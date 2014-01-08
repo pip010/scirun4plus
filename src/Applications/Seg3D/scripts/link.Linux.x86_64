@@ -1,0 +1,14 @@
+ld --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o ${DIR}/bin/Seg3D /usr/lib/gcc/x86_64-linux-gnu/4.0.3/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-linux-gnu/4.0.3/../../../../lib64/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.0.3/crtbegin.o -L${DIR}/thirdparty.bin/3.0.0/Linux/gcc-4.0.3-64bit/lib/InsightToolkit -L${DIR}/thirdparty.bin/3.0.0/Linux/gcc-4.0.3-64bit/lib -L${DIR}/bin/lib -L/usr/lib64 -L/usr/lib/gcc/x86_64-linux-gnu/4.0.3 -L/usr/lib/gcc/x86_64-linux-gnu/4.0.3 -L/usr/lib/gcc/x86_64-linux-gnu/4.0.3/../../../../lib64 -L/usr/lib/gcc/x86_64-linux-gnu/4.0.3/../../.. -L/lib/../lib64 -L/usr/lib/../lib64 ${DIR}/bin/Applications/Seg3D/CMakeFiles/Seg3D.dir/main.o -lPainter -lGL -lteem -lCore_Matlab -lCore_Algorithms_Visualization -lCore_Basis -lCore_Bundle -lCore_Containers -lCore_Datatypes -lCore_Events -lCore_Exceptions -lCore_Geom -lCore_Geometry -lCore_Math -lCore_Persistent -lCore_Skinner -lCore_Thread -lCore_Util -lCore_Volume -lCore_Malloc -lITKCommon -lITKBasicFilters -lITKIO -lCore_ImportExport -lCore_Events -lCore_Algorithms_Fields -lCore_Algorithms_Converter -lCore_Algorithms_Util -lCore_Bundle -lCore_Algorithms_Visualization -lmpege -lCore_Math -lCore_XMLUtil -lxml2 -lCore_Geom -lfreetype -lCore_Datatypes -lCore_Basis /usr/lib/libICE.a /usr/lib/libSM.a /usr/lib/libX11.a /usr/lib/libXext.a /usr/lib64/libXau.a -lCore_Geometry -lpng -lCore_Persistent -lz -lCore_Util -lCore_Containers -lGL /usr/lib/libGLU.a -lteem -lCore_Thread -lCore_Exceptions -lITKNrrdIO -litkgdcm -litkjpeg12 -litkjpeg16 -litkopenjpeg -litkpng -litktiff -litkjpeg8 -lITKSpatialObject -lITKNumerics -lITKCommon -litkvnl_inst -litkvnl_algo -litkv3p_netlib -litkvnl -litkvcl -lpthread -lITKMetaIO -litksys -ldl -lITKDICOMParser -lITKEXPAT -lITKniftiio -lITKznz -litkzlib -rpath /usr/lib64 /usr/lib/gcc/x86_64-linux-gnu/4.0.3/libstdc++.a /usr/lib/libm.a -lgcc_eh -lgcc -lc -lgcc_eh -lgcc /usr/lib/gcc/x86_64-linux-gnu/4.0.3/crtend.o /usr/lib/gcc/x86_64-linux-gnu/4.0.3/../../../../lib64/crtn.o 
+mkdir -p $DIR/Seg3D
+rm -rf $DIR/Seg3D/*
+cp $DIR/bin/Seg3D $DIR/Seg3D
+mkdir $DIR/Seg3D/data
+cp -r $DIR/src/Applications/Seg3D/data/* $DIR/Seg3D/data
+version=`$svnbin info $DIR/src | grep Revision | cut -d" " -f 2`
+cd $DIR
+archive=$DIR/Seg3D-r${version}-`uname -s`-`uname -m`.tar.gz
+echo "archive: $archive"
+tar cvzf $archive Seg3D
+rm -rf $DIR/Seg3D
+echo scp $archive $library
+scp $archive $library

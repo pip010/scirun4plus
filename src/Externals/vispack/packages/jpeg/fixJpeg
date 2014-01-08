@@ -1,0 +1,4 @@
+#!/usr/bin/sh
+sed 's/boolean/jpegBoolean/g' $1 > _junk
+mv -f _junk $1
+echo finished $1

@@ -1,0 +1,72 @@
+*** xv.h	Thu Jan  2 18:02:19 1992
+--- /usr/people/sam/xv-2.00/xv.h	Wed Feb  5 17:45:30 1992
+***************
+*** 327,335 ****
+  #define F_XBM       4
+  #define F_SUNRAS    5
+  #define F_PS        6
+  
+  #ifdef HAVE_JPEG
+! #define F_JPEG      7
+  #endif
+  
+  
+--- 327,336 ----
+  #define F_XBM       4
+  #define F_SUNRAS    5
+  #define F_PS        6
++ #define	F_TIFF	    7
+  
+  #ifdef HAVE_JPEG
+! #define F_JPEG      8
+  #endif
+  
+  
+***************
+*** 540,546 ****
+  #define MONO(rd,gn,bl) (((rd)*11 + (gn)*16 + (bl)*5) >> 5)  /*.33R+ .5G+ .17B*/
+  
+  
+- 
+  /* X stuff */
+  WHERE Display       *theDisp;
+  WHERE int           theScreen;
+--- 541,546 ----
+***************
+*** 675,680 ****
+--- 675,684 ----
+  WHERE int           psUp;       /* is psW mapped, or what? */
+  
+  
++ /* stuff used for 'tiff' box */
++ WHERE Window        tiffW;
++ WHERE int           tiffUp;       /* is tiffW mapped, or what? */
++ 
+  #ifdef HAVE_JPEG
+  /* stuff used for 'jpeg' box */
+  WHERE Window        jpegW;
+***************
+*** 905,910 ****
+--- 909,918 ----
+  int LoadPBM(char *, int);
+  int WritePBM(FILE *, byte *, int, int, byte *, byte *, byte *, int, int, int);
+  
++ /**************************** XVTIFF.C ***************************/
++ int LoadTIFF *, int);
++ int WriteTIFF(FILE *, byte *, int, int, byte *, byte *, byte *, int, int, int);
++ 
+  /**************************** XVXBM.C ***************************/
+  int LoadXBM(char *, int);
+  int WriteXBM(FILE *, byte *, int, int, char *);
+***************
+*** 1055,1060 ****
+--- 1063,1071 ----
+  
+  /**************************** XVPBM.C ***************************/
+  int LoadPBM(), WritePBM();
++ 
++ /**************************** XVTIFF.C ***************************/
++ int LoadTIFF(), WriteTIFF();
+  
+  /**************************** XVXBM.C ***************************/
+  int LoadXBM(), WriteXBM();

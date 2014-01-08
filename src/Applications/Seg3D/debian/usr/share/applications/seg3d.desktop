@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Seg3D
+GenericName=Seg3D
+Comment=Interactive volume segmentation tool
+TryExec=/usr/bin/Seg3D
+Exec=Seg3D
+Terminal=false
+Type=Application
+Icon=/usr/share/Seg3D/1.9.1/data/Seg3D-icon.png
+Categories=Application;Education;Science;

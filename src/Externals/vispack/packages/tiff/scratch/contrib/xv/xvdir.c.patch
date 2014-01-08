@@ -1,0 +1,69 @@
+*** xvdir.c	Thu Jan  2 18:05:59 1992
+--- /usr/people/sam/xv-2.00/xvdir.c	Wed Feb  5 17:45:08 1992
+***************
+*** 141,148 ****
+    RBCreate(formatRB, dirW, 26, y+72,  "X11 Bitmap", infofg, infobg);
+    RBCreate(formatRB, dirW, 26, y+90,  "Sun Rasterfile", infofg, infobg);
+    RBCreate(formatRB, dirW, 26, y+108, "PostScript", infofg, infobg);
+  #ifdef HAVE_JPEG
+!   RBCreate(formatRB, dirW, 26, y+126, "JPEG", infofg, infobg);
+  #endif
+  
+    colorRB = RBCreate(NULL, dirW, DIRWIDE/2, y, "Full Color", infofg, infobg);
+--- 141,149 ----
+    RBCreate(formatRB, dirW, 26, y+72,  "X11 Bitmap", infofg, infobg);
+    RBCreate(formatRB, dirW, 26, y+90,  "Sun Rasterfile", infofg, infobg);
+    RBCreate(formatRB, dirW, 26, y+108, "PostScript", infofg, infobg);
++   RBCreate(formatRB, dirW, 26, y+126, "TIFF", infofg, infobg);
+  #ifdef HAVE_JPEG
+!   RBCreate(formatRB, dirW, 26, y+144, "JPEG", infofg, infobg);
+  #endif
+  
+    colorRB = RBCreate(NULL, dirW, DIRWIDE/2, y, "Full Color", infofg, infobg);
+***************
+*** 656,663 ****
+      return 0;                      /* always 'succeeds' */
+    }
+  
+  #ifdef HAVE_JPEG
+!   else if (fmt == F_JPEG) {   /* PostScript */
+      JPEGSaveParams(globname, col);
+      JPEGDialog(1);                   /* open JPEGDialog box */
+      dbut[S_BOK].lit = 0;  BTRedraw(&dbut[S_BOK]);
+--- 657,671 ----
+      return 0;                      /* always 'succeeds' */
+    }
+  
++   else if (fmt == F_TIFF) {   /* TIFF */
++     TIFFSaveParams(globname, col);
++     TIFFDialog(1);                   /* open TIFFDialog box */
++     dbut[S_BOK].lit = 0;  BTRedraw(&dbut[S_BOK]);
++     return 0;                      /* always 'succeeds' */
++   }
++ 
+  #ifdef HAVE_JPEG
+!   else if (fmt == F_JPEG) {   /* JPEG */
+      JPEGSaveParams(globname, col);
+      JPEGDialog(1);                   /* open JPEGDialog box */
+      dbut[S_BOK].lit = 0;  BTRedraw(&dbut[S_BOK]);
+***************
+*** 834,839 ****
+--- 842,849 ----
+        (strcmp(lowsuf,"ras" )==0) ||
+        (strcmp(lowsuf,"ps"  )==0) ||
+        (strcmp(lowsuf,"eps" )==0) ||
++       (strcmp(lowsuf,"tif")==0)  ||
++       (strcmp(lowsuf,"tiff")==0) ||
+        (strcmp(lowsuf,"jpg" )==0) ||
+        (strcmp(lowsuf,"jpeg")==0) ||
+        (strcmp(lowsuf,"jfif")==0)) {
+***************
+*** 857,862 ****
+--- 867,873 ----
+      case F_XBM:      strcpy(lowsuf,"xbm");  break;
+      case F_SUNRAS:   strcpy(lowsuf,"ras");  break;
+      case F_PS:       strcpy(lowsuf,"ps");   break;
++     case F_TIFF:     strcpy(lowsuf,"tif");  break;
+  
+  #ifdef HAVE_JPEG
+      case F_JPEG:     strcpy(lowsuf,"jpg");  break;

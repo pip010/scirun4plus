@@ -1,0 +1,22 @@
+*** /tmp/,RCSt1a06735	Mon Feb 10 16:08:39 1992
+--- xvmisc.c	Wed Feb  5 17:43:45 1992
+***************
+*** 375,380 ****
+--- 375,381 ----
+      if (dirW)  XDefineCursor(theDisp, dirW, arrow);
+      if (gamW)  XDefineCursor(theDisp, gamW, arrow);
+      if (psW)   XDefineCursor(theDisp, psW,  arrow);
++     if (tiffW) XDefineCursor(theDisp, tiffW,  arrow);
+  #ifdef HAVE_JPEG
+      if (jpegW) XDefineCursor(theDisp, jpegW,  arrow);
+  #endif
+***************
+*** 399,404 ****
+--- 400,406 ----
+      if (dirW)  XDefineCursor(theDisp, dirW, c);
+      if (gamW)  XDefineCursor(theDisp, gamW, c);
+      if (psW)   XDefineCursor(theDisp, psW, c);
++     if (tiffW) XDefineCursor(theDisp, tiffW, c);
+  #ifdef HAVE_JPEG
+      if (jpegW) XDefineCursor(theDisp, jpegW, c);
+  #endif

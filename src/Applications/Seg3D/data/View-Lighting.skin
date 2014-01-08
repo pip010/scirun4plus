@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<definition name="View-Lighting">
+  <object name="Skinner::Grid">
+
+    <var name="Lighting::on" propagate="yes" overwrite="no">1</var>
+    <var name="Lighting::ambient" propagate="yes" overwrite="no">0.5</var>
+    <var name="Lighting::diffuse" propagate="yes" overwrite="no">0.5</var>
+    <var name="Lighting::specular" propagate="yes" overwrite="no">1.0</var>
+    <var name="Lighting::shine" propagate="yes" overwrite="no">16</var>
+
+    <var name="rows">7</var>
+    <var name="cols">1</var>
+
+    <signal name="Slider::changed"
+            target="Lighting::changed"/>
+
+    <object name="Skinner::Grid">
+      <var name="row">2</var>
+      <var name="col">1</var>
+
+      <var name="rows">1</var>
+      <var name="cols">2</var>
+
+      <var name="cell-height">25</var>
+
+      <object name="Skinner::Collection">
+        <var name="row">1</var>
+        <var name="col">1</var>
+        <var name="cell-width">70</var>
+      </object>
+
+      <object name="LabeledCheckButton">
+        <var name="row">1</var>
+        <var name="col">2</var>
+        <var name="cell-height">25</var>
+        <var name="Button::Text::text"
+             propagate="yes">Lighting </var>
+        <var name="CheckButton::state"
+             propagate="yes">$Lighting::on</var>
+        <signal name="Button::clicked"
+                target="Lighting::changed"/>
+      </object>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">3</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Ambient</var>
+      <var name="Slider::value"
+           propagate="yes">$Lighting::ambient</var>
+      <var name="Slider::min" propagate="yes">0.0</var>
+      <var name="Slider::max" propagate="yes">1.0</var>
+      <var name="Slider::resolution" propagate="yes">0.01</var>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">4</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Diffuse</var>
+      <var name="Slider::value"
+           propagate="yes">$Lighting::diffuse</var>
+      <var name="Slider::min" propagate="yes">0.0</var>
+      <var name="Slider::max" propagate="yes">1.0</var>
+      <var name="Slider::resolution" propagate="yes">0.01</var>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">5</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Specular</var>
+      <var name="Slider::value"
+           propagate="yes">$Lighting::specular</var>
+      <var name="Slider::min" propagate="yes">0.0</var>
+      <var name="Slider::max" propagate="yes">1.0</var>
+      <var name="Slider::resolution" propagate="yes">0.01</var>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">6</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Shine</var>
+      <var name="Slider::value"
+           propagate="yes">$Lighting::shine</var>
+      <var name="Slider::min" propagate="yes">1.0</var>
+      <var name="Slider::max" propagate="yes">128.0</var>
+      <var name="Slider::resolution" propagate="yes">1</var>
+    </object>
+  </object>
+</definition>
+

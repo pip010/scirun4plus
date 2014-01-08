@@ -1,0 +1,99 @@
+RELEASE NOTES
+
+Program: SCIRun 4.7
+Date: November 13, 2013
+
+
+Supported platforms:
+
+[1] Windows: SCIRun 4.7 currently runs on Windows 8, Windows 7, Windows Vista and
+    Windows XP Service Pack (SP) 3 both 64 and 32bit. 
+
+[2] OS X: SCIRun 4.7 supports OS X 10.5 and higher. Currently both a 32bit and
+    a 64bit version are available. Please note that SCIRun requires the X11 package
+    to be installed from the installation disk. For OS X 10.5, note that some of the
+    latest releases of the X11.pkg (2.3.1) contain bugs that prevent SCIRun from
+    running properly when compiled with 2.3.1 X11 libraries. We use X11.pkg version
+    2.2.0 which works fine with our software.
+    For OS X 10.6 and 10.7, the default X11.pkg is supported.
+    For OS X 10.8, only NVIDIA cards are known to work with SCIRun's visualization
+    code.
+    Install the recommended XQuartz version (currently 2.7).
+
+[3] Linux: SCIRun 4.7 supports most flavors of Linux, but requires the user to
+    compile SCIRun from scratch. Generally, ATI graphics cards do not work with
+    SCIRun on Linux, for functionality such as volume rendering. For Linux we
+    recommend an NVIDIA graphics card, as the NVDIA drivers are more compatible with
+    SCIRun. Although SCIRun is shipped with most thirdparty software, compilation
+    tools like gcc, svn and cmake need to be installed on the machine separately
+    prior to running the build.sh script.
+
+
+OpenGL requirement:
+
+On older systems OpenGL often is version 1.2 or 1.1. However for SCIRun to work one
+needs an OpenGL library of version 2.0 or higher. Currently most Linux and OS X
+systems have a recent enough OpenGL library. Usually, only older Windows XP versions do
+not have a newer OpenGL library. Please update OpenGL drivers on those older systems
+before running SCIRun.
+
+
+Binary versions:
+
+Binary versions are available for Windows XP/Vista/7 and OS X 10.5 and greater.
+We no longer ship PowerPC compatible binaries, however SCIRun can be build from source
+on those architectures.
+
+
+Source code:
+
+Source code of SCIRun is available from https://gforge.sci.utah.edu/, use Subversion
+to check out the latest version of the code. The latest code can be downloaded by:
+
+svn co --username anonymous https://gforge.sci.utah.edu/svn/cibc/cibc/trunk .
+
+
+Documentation:
+
+SCIRun tutorials are available in PDF format in the binary downloads for OS X and
+Windows, and in the source distributions, as well as online (http://www.scirun.org).
+Documentation can also be built from source code, if LaTeX software is available, by
+enabling documentation in CMake, or using the "--documentation" flag with the SCIRun
+build script. Module documentation is still available online, as is the SCIRun wiki.
+
+Questions regarding SCIRun can always be posted to scirun-users@sci.utah.edu.
+
+
+New features:
+
+[1] The ECGToolkit is a collection of software tools and example SCIRun networks for
+    solving forward and inverse problems in electrocardiography, with special
+    documentation to describe these tools and their use.
+    The tools feature BEM and FEM solvers for most of the important cases of
+    activation-based and potential-based source models and a number of inverse
+    solution methods. Some of the code is written in Matlab and connects with SCIRun
+    through our interface module, and some functionality depends on ECGSim, a free
+    package distributedly separately from http://www.ecgsim.org.
+
+[2] The module BuildTDCSMatrix has been added to the SCIRun package, which generates
+    a matrix which formulates the forward problem of transcranial direct current
+    stimulation (tDCS).
+
+[3] Fixed bug in Tetrahedral mesh Gaussian sampling scheme (contributed by Peter
+    Johnston, Griffith University).
+
+[4] Boost upgrade to version 1.53.
+
+[5] A test network ws added for ClipLatVolByIndicesOrWidget module demonstrating
+    the use of the bounding box widget to clip the test LatVol field.
+
+[6] A new linear system solver function (LAPACK-based) was added to DenseMatrix.
+
+[7] A divide by zero exception in the math function parser library.
+
+[8] Fixed bug in the JoinFields module: only copy elements if there are any to copy.
+
+[9] The BuildFEMatrix modules in the BioPSE and SCIRun packages have been merged.
+    The BioPSE BuildFEMatrix module has been deleted.
+
+[10] SparseMatrix support has been added to the CollectMatrices module.

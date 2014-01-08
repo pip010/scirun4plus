@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<definition name="LayerButton" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <object name="Painter::LayerButton">
+    <var name="visible">0</var>
+    <var name="LayerButton::num" type="int" overwrite="no">1</var>
+    <var name="LayerButton::background_color" propagate="yes">#00000000</var>
+    <var name="LayerButton::active_render_target" propagate="yes">0</var>
+    <var name="LayerButton::color_is_selectable" propagate="yes">0</var>
+    <var name="LayerButton::visible" propagate="yes">1</var>
+    <var name="LayerButton::indent" propagate="yes">10</var>
+    <var name="LayerButton::color" propagate="yes">#FFFFFFFF</var>
+    <var name="Button::Text::size" propagate="yes">20</var>
+    <var name="row">$LayerButton::num</var>
+    <var name="col">1</var>
+    <var name="thumbnail_height" propagate="yes">45</var>
+    <var name="button_width" propagate="yes">20</var>
+    <var name="button_height" propagate="yes">20</var>
+    <var name="cell-height">$thumbnail_height</var>
+
+    <var name="LayerButton::name" propagate="yes">Layer</var>
+
+    <object name="Skinner::Box" id="background">
+      <var name="color">$LayerButton::background_color</var>
+      <signal name="button_1_clicked" target="LayerButton::select"/>
+      <signal name="button_1_clicked" target="GLWindow::mark_redraw"/>
+
+      <object name="Skinner::Grid">
+        <var name="rows">3</var>
+        <var name="cols">3</var>
+
+        <object name="Skinner::Collection">
+          <var name="row">1</var>
+          <var name="col">1</var>
+          <var name="cell-height">2</var>
+          <var name="cell-width">$LayerButton::indent</var>
+        </object>
+
+        <object name="Skinner::Collection">
+          <var name="row">3</var>
+          <var name="col">1</var>
+          <var name="cell-height">2</var>
+        </object>
+
+        <object name="Skinner::Collection">
+          <var name="row">2</var>
+          <var name="col">3</var>
+          <var name="cell-width">0</var>
+        </object>
+
+        <object name="Skinner::Grid">
+          <var name="row">2</var>
+          <var name="col">2</var>
+
+          <var name="rows">2</var>
+          <var name="cols">15</var>
+
+          <xi:include href="ArrowButton.skin" parse="xml"/>
+
+          <object name="Skinner::FocusRegion">
+            <var name="row-begin">1</var>
+            <var name="row-end">1</var>
+            <var name="col-begin">1</var>
+            <var name="col-end">15</var>
+            <var name="TextEntry::focused" propagate="yes">0</var>
+            <var name="focus">$TextEntry::focused</var>
+            <object name="Skinner::ViewSubRegion">
+              <object name="Skinner::TextEntry">
+                <var name="size">17</var>
+                <var name="text">$LayerButton::name</var>
+                <var name="bgcolor">#000000FF</var>
+                <var name="fgcolor">#FFFFFFFF</var>
+                <var name="shadow">1</var>
+                <var name="offsetx">-1</var>
+                <var name="offsety">1</var>
+                <var name="cursor">$TextEntry::focused</var>
+                <var name="cursor">1</var>
+                <var name="anchor">W</var>
+              </object>
+            </object>
+          </object>
+
+          <object name="CheckButtonTemplate">
+            <var name="row">2</var>
+            <var name="col">1</var>
+            <var name="cell-width">$button_width</var>
+            <var name="cell-height">$button_height</var>
+
+            <var name="CheckButton::state" propagate="yes">$LayerButton::visible</var>
+            <signal name="Button::clicked"
+                    target="GLWindow::mark_redraw"/>
+
+            <definition name="CheckButtonTemplate::OffObject">
+              <object name="FrameButton">
+                <var name="row">2</var>
+                <var name="col">2</var>
+                <var name="cell-width">$button_width</var>
+                <var name="cell-height">$button_height</var>
+                <var name="font" propagate="yes">glyphite.ttf</var>
+                <var name="Button::Text::text" propagate="yes">+</var>
+              </object>
+            </definition>
+
+            <definition name="CheckButtonTemplate::OnObject">
+              <object name="FrameButton">
+                <var name="row">2</var>
+                <var name="col">2</var>
+                <var name="cell-width">$button_width</var>
+                <var name="cell-height">$button_height</var>
+                <var name="font" propagate="yes">glyphite.ttf</var>
+                <var name="Button::Text::text" propagate="yes">-</var>
+              </object>
+            </definition>
+          </object>
+
+
+          <object name="FrameButton">
+            <var name="row">2</var>
+            <var name="col">2</var>
+            <var name="cell-width">$button_width</var>
+            <var name="cell-height">$button_height</var>
+            <var name="font" propagate="yes">glyphite.ttf</var>
+            <var name="Button::Text::text" propagate="yes">+</var>
+
+            <signal name="Button::clicked"
+                    target="Painter::CreateLabelVolume">
+            </signal>
+
+            <signal name="Button::clicked"
+                    target="GLWindow::mark_redraw"/>
+
+            <signal name="Button::clicked"
+                    target="Skinner::Stop"/>
+          </object>
+
+          <object name="FrameButton">
+            <var name="row">2</var>
+            <var name="col">3</var>
+            <var name="cell-width">$button_width</var>
+            <var name="cell-height">$button_height</var>
+            <var name="font" propagate="yes">glyphite.ttf</var>
+            <var name="Button::Text::text" propagate="yes">i</var>
+
+            <signal name="Button::clicked"
+                    target="Painter::VolumeInformation">
+            </signal>
+
+            <signal name="Button::clicked" target="Skinner::Stop"/>
+          </object>
+
+          <object name="FrameButton">
+            <var name="row">2</var>
+            <var name="col">4</var>
+            <var name="cell-width">$button_width</var>
+            <var name="cell-height">$button_height</var>
+            <var name="font" propagate="yes">glyphite.ttf</var>
+            <var name="Button::Text::text" propagate="yes">f</var>
+
+            <signal name="Button::clicked"
+                    target="Painter::OpenOpacityDialog">
+            </signal>
+
+            <signal name="Button::clicked" target="Skinner::Stop"/>
+          </object>
+
+
+          <object name="FrameButton">
+             <var name="row">2</var>
+             <var name="col">5</var>
+             <var name="cell-width">$button_width</var>
+             <var name="cell-height">$button_height</var>
+             <var name="Button::color" propagate="yes">$LayerButton::color</var>
+             <var name="Button::Text::text" propagate="yes"> </var>
+             <var name="visible">$LayerButton::color_is_selectable</var>
+
+             <signal name="Button::clicked"
+                     target="Painter::OpenLabelColorDialog">
+              <var name="name">$LayerButton::name</var>
+            </signal>
+
+            <signal name="Button::clicked" target="Skinner::Stop"/>
+          </object>
+
+
+          <object name="FrameButton">
+            <var name="row">2</var>
+            <var name="col">6</var>
+            <var name="cell-width">$button_width</var>
+            <var name="cell-height">$button_height</var>
+            <var name="Button::Text::text" propagate="yes">x</var>
+            <var name="font" propagate="yes">glyphite.ttf</var>
+            <var name="Button::Text::fgcolor" propagate="yes">#660000FF</var>
+
+            <signal name="Button::clicked"
+                    target="Painter::DeleteLayer">
+              <var name="name">$LayerButton::name</var>
+            </signal>
+
+            <signal name="Button::clicked"
+                    target="GLWindow::mark_redraw"/>
+
+            <signal name="Button::clicked"
+                    target="Skinner::Stop"/>
+          </object>
+
+          <object name="Skinner::Texture">
+             <var name="row">2</var>
+             <var name="col">7</var>
+             <var name="cell-width">$button_width</var>
+             <var name="cell-height">$button_height</var>
+             <var name="visible">$LayerButton::active_render_target</var>
+             <var name="file">icon-volume.png</var>
+          </object>
+
+        </object>
+      </object>
+    </object>
+  </object>
+</definition>

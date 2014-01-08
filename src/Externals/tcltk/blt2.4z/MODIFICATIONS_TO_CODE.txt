@@ -1,0 +1,21 @@
+This version of BLT has been modified in the following way:
+
+We added a CMake system that replaces the old make system. This impacts the 
+src/bltConfig.h.in and src/bltHash.in, as they now need #cmakedefine instead of #define.
+
+The other modifications were bug fixes to ensure that the code compiles with new TCL/TK versions:
+
+We modified
+src/bltScrollbar.c
+src/bltTed.c
+src/bltInit.c
+src/BltNsUtil.h
+src/BltVecMath.c
+
+The changes were limited to the changes required by an API change in TCL. Some functions now require a const char* instead of a char*, and The_interp does not have a field result anymore and needs an additional function call to obtain the result field. 
+
+Hence in src/BltNsUtil.h we modified the external definitions of the TCL calls to mirror the ones in tcl.h. In src/bltScrollbar.c, src/bltTed.c, and 
+src/BltVecMath.c we modified the way results are send back to TCL and finally in src/bltInit.c, we removed exact version number checking, as we are linking against a beta version of TCL that has an additional pattch level that BLT does not know how to deal with.
+
+The changes mentioned were the only ones needed to fix BLT to run under TCL 8.6 using CMake.
+

@@ -1,0 +1,12 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=Seg3D.chm
+Contents file=C:\Bryan\Seg3d\src\StandAlone\Apps\Seg3D\doc\Seg3d.hhc
+Default topic=overview.htm
+Display compile progress=No
+Index file=C:\Bryan\Seg3d\src\StandAlone\Apps\Seg3D\doc\Seg3d.hhk
+Language=0x409 English (United States)
+
+
+[INFOTYPES]
+

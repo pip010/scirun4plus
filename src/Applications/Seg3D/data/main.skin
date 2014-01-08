@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<!DOCTYPE skinner PUBLIC "-//Skinner/Drawable DTD" "skinner.dtd">
+
+<skinner version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <var name="program_name" propagate="yes">Seg3D</var>
+  <var name="version" propagate="yes">Version 1.12</var>
+
+  <var name="Painter::appearance::fatlines" type="bool" propagate="yes">1</var>
+  <var name="Painter::appearance::stipple" type="bool" propagate="yes">1</var>
+
+  <var name="Painter::brush_radius" type="double" propagate="yes">5.0</var>
+  <var name="Painter::brush_force_erasing" type="bool" propagate="yes">false</var>
+
+  <var name="Painter::thresholdtool_lower" type="double" propagate="yes">0.0</var>
+  <var name="Painter::thresholdtool_upper" type="double" propagate="yes">1.0</var>
+  
+  <var name="Painter::windowleveltool_window" type="double" propagate="yes">0.0</var>
+  <var name="Painter::windowleveltool_level" type="double" propagate="yes">1.0</var>
+  
+  <var name="Painter::IntensityCorrection::order" type="int" propagate="yes">3</var>
+  <var name="Painter::IntensityCorrection::edge" type="double" propagate="yes">0.1</var>
+
+  <var name="Painter::polylinetool_erase" type="bool" propagate="yes">0</var>
+
+  <var name="MedianFilterVolume::radius" type="int" propagate="yes">5</var>
+
+  <var name="Painter::SetLabelColor::r" type="double" propagate="yes">0</var>
+  <var name="Painter::SetLabelColor::g" type="double" propagate="yes">0</var>
+  <var name="Painter::SetLabelColor::b" type="double" propagate="yes">0</var>
+  <var name="Painter::SetLabelColor::layername" type="string" propagate="yes"></var>
+
+  <var name="Painter::HistoEq::bins" type="int" propagate="yes">1</var>
+  <var name="Painter::HistoEq::alpha" type="double" propagate="yes">1.0</var>
+
+  <var name="ITKCurvatureAnisotropicDiffusionImageFilterTool::numberOfIterations" type="int" propagate="yes">5</var>
+  <var name="ITKCurvatureAnisotropicDiffusionImageFilterTool::timeStep" type="double" propagate="yes">0.0625</var>
+  <var name="ITKCurvatureAnisotropicDiffusionImageFilterTool::conductanceParameter" type="double" propagate="yes">5.0</var>
+
+  <var name="ITKConfidenceConnectedImageFilterTool::numberOfIterations"
+       type="int" propagate="yes">3</var>
+  <var name="ITKConfidenceConnectedImageFilterTool::multiplier"
+       type="double" propagate="yes">2.0</var>
+  <var name="ITKConfidenceConnectedImageFilterTool::replaceValue"
+       type="double" propagate="yes">1.0</var>
+  <var name="ITKConfidenceConnectedImageFilterTool::initialNeighborhoodRadius"
+       type="int" propagate="yes">1</var>
+
+  <var name="ITKBinaryDilateErodeImageFilterTool::DilateRadius" type="int" propagate="yes">3</var>
+  <var name="ITKBinaryDilateErodeImageFilterTool::ErodeRadius" type="int" propagate="yes">3</var>
+  <var name="ITKBinaryDilateErode::radius" propagate="yes">3</var>
+  <var name="ITKBinaryDilateErode::dilateValue" propagate="yes">1</var>
+  <var name="ITKBinaryDilateErode::erodeValue" propagate="yes">1</var>
+
+  <var name="ITKSpeedToPathGradientDescentImageFilterTool::mIterations" type="int" propagate="yes">1000</var>
+  <var name="ITKSpeedToPathGradientDescentImageFilterTool::mTermination" type="double" propagate="yes">2.0</var>
+  <var name="ITKSpeedToPathGradientDescentImageFilterTool::mSeedPoints" type="bool" propagate="yes">1</var>
+
+  <var name="ITKSpeedToPathRegularStepGradientDescentImageFilterTool::mIterations" type="int" propagate="yes">1000</var>
+  <var name="ITKSpeedToPathRegularStepGradientDescentImageFilterTool::mTermination" type="double" propagate="yes">2.0</var>
+  <var name="ITKSpeedToPathRegularStepGradientDescentImageFilterTool::mStepLengthFactor" type="double" propagate="yes">1.0</var>
+  <var name="ITKSpeedToPathRegularStepGradientDescentImageFilterTool::mStepLengthRelax" type="double" propagate="yes">0.999</var>
+  <var name="ITKSpeedToPathRegularStepGradientDescentImageFilterTool::mSeedPoints" type="bool" propagate="yes">1</var>
+
+  <var name="ITKSpeedToPathIterateNeighborhoodImageFilterTool::mTermination" type="double" propagate="yes">2.0</var>
+  <var name="ITKSpeedToPathIterateNeighborhoodImageFilterTool::mStepLengthFactor" type="double" propagate="yes">1.0</var>
+  <var name="ITKSpeedToPathIterateNeighborhoodImageFilterTool::mSeedPoints" type="bool" propagate="yes">1</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::CurvatureScaling"
+       type="double" propagate="yes">1.1</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::PropagationScaling"
+       type="double" propagate="yes">1.0</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::AdvectionScaling"
+       type="double" propagate="yes">1.0</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::EdgeWeight"
+       type="double" propagate="yes">0.0</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::NumberOfIterations"
+       type="int" propagate="yes">5000</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::MaximumRMSError"
+       type="double" propagate="yes">0</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::ReverseExpansionDirection"
+       type="bool" propagate="yes">1</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::IsoSurfaceValue"
+       type="double" propagate="yes">0.5</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::SmoothingIterations"
+       type="int" propagate="yes">0.0</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::SmoothingTimeStep"
+       type="double" propagate="yes">0.0</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::SmoothingConductance"
+       type="double" propagate="yes">0.0</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::LowerThreshold"
+       type="double" propagate="yes">1.0</var>
+
+  <var name="ITKThresholdSegmentationLevelSetImageFilterTool::UpperThreshold"
+       type="double" propagate="yes">3.0</var>
+
+
+  <var name="volume_visible" propagate="yes">1</var>
+
+  <var name="Painter::flip::axis" type="int" propagate="yes">0</var>
+  <var name="Painter::crop::min::x" type="double" propagate="yes">0</var>
+  <var name="Painter::crop::min::y" type="double" propagate="yes">0</var>
+  <var name="Painter::crop::min::z" type="double" propagate="yes">0</var>
+  <var name="Painter::crop::max::x" type="double" propagate="yes">0</var>
+  <var name="Painter::crop::max::y" type="double" propagate="yes">0</var>
+  <var name="Painter::crop::max::z" type="double" propagate="yes">0</var>
+
+  <var name="Painter::movescale::origin::x" type="double" propagate="yes">0</var>
+  <var name="Painter::movescale::origin::y" type="double" propagate="yes">0</var>
+  <var name="Painter::movescale::origin::z" type="double" propagate="yes">0</var>
+  <var name="Painter::movescale::spacing::x" type="double" propagate="yes">0</var>
+  <var name="Painter::movescale::spacing::y" type="double" propagate="yes">0</var>
+  <var name="Painter::movescale::spacing::z" type="double" propagate="yes">0</var>
+
+  <var name="Filter::percent" type="double" propagate="yes">0</var>
+  <var name="Filter::stopped" type="bool" propagate="yes">1</var>
+  <var name="Filter::playing" type="bool" propagate="yes">0</var>
+  <var name="Filter::ready" type="bool" propagate="yes">1</var>
+
+  <var name="Resample::x" type="int" propagate="yes">128</var>
+  <var name="Resample::y" type="int" propagate="yes">128</var>
+  <var name="Resample::z" type="int" propagate="yes">128</var>
+  <var name="Resample::filter" type="string" propagate="yes"></var>
+
+  <var name="Resample::percent_x" type="double" propagate="yes">100</var>
+  <var name="Resample::precent_y" type="double" propagate="yes">100</var>
+  <var name="Resample::percent_z" type="double" propagate="yes">100</var>
+
+  <var name="ITKBinaryDilateErode::dilateValue" propagate="yes">1</var>
+  <var name="ITKBinaryDSlilateErode::erodeValue" propagate="yes">1</var>
+
+  <var name="main_color" propagate="yes">#AAAAB0FF</var>
+  <var name="background_color" propagate="yes">#666666FF</var>
+  <var name="dark_color" propagate="yes">#404040FF</var>
+  <var name="dark_clear" propagate="yes">#40404000</var>
+  <var name="background_color_clear" propagate="yes">#66666600</var>
+  <var name="focus_color" propagate="yes">#999999FF</var>
+  <var name="focus_color_clear" propagate="yes">#99999900</var>
+  <var name="main_color_dark" propagate="yes">#AAAAB080</var>
+  <var name="hilite_shadow" propagate="yes">#AAAAB080</var>
+  <var name="hilite_shadow" propagate="yes">#FFFF90FF</var>
+  <var name="hilite_shadow_clear" propagate="yes">#FFFF90FF</var>
+
+  <var name="hilite_shadow" propagate="yes">#CCCC90FF</var>
+  <var name="hilite_shadow_clear" propagate="yes">#CCCC9080</var>
+
+  <var name="grey" propagate="yes">#444444FF</var>
+  <var name="grey2" propagate="yes">#777777FF</var>
+  <var name="grey3" propagate="yes">#AAAAAAFF</var>
+  <var name="light_red" propagate="yes">#882222BB</var>
+  <var name="light_red_clear" propagate="yes">#88222250</var>
+  <var name="light_green" propagate="yes">#33993388</var>
+  <var name="light_green_clear" propagate="yes">#33993350</var>
+  <var name="light_blue" propagate="yes">#33339988</var>
+  <var name="light_blue_clear" propagate="yes">#33339900</var>
+  <var name="default_font_size" propagate="yes">15</var>
+  <var name="SliceWindow::GridFontSize"
+       propagate="yes">$default_font_size</var>
+
+  <var name="dark_blue" propagate="yes">#444466FF</var>
+
+  <var name="button_color" propagate="yes">#BBBBFFFF</var>
+  <var name="button_color" propagate="yes">#FFFFFFFF</var>
+  <var name="main-color" propagate="yes">#EEEEEEDD</var>
+
+  <var name="grey" propagate="yes">$main-color</var>
+  <var name="grey2" propagate="yes">$main-color</var>
+  <var name="grey3" propagate="yes">$main-color</var>
+
+  <var name="clear" propagate="yes">#00000000</var>
+  <var name="black50" propagate="yes">#00000080</var>
+  <var name="black90" propagate="yes">#000000BB</var>
+  <var name="Window::borders" propagate="yes">1</var>
+  <var name="ColorPicker::color" propagate="yes">#00FF00FF</var>
+  <var name="FileLoadBox::filename" propagate="yes"></var>
+
+  <var name="FileBrowser::fullpath"></var>
+
+  <var name="FloodFill::3D" propagate="yes">0</var>
+
+  <xi:include href="ClearBorder.skin" parse="xml"/>
+  <xi:include href="CheckButtonTemplate.skin" parse="xml"/>
+  <xi:include href="CheckButton.skin" parse="xml"/>
+  <xi:include href="LabeledCheckButton.skin" parse="xml"/>
+  <xi:include href="LabeledLeftCheckButton.skin" parse="xml"/>
+  <xi:include href="EyeCheckButton.skin" parse="xml"/>
+  <xi:include href="FrameButtonTemplate.skin" parse="xml"/>
+  <xi:include href="ImageFrameButton.skin" parse="xml"/>
+  <xi:include href="ExpandArrowCheckButton.skin" parse="xml"/>
+  <xi:include href="TextCheckButton.skin" parse="xml"/>
+
+  <xi:include href="GrabFocusRegion.skin" parse="xml"/>
+  <xi:include href="Shadow.skin" parse="xml"/>
+  <xi:include href="ShadowedBox.skin" parse="xml"/>
+
+  <!-- Buttons -->
+  <xi:include href="Button2.skin" parse="xml"/>
+  <xi:include href="ButtonRoundFlat.skin" parse="xml"/>
+  <xi:include href="CancelButton.skin" parse="xml"/>
+  <xi:include href="OKButton.skin" parse="xml"/>
+  <xi:include href="CancelOKButtons.skin" parse="xml"/>
+  <xi:include href="ImageButton.skin" parse="xml"/>
+  <xi:include href="FrameButton.skin" parse="xml"/>
+
+  <xi:include href="3DViewer.skin" parse="xml"/>
+
+  <xi:include href="MenuList.skin" parse="xml"/>
+  <xi:include href="GreyFrame.skin" parse="xml"/>
+  <xi:include href="FocusBox.skin" parse="xml"/>
+  <xi:include href="Slider.skin" parse="xml"/>
+  <xi:include href="LabeledSlider.skin" parse="xml"/>
+  <xi:include href="PainterWindow.skin" parse="xml"/>
+  <xi:include href="View.skin" parse="xml"/>
+
+  <xi:include href="LabeledFrame.skin" parse="xml"/>
+  <xi:include href="ColorPicker.skin" parse="xml"/>
+
+  <xi:include href="MainWindow.skin" parse="xml"/>
+
+  <xi:include href="MenuButton.skin" parse="xml"/>
+  <xi:include href="MenuButtonTemplate.skin" parse="xml"/>
+  <xi:include href="HelpButton.skin" parse="xml"/>
+  <xi:include href="ScrolledView.skin" parse="xml"/>
+  <xi:include href="SpinnerBox.skin" parse="xml"/>
+
+  <xi:include href="LabeledSpinnerBox.skin" parse="xml"/>
+  <xi:include href="Layers.skin" parse="xml"/>
+
+  <xi:include href="TransferFunction2D.skin" parse="xml"/>
+  <xi:include href="View-Lighting.skin" parse="xml"/>
+  <xi:include href="View-Other.skin" parse="xml"/>
+  <xi:include href="TabbedNotebook.skin" parse="xml"/>
+
+  <!--
+      ***** Definitions Over
+      ***** Objects Begin
+  -->
+  <object name="Skinner::Arithmetic">
+    <object name="Skinner::Animation">
+      <var name="variable-1-seconds">0.33</var>
+      <var name="variable-1-begin">0</var>
+      <var name="variable-1-end">350</var>
+      <var name="Animation::variable-1" type="double" propagate="yes">0</var>
+
+      <object name="Skinner::VisibilityGroup">
+        <var name="Painter::progress_bar_text"
+             propagate="yes"></var>
+        <var name="Painter::progress_bar_total_width"
+             propagate="yes">500</var>
+        <var name="Painter::progress_bar_done_width"
+             propagate="yes">0</var>
+
+        <var name="ToolDialog::text"
+             propagate="yes"
+             overwrite="no"></var>
+
+        <var name="ToolDialog::button_height"
+             propagate="yes"
+             overwrite="no">40</var>
+
+        <var name="value"
+             propagate="yes"
+             overwrite="no"></var>
+
+        <var name="clut_min_max"
+             propagate="yes"
+             overwrite="no"></var>
+
+        <var name="xyz_pos"
+             propagate="yes"
+             overwrite="no"></var>
+
+        <var name="sca_pos"
+             propagate="yes"
+             overwrite="no"></var>
+
+        <object name="Skinner::GLWindow">
+
+          <var name="id">$program_name</var>
+          <var name="width" type="int">1100</var>
+          <var name="GLWindow::width" propagate="yes">$width</var>
+          <var name="height" type="int">800</var>
+          <var name="posx" type="int">120</var>
+          <var name="posy" type="int">50</var>
+          <var name="border" type="bool">$Window::borders</var>
+
+          <object name="Painter">
+            <var name="Painter::slices_visible" propagate="yes">1</var>
+            <var name="Painter::volume_visible" propagate="yes">0</var>
+            <var name="Painter::isosurface_visible" propagate="yes">1</var>
+
+            <signal name="GLWindow::Destroy"
+                    target="GLWindow::mark_redraw"/>
+
+            <object name="MainWindow"/>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+</skinner>
+

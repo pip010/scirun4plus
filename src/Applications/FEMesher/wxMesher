@@ -1,0 +1,228 @@
+<?xml version="1.0"?>
+
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<application path="/scratch/mjc/cibc/SCIRun/src/StandAlone/Apps/FEMesher" name="Mesher3D" class="Mesher3D" option="1" language="python" top_window="Viewer" encoding="UTF-8" use_gettext="0" overwrite="0" use_new_namespace="1" for_version="2.8" is_template="0">
+    <object class="controls" name="Mesh3D" base="EditFrame">
+        <style>wxDEFAULT_FRAME_STYLE</style>
+        <title>Mesh3D</title>
+        <menubar>1</menubar>
+        <object class="wxMenuBar" name="frame_1_menubar" base="EditMenuBar">
+            <menus>
+                <menu name="" label="File">
+                    <item>
+                        <label>Quit</label>
+                        <id>ID_EXIT</id>
+                        <handler>menu_item_about</handler>
+                    </item>
+                </menu>
+                <menu name="" label="Edit">
+                </menu>
+                <menu name="" label="View">
+                </menu>
+                <menu name="" label="Help">
+                    <item>
+                        <label>About</label>
+                        <id>ID_ABOUT</id>
+                    </item>
+                </menu>
+            </menus>
+        </object>
+        <object class="wxBoxSizer" name="sizer_1" base="EditBoxSizer">
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+                <flag>wxEXPAND</flag>
+                <border>0</border>
+                <option>1</option>
+                <object class="wxNotebook" name="notebook" base="EditNotebook">
+                    <style>0</style>
+                    <tabs>
+                        <tab window="volume_pane">Volume</tab>
+                        <tab window="surf_pane">Surfaces</tab>
+                        <tab window="tet_pane">Tets</tab>
+                    </tabs>
+                    <size>600, 400</size>
+                    <object class="wxPanel" name="volume_pane" base="EditPanel">
+                        <style>wxRAISED_BORDER|wxTAB_TRAVERSAL</style>
+                        <object class="wxBoxSizer" name="sizer_2" base="EditBoxSizer">
+                            <orient>wxVERTICAL</orient>
+                            <object class="sizeritem">
+                                <flag>wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE</flag>
+                                <border>0</border>
+                                <option>0</option>
+                                <object class="wxStaticBoxSizer" name="nin_sizer" base="EditStaticBoxSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <label>Input Nrrd</label>
+                                    <object class="sizeritem">
+                                        <flag>wxALIGN_CENTER_VERTICAL</flag>
+                                        <border>0</border>
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="nin_tctrl" base="EditTextCtrl">
+                                            <style>wxTE_READONLY</style>
+                                            <events>
+                                                <handler event="EVT_TEXT">text_handler_boo</handler>
+                                            </events>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE</flag>
+                                <border>0</border>
+                                <option>0</option>
+                                <object class="wxStaticBoxSizer" name="projdir_sizer" base="EditStaticBoxSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <label>Project Dir</label>
+                                    <object class="sizeritem">
+                                        <flag>wxALIGN_CENTER_VERTICAL</flag>
+                                        <border>0</border>
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="projdir_tctrl" base="EditTextCtrl">
+                                            <style>wxTE_READONLY</style>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE</flag>
+                                <border>0</border>
+                                <option>0</option>
+                                <object class="wxStaticBoxSizer" name="mmat_sizer" base="EditStaticBoxSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <label>Max Material Index</label>
+                                    <object class="sizeritem">
+                                        <flag>wxALIGN_CENTER_VERTICAL</flag>
+                                        <border>0</border>
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="mmat_tctrl" base="EditTextCtrl">
+                                            <style>wxTE_RIGHT</style>
+                                            <value>0</value>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>0</border>
+                                <option>5</option>
+                                <object class="wxBoxSizer" name="sizer_3" base="EditBoxSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <flag>wxADJUST_MINSIZE</flag>
+                                        <border>0</border>
+                                        <option>0</option>
+                                        <object class="wxBoxSizer" name="bgrid_sizer" base="EditBoxSizer">
+                                            <orient>wxVERTICAL</orient>
+                                            <object class="sizeritem">
+                                                <border>0</border>
+                                                <option>1</option>
+                                                <object class="wxButton" name="add_button" base="EditButton">
+                                                    <stockitem>ADD</stockitem>
+                                                    <label>Add</label>
+                                                </object>
+                                            </object>
+                                            <object class="sizeritem">
+                                                <border>0</border>
+                                                <option>1</option>
+                                                <object class="wxButton" name="remove_button" base="EditButton">
+                                                    <stockitem>REMOVE</stockitem>
+                                                    <label>Remove</label>
+                                                </object>
+                                            </object>
+                                            <object class="sizeritem">
+                                                <border>0</border>
+                                                <option>1</option>
+                                                <object class="wxButton" name="generate_button" base="EditButton">
+                                                    <label>Generate</label>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxALL|wxEXPAND</flag>
+                                        <border>0</border>
+                                        <option>10</option>
+                                        <object class="wxGrid" name="material_grid" base="EditGrid">
+                                            <rows_number>100</rows_number>
+                                            <columns>
+                                                <column size="100">Material Index</column>
+                                                <column size="100">Material Name</column>
+                                                <column size="60">IsoValue</column>
+                                                <column size="300">Notes</column>
+                                            </columns>
+                                            <selection_mode>wxGrid.wxGridSelectCells</selection_mode>
+                                            <enable_grid_lines>1</enable_grid_lines>
+                                            <enable_grid_resize>1</enable_grid_resize>
+                                            <enable_editing>1</enable_editing>
+                                            <create_grid>1</create_grid>
+                                            <enable_row_resize>1</enable_row_resize>
+                                            <enable_col_resize>1</enable_col_resize>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    <object class="wxPanel" name="surf_pane" base="EditPanel">
+                        <style>wxTAB_TRAVERSAL</style>
+                    </object>
+                    <object class="wxPanel" name="tet_pane" base="EditPanel">
+                        <style>wxTAB_TRAVERSAL</style>
+                    </object>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object class="ViewerFrame" name="Viewer" base="EditFrame">
+        <style>wxCAPTION|wxCLOSE_BOX|wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxSYSTEM_MENU|wxRESIZE_BORDER|wxFULL_REPAINT_ON_RESIZE|wxCLIP_CHILDREN</style>
+        <title>Viewer</title>
+        <statusbar>1</statusbar>
+        <size>800, 450</size>
+        <object class="wxStatusBar" name="Viewer_statusbar" base="EditStatusBar">
+            <fields>
+                <field width="-1">Status</field>
+                <field width="-1">FPS</field>
+            </fields>
+        </object>
+        <object class="wxBoxSizer" name="sizer_4" base="EditBoxSizer">
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+                <flag>wxEXPAND</flag>
+                <border>0</border>
+                <option>1</option>
+                <object class="M3DGLCanvas" name="viewer_canvas" base="CustomWidget">
+                    <arguments>
+                        <argument>$parent</argument>
+                        <argument>$id</argument>
+                    </arguments>
+                </object>
+            </object>
+        </object>
+    </object>
+</application>

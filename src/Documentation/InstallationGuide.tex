@@ -1,0 +1,163 @@
+\documentclass[fleqn,12pt,openany]{book}
+
+% These two need to be set before including scirun style package
+\title{SCIRun Installation Guide}
+\author{Jeroen Stinstra}
+
+% INCLUDE SCI STYLE DOCUMENT
+\usepackage{scirun}
+
+\begin{document}
+
+% CREATE TITLE PAGE --------------------------------------------------
+\maketitle
+
+% CHAPTERS ---------------------------------------------------------------
+
+\chapter{Installation Guide}
+
+
+\section{Getting Started}
+
+SCIRun version \SCIRunVersion is currently available as a binary download for Windows XP/Vista and for Mac OS X 10.5 and better.
+For all other platforms one currently needs to build SCIRun from source.
+We recommend to only use the source distribution for building SCIRun on Linux or for those users who want to contribute to the code.
+This installation guide deals with both installing the binary distribution and the source distribution.
+
+\section{Distribution Model}
+
+SCIRun is currently being distributed through two channels:
+\begin{itemize}
+\item code and binaries can be downloaded from our \href{http://software.sci.utah.edu}{website}
+\item the SCIRun code can be checked out through our subversion repository (see section \hyperref[dev]{\ref{dev} downloading for development})
+\end{itemize}
+
+At all times two versions of SCIRun are available:
+\begin{itemize}
+\item the release version of SCIRun, which is currently version \SCIRunVersion.
+\item the development version of SCIRun, which is currently version 4.4.
+\end{itemize}
+
+The release version is intended to be the most stable version in which will only be updated with bug fixes.
+The development version contains the latest features, but may not be entirely stable as new code is added frequently.
+As both versions are continually updated, up-to-date versions can be downloaded from our website. 
+
+Both binary and source files are generated on a weekly basis and downloads are encoded by date to ensure
+the user will always download the latest version.
+Hence if a bug report is submitted and a solution is found, new versions will be available quickly through the website.
+
+To check which version of SCIRun is being used, one can always look in the top right corner of the main SCIRun window:
+it will list the SCIRun version and build revision number of that specific build. 
+
+\section{System Requirements}
+
+\subsection{Windows}
+
+For Windows we highly recommended using the binary downloads as building SCIRun from source on these platforms is more complicated.
+
+In order to make use of the volume rendering capabilities within SCIRun, it is recommended to use an NVIDIA or ATI graphics card.
+As not all Windows installations come with the proper drivers installed for the graphics cards, we recommended upgrading the graphics card drivers before installing SCIRun.
+The latest graphics card drivers can generally be downloaded from the card manufacturer's website.
+
+\subsection{OS X}
+
+For OS X binary downloads are available for OS X 10.5 and up.
+We do not support any older version of OS X, and the current version of SCIRun fails to build on these older operating systems.
+Currently both PowerPC and Intel-based workstations are supported for OS X 10.5 and the binary downloads are built as universals that should work on any Macintosh machine that supports OS X 10.5 or 10.6.
+
+One needs to have an NVIDIA or ATI graphics card to make use of the volume rendering capabilities in SCIRun.
+Laptops that rely on an Intel graphics card generally do not support the functionality that is needed for volume
+rendering, and hence these components will not be available on these laptops.
+SCIRun will work on these laptops but certain functionality in its kernel will be switched off. 
+
+\subsection{Linux}
+
+We currently test our SCIRun distribution on Fedora, SuSE and Ubuntu.
+However SCIRun will probably work fine on other Linux distribution as well.
+Currently SCIRun has to be build from source and it is recommended to have a GCC version of 3.4 or higher.
+
+For Linux platforms we recommend against the use of ATI graphics cards as the graphics drivers are not compatible with SCIRun 4.x.
+For doing any volume rendering on Linux we recommend the use of a NVIDIA graphics card.
+
+As newer Linux distributions become available frequently, we will upgrade our code to be compatible with the latest
+compilers and features, however we cannot guarantee that our code will work as soon as a new compiler/linux version
+becomes available. 
+
+\subsection{Compilers}
+
+Visual Studio 2008 or the Visual Studio 2008 Express Edition are required to compile SCIRun on Windows.
+We no longer support older compilers such as Visual Studio 2003 and Visual Studio 2005.
+
+To compile SCIRun on OS X or Linux, we require the GCC/G++ compiler version 3.4 or newer.
+As we cannot test any older versions, we cannot guarantee that the code base will compile on those compilers.
+The SCIRun version 4.0 will compile on older versions, however more recent versions will require newer compilers.
+
+\section{Installing the binary version}
+
+Download installers from the
+\href{http://software.sci.utah.edu}{SCI software portal}
+and the SCIRun product link.
+
+\subsection{Windows}
+
+Download the win32 or win64 installer application and launch the installer.
+The win64 installer contains the full 64bit version that allows the user to generate larger datasets and simulations.
+The installer will guide the user through the process of installing SCIRun.
+After SCIRun has been installed, run SCIRun from the start menu. 
+
+\subsection{OS X}
+
+OS X users can download a 32bit or a 64bit version of SCIRun depending on what their processor will support.
+The latter version is a full 64bit build that allows the user to generate larger datasets and simulations.
+Double click on the DMG file to mount the disk image and then open the disk image and drag the SCIRun Application to /Applications or to any other desired location.
+Double click on the application icon to launch SCIRun.
+
+\section{Installing the source distribution}
+
+The instructions for installing the Linux and source archives are essentially the same.
+Download the tar archive from the SCIRun download site and unpack.
+Use the \texttt{build.sh} script to build SCIRun; the script will download and build the
+\href{http://www.cmake.org}{CMake} build system (the \texttt{wget} or \texttt{curl} command line tools are needed)
+if the CMake tools are not found in \textbf{PATH}.
+Usage information is available:
+\begin{verbatim}
+./build.sh --help
+\end{verbatim}
+
+SCIRun can be built from source on Windows by configuring the SCIRun build with CMake (using the
+CMake GUI is strongly recommended) to generate Visual Studio 2008 project files.
+Both 32 and 64 bit architectures are supported.
+More detailed information about how to build SCIRun on Windows can be found in the Developer Guide.
+
+\section{Downloading source from Subversion for development}\label{dev}
+
+Anonymous checkout is supported for read-only access to the SCIRun Subversion repository.
+Developers with a SCI account can use their SCI account to authenticate with the Subversion server.
+Full access information is available from the project
+\href{https://code.sci.utah.edu/gf/project/cibc/scmsvn/?action=AccessInfo}{Subversion portal}.
+Anonymous checkout is also supported in Windows Subversion clients such as TortoiseSVN.
+
+\begin{verbatim}
+svn checkout --username anonymous \
+  https://code.sci.utah.edu/svn/cibc/cibc/trunk SCIRun
+\end{verbatim}
+
+\noindent This will include SCIRun data from Subversion as well as the source code.
+To only download SCIRun source code:
+
+\begin{verbatim}
+svn checkout --username anonymous \
+  https://code.sci.utah.edu/svn/cibc/cibc/trunk/SCIRun SCIRun_source
+\end{verbatim}
+
+SCIRun data can be obtained separately from Subversion.
+Full access information is available from the project
+\href{https://code.sci.utah.edu/gf/project/CIBCData/scmsvn/?action=AccessInfo}{Subversion portal}.
+
+\begin{verbatim}
+svn checkout --username anonymous \
+  https://code.sci.utah.edu/svn/CIBCData/SCIRunData
+\end{verbatim}
+
+\end{document}
+% ------------------------------------------------------------------------

@@ -1,0 +1,4 @@
+
+You must set your PYTHONPATH env var to your builds sr_py dir:
+
+PYTHONPATH=<full path to your SCIRun/bin/lib>

@@ -1,0 +1,321 @@
+#!/bin/bash
+
+#
+#  For more information, please see: http://software.sci.utah.edu
+# 
+#  The MIT License
+# 
+#  Copyright (c) 2011 Scientific Computing and Imaging Institute,
+#  University of Utah.
+# 
+#  
+#  Permission is hereby granted, free of charge, to any person obtaining a
+#  copy of this software and associated documentation files (the "Software"),
+#  to deal in the Software without restriction, including without limitation
+#  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#  and/or sell copies of the Software, and to permit persons to whom the
+#  Software is furnished to do so, subject to the following conditions:
+# 
+#  The above copyright notice and this permission notice shall be included
+#  in all copies or substantial portions of the Software.
+# 
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+#  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#  DEALINGS IN THE SOFTWARE.
+#
+
+cd @CMAKE_BINARY_DIR@
+
+# Using the command line version, which can be obtained from the application's
+# binary download.
+# We've tested up to version 3.4.
+# See the README in this directory for more details.
+PLATYPUS=@PLATYPUS_EXECUTABLE@
+
+#         COMMAND LINE OPTIONS
+        
+#         // *required*
+#         -a      Application Name
+#         -t      Script Type
+#         -o      Output Type: None, TextWindow
+        
+#         // *advanced options*
+        
+#         -i      Icon file
+#         -p      Interpreter
+#         -V      Version
+#         -s      Signature (4 character string)
+#         -I      Identifier
+#         -f  Bundled file argument
+
+#         -A      Requires Administrator privileges
+#         -S      Secure bundled script
+#         -D      Is Droppable
+#         -B      Runs in background
+#         -R  remainRunningAfterCompletion
+        
+#         -X  Suffixes supported
+#         -T  File Type Codes supported
+        
+#         -b  Verbose output
+#         -v      Print version string
+#         -h      Print help
+
+
+
+APP_NAME=@SCIRUN_APP_NAME@
+BIOMESH3D_APP_NAME=@BIOMESH3D_APP_NAME@
+#BIOTENSOR_APP_NAME=BioTensor
+
+rm -rf $APP_NAME
+"$PLATYPUS" -a 'SCIRun' -t 'Shell' -o 'None' -u 'SCI Institute' -p '/bin/sh' -V @SCIRUN_VERSION_STRING@ -s '????' -D -I 'edu.SCI.SCIRun' -i @SCIRUN_ICON_FILE@ @SCIRUN_STARTUP_SCRIPT@ $APP_NAME
+
+rm -rf $BIOMESH3D_APP_NAME
+"$PLATYPUS" -a 'BioMesh3D' -t 'Shell' -o 'None' -u 'SCI Institute' -p '/bin/sh' -V @BIOMESH_VERSION_STRING@ -s '????' -D -I 'edu.SCI.BioMesh3D' -i @SCIRUN_ICON_FILE@ @BIOMESH3D_STARTUP_SCRIPT@ $BIOMESH3D_APP_NAME
+
+#rm -rf $BIOTENSOR_APP_NAME
+#"$PLATYPUS" -a 'BioTensor' -t 'Shell' -o 'None' -u 'SCI Institute' -p '/bin/sh' -V @BIOTENSOR_VERSION_STRING@ -s '????' -D -I 'edu.SCI.BioTensor' -i @SCIRUN_ICON_FILE@ @BIOTENSOR_STARTUP_SCRIPT@ $BIOTENSOR_APP_NAME
+
+echo "Created app directory"
+
+# Now copy the right bits into the script
+RESOURCES=$APP_NAME/Contents/Resources
+
+SCIRUN_CORE_BINARY_DIR=@SCIRUN_CORE_BINARY_DIR@
+SCIRUN_CORE_SOURCE_DIR=@SCIRUN_CORE_SOURCE_DIR@
+@DISABLE_ITK@ITK_DIR=@ITK_DIR@
+
+echo "Copying SCIRun binaries and libraries from $SCIRUN_CORE_BINARY_DIR"
+mkdir $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/scirun $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/unu    $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/ComputeTightenedLabels    $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/ConvertFieldToNrrd $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/ConvertNrrdToField $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/ExtractIsosurface $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/FieldToPtcl $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/GenerateMedialAxisPoints $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/InterfaceWithTetGen $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/JoinFields $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/LabelTets $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/MA2PointCloudVectors $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/MapFieldDataFromSourceToDestination $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/MtoTriSurfField $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/OrientFaces $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/PtclToField $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/SeedIntersections $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/TetgenToTetVol $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/TransformFieldWithTransform $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/UnorientNrrdAndGetTransform $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/morphsmooth $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/optimize-particle-system $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/pts2node $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/redosizingfield $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/removetets $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/removetetsall $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/sizingfield $RESOURCES/bin
+cp -p $SCIRUN_CORE_BINARY_DIR/tetgen $RESOURCES/bin
+
+cp -Rp $SCIRUN_CORE_BINARY_DIR/lib $RESOURCES
+cp -Rp $SCIRUN_CORE_BINARY_DIR/Licenses $RESOURCES
+cp -Rp $SCIRUN_CORE_BINARY_DIR/Licenses $RESOURCES/bin/
+cp -Rp $SCIRUN_CORE_BINARY_DIR/FEMesher $RESOURCES/bin/
+
+# Assumes that ITK was built with shared object libraries
+@DISABLE_ITK@cp -p $ITK_DIR/bin/*.dylib $RESOURCES/lib
+
+mkdir $RESOURCES/src
+
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/pixmaps $RESOURCES/src
+mkdir $RESOURCES/src/Dataflow
+mkdir $RESOURCES/src/Dataflow/GUI
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/Dataflow/XML $RESOURCES/src/Dataflow/XML
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/Dataflow/GUI/*.html $RESOURCES/src/Dataflow/GUI
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/nets $RESOURCES/src/nets
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/Subnets $RESOURCES/src/Subnets
+cp -p  $SCIRUN_CORE_SOURCE_DIR/scirunrc $RESOURCES/src/scirunrc
+
+mkdir $RESOURCES/src/Packages
+
+MATLAB_BIN_SERVICES=$RESOURCES/services
+MATLAB_SRC_LIBRARY=$SCIRUN_CORE_SOURCE_DIR/Packages/MatlabInterface/MatlabLibrary
+PACKAGES=`ls -1 $SCIRUN_CORE_SOURCE_DIR/Packages`
+for T in ${PACKAGES}; do
+  mkdir $RESOURCES/src/Packages/$T
+  mkdir $RESOURCES/src/Packages/$T/Dataflow
+
+  cp -Rp $SCIRUN_CORE_SOURCE_DIR/Packages/$T/Dataflow/XML $RESOURCES/src/Packages/$T/Dataflow/XML
+  cp -Rp $SCIRUN_CORE_SOURCE_DIR/Packages/$T/nets $RESOURCES/src/Packages/$T/nets
+
+  if [[ $T == MatlabInterface ]]; then
+    mkdir -p $RESOURCES/src/Packages/$T/Services
+    cp -p $SCIRUN_CORE_SOURCE_DIR/Packages/$T/Services/MatlabEngine.xml $RESOURCES/src/Packages/$T/Services/MatlabEngine.xml
+    cp -p $SCIRUN_CORE_SOURCE_DIR/Packages/$T/Services/MatlabEngineFileTransfer.xml $RESOURCES/src/Packages/$T/Services/MatlabEngineFileTransfer.xml
+    cp -p $SCIRUN_CORE_SOURCE_DIR/Packages/$T/Services/matlabengine.rc $RESOURCES/src/Packages/$T/Services/matlabengine.rc
+    if [[ -e $SCIRUN_CORE_BINARY_DIR/services/matlabengine.rc ]]; then
+      cp -Rp $SCIRUN_CORE_BINARY_DIR/services $MATLAB_BIN_SERVICES
+    else
+      mkdir -p $MATLAB_BIN_SERVICES
+      cp -p $SCIRUN_CORE_SOURCE_DIR/Packages/$T/Services/matlabengine.rc $MATLAB_BIN_SERVICES
+    fi
+    mkdir -p $RESOURCES/src/Packages/$T/MatlabLibrary
+    cp -Rp $MATLAB_SRC_LIBRARY/activation_inverse $RESOURCES/src/Packages/$T/MatlabLibrary
+    cp -Rp $MATLAB_SRC_LIBRARY/bem $RESOURCES/src/Packages/$T/MatlabLibrary
+    cp -Rp $MATLAB_SRC_LIBRARY/ctissue $RESOURCES/src/Packages/$T/MatlabLibrary
+    cp -Rp $MATLAB_SRC_LIBRARY/reg_tools $RESOURCES/src/Packages/$T/MatlabLibrary
+    cp -Rp $MATLAB_SRC_LIBRARY/scirun $RESOURCES/src/Packages/$T/MatlabLibrary
+    cp -Rp $MATLAB_SRC_LIBRARY/wavebased_inverse $RESOURCES/src/Packages/$T/MatlabLibrary
+    cp -p $MATLAB_SRC_LIBRARY/*.m $RESOURCES/src/Packages/$T/MatlabLibrary
+    cp -p $MATLAB_SRC_LIBRARY/*.txt $RESOURCES/src/Packages/$T/MatlabLibrary
+  fi
+done
+
+
+mkdir -p $RESOURCES/src/Applications/SCIRun
+mkdir -p $RESOURCES/src/Packages/Teem/Dataflow/GUI
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/Applications/SCIRun/SCIRun-icon.icns $RESOURCES/src/Applications/SCIRun
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/Applications/SCIRun/sciabout.ppm $RESOURCES/src/Applications/SCIRun
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/Applications/SCIRun/scisplash.ppm $RESOURCES/src/Applications/SCIRun
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/Applications/SCIRun/scirun.rc $RESOURCES/src/Applications/SCIRun
+cp -Rp $SCIRUN_CORE_SOURCE_DIR/Packages/Teem/Dataflow/GUI/splash-tensor.ppm $RESOURCES/src/Packages/Teem/Dataflow/GUI
+OCD=`pwd`
+
+cd ${RESOURCES}/lib
+
+SCIRUN_LIBS=`ls -1 *.dylib`
+for T in ${SCIRUN_LIBS}; do
+  COMMAND=`otool -L $T | sed -n 's:@SCIRUN_DIR@/lib/:& :p' | awk -v lib=$T '{print "install_name_tool -change "$1$2" "$2" " lib }'`
+  echo "${COMMAND}"
+  sh -c "${COMMAND}"
+
+  COMMAND=`otool -L $T | sed -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | awk -v lib=$T '{print "install_name_tool -change "$1" @executable_path/../lib/"$1" " lib }'`
+  echo "${COMMAND}"
+  sh -c "${COMMAND}"
+
+  COMMAND=`otool -L $T | sed -n 's:/usr/X11/:& :p' | awk -v lib=$T '{print "install_name_tool -change "$1$2" /usr/X11R6/"$2" " lib }'`
+  echo "${COMMAND}"
+  sh -c "${COMMAND}"
+
+  # process ITK library references (if built with ITK support)
+  @DISABLE_ITK@COMMAND=`otool -L $T | sed -n 's:@ITK_DIR@/bin/:& :p' | awk -v lib=$T '{print "install_name_tool -change "$1$2" @executable_path/../lib/"$2" " lib }'`
+  @DISABLE_ITK@echo "${COMMAND}"
+  @DISABLE_ITK@sh -c "${COMMAND}"
+
+  echo "install_name_tool -id @executable_path/../lib/${T} ${T}"
+  install_name_tool -id "@executable_path/../lib/${T}" ${T}
+done
+cd $OCD
+
+cd ${RESOURCES}/bin
+SCIRUN_APPS=`ls -1`
+
+for T in ${SCIRUN_APPS}; do
+  COMMAND=`otool -L $T | sed -n 's:@SCIRUN_DIR@/lib/:& :p' | awk -v lib=$T '{print "install_name_tool -change "$1$2" "$2" " lib }'`
+  echo "${COMMAND}"
+  sh -c "${COMMAND}"
+
+  COMMAND=`otool -L $T | sed -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | awk -v lib=$T '{print "install_name_tool -change "$1" @executable_path/../lib/"$1" " lib }'`
+  echo "${COMMAND}"
+  sh -c "${COMMAND}"
+
+  COMMAND=`otool -L $T | sed -n 's:/usr/X11/:& :p' | awk -v lib=$T '{print "install_name_tool -change "$1$2" /usr/X11R6/"$2" " lib }'`
+  echo "${COMMAND}"
+  sh -c "${COMMAND}"
+
+  # process ITK library references (if built with ITK support)
+  @DISABLE_ITK@COMMAND=`otool -L $T | sed -n 's:@ITK_DIR@/bin/:& :p' | awk -v lib=$T '{print "install_name_tool -change "$1$2" @executable_path/../lib/"$2" " lib }'`
+  @DISABLE_ITK@echo "${COMMAND}"
+  @DISABLE_ITK@sh -c "${COMMAND}"
+done
+cd $OCD
+
+# Clean out some of the thirdparty cruft
+find $RESOURCES/lib -name "*.a" -delete
+find $RESOURCES/lib -name "*.la" -delete
+find $RESOURCES/lib -name "*.so" -delete
+find $RESOURCES/lib -name "*.sh" -delete
+find $RESOURCES/lib -name "libair.*" -delete
+find $RESOURCES/lib -name "libalan.*" -delete
+find $RESOURCES/lib -name "libbane.*" -delete
+find $RESOURCES/lib -name "libbiff.*" -delete
+find $RESOURCES/lib -name "libcoil.*" -delete
+find $RESOURCES/lib -name "libdye.*" -delete
+find $RESOURCES/lib -name "libecho.*" -delete
+find $RESOURCES/lib -name "libell.*" -delete
+find $RESOURCES/lib -name "libgage.*" -delete
+find $RESOURCES/lib -name "libhest.*" -delete
+find $RESOURCES/lib -name "libhoover.*" -delete
+find $RESOURCES/lib -name "liblimn.*" -delete
+find $RESOURCES/lib -name "libamoss.*" -delete
+find $RESOURCES/lib -name "libmite.*" -delete
+find $RESOURCES/lib -name "liboush.*" -delete
+find $RESOURCES/lib -name "libnrrd.*" -delete
+find $RESOURCES/lib -name "libten.*" -delete
+find $RESOURCES/lib -name "libunrrdu.*" -delete
+
+SCIRUNDMG=`date "+@SCIRUN_BUILD_DIST@_%Y%m%d_@SCIRUN_BUILD_TYPE@.dmg"`
+SCIRUNDIR=`date "+@SCIRUN_BUILD_DIST@_%Y%m%d_@SCIRUN_BUILD_TYPE@"`
+
+rm -rf ${SCIRUNDIR}
+rm -rf *.dmg
+mkdir ${SCIRUNDIR}
+mkdir ${SCIRUNDIR}/SCIRun
+
+find -d $RESOURCES -name ".svn" -type d -exec rm -Rf {} \; 
+
+cp -rp ${APP_NAME}/Contents/Resources/bin ${BIOMESH3D_APP_NAME}/Contents/Resources/
+cp -rp ${APP_NAME}/Contents/Resources/lib ${BIOMESH3D_APP_NAME}/Contents/Resources/
+cp -rp ${APP_NAME}/Contents/Resources/src ${BIOMESH3D_APP_NAME}/Contents/Resources/
+cp -rp ${APP_NAME}/Contents/Resources/Licenses ${BIOMESH3D_APP_NAME}/Contents/Resources/
+
+cp -r ${APP_NAME} ${SCIRUNDIR}/SCIRun/${APP_NAME}
+cp -r ${BIOMESH3D_APP_NAME} ${SCIRUNDIR}/SCIRun/${BIOMESH3D_APP_NAME}
+
+cp ${SCIRUN_CORE_SOURCE_DIR}/LICENSE ${SCIRUNDIR}/SCIRun/LICENSE.txt
+
+mkdir ${SCIRUNDIR}/SCIRun/example_nets
+mkdir ${SCIRUNDIR}/SCIRun/example_nets/SCIRun
+cp -r ${SCIRUN_CORE_SOURCE_DIR}/nets/* ${SCIRUNDIR}/SCIRun/example_nets/SCIRun
+
+mkdir ${SCIRUNDIR}/SCIRun/BioMesh3D_Examples/
+cp -r ${SCIRUN_CORE_SOURCE_DIR}/../../scirundata/FEMesher/* ${SCIRUNDIR}/SCIRun/BioMesh3D_Examples/
+
+mkdir -p ${SCIRUNDIR}/SCIRun/MatlabLibrary
+cp -Rp $MATLAB_SRC_LIBRARY/activation_inverse ${SCIRUNDIR}/SCIRun/MatlabLibrary
+cp -Rp $MATLAB_SRC_LIBRARY/bem ${SCIRUNDIR}/SCIRun/MatlabLibrary
+cp -Rp $MATLAB_SRC_LIBRARY/ctissue ${SCIRUNDIR}/SCIRun/MatlabLibrary
+cp -Rp $MATLAB_SRC_LIBRARY/reg_tools ${SCIRUNDIR}/SCIRun/MatlabLibrary
+cp -Rp $MATLAB_SRC_LIBRARY/scirun ${SCIRUNDIR}/SCIRun/MatlabLibrary
+cp -Rp $MATLAB_SRC_LIBRARY/wavebased_inverse ${SCIRUNDIR}/SCIRun/MatlabLibrary
+cp -p $MATLAB_SRC_LIBRARY/*.m ${SCIRUNDIR}/SCIRun/MatlabLibrary
+cp -p $MATLAB_SRC_LIBRARY/*.txt ${SCIRUNDIR}/SCIRun/MatlabLibrary
+
+cp ${SCIRUN_CORE_SOURCE_DIR}/InstallUtils/README-OSX-BIOMESH3D.txt ${SCIRUNDIR}/SCIRun/
+cp ${SCIRUN_CORE_SOURCE_DIR}/InstallUtils/README-SCIRUNDATA.txt ${SCIRUNDIR}/SCIRun/
+
+PACKAGES=`ls -1 ${SCIRUN_CORE_SOURCE_DIR}/Packages`
+for T in ${PACKAGES}; do
+  mkdir ${SCIRUNDIR}/SCIRun/example_nets/$T
+  cp -r ${SCIRUN_CORE_SOURCE_DIR}/Packages/${T}/nets/* ${SCIRUNDIR}/SCIRun/example_nets/$T
+done
+find -d ${SCIRUNDIR}/SCIRun/example_nets -name "PowerApps" -type d -exec rm -Rf {} \; 
+
+cp ${SCIRUN_CORE_BINARY_DIR}/InstallUtils/BioTensor ${SCIRUNDIR}/SCIRun
+chmod +x ${SCIRUNDIR}/SCIRun/BioTensor
+
+mkdir ${SCIRUNDIR}/SCIRun/Documentation
+cp -r ${SCIRUN_CORE_BINARY_DIR}/Documentation/*.pdf ${SCIRUNDIR}/SCIRun/Documentation/
+
+# find and delete all Subversion directories
+find -d $SCIRUNDIR -name ".svn" -type d -exec rm -Rf {} \; 
+
+echo "Building DMG"
+
+hdiutil create -srcfolder ${SCIRUNDIR} ${SCIRUNDMG} -verbose 
+rm -rf ${SCIRUNDIR}
+
+echo "$0 done"

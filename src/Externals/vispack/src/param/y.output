@@ -1,0 +1,238 @@
+
+
+Terminals which are not used:
+
+   EQUALS
+   NEWLINE
+
+
+
+Grammar
+rule 1    Start -> File
+rule 2    File -> Parameter
+rule 3    File -> Parameter File
+rule 4    Parameter -> LPAREN IDENT RPAREN
+rule 5    Parameter -> LPAREN IDENT ValueList RPAREN
+rule 6    ValueList -> Value
+rule 7    ValueList -> Value ValueList
+rule 8    Value -> IntegerVal
+rule 9    Value -> DecimalVal
+rule 10   Value -> StringVal
+rule 11   IntegerVal -> NUM
+rule 12   DecimalVal -> DEC_NUM
+rule 13   StringVal -> STRING
+
+Terminals, with rules where they appear
+
+$ (-1)
+error (256)
+NUM (257) 11
+DEC_NUM (258) 12
+IDENT (259) 4 5
+STRING (260) 13
+EQUALS (261)
+LPAREN (262) 4 5
+RPAREN (263) 4 5
+NEWLINE (264)
+
+Nonterminals, with rules where they appear
+
+Start (11)
+    on left: 1
+File (12)
+    on left: 2 3, on right: 1 3
+Parameter (13)
+    on left: 4 5, on right: 2 3
+ValueList (14)
+    on left: 6 7, on right: 5 7
+Value (15)
+    on left: 8 9 10, on right: 6 7
+IntegerVal (16)
+    on left: 11, on right: 8
+DecimalVal (17)
+    on left: 12, on right: 9
+StringVal (18)
+    on left: 13, on right: 10
+
+
+state 0
+
+    LPAREN	shift, and go to state 1
+
+    Start	go to state 17
+    File	go to state 2
+    Parameter	go to state 3
+
+
+
+state 1
+
+    Parameter  ->  LPAREN . IDENT RPAREN   (rule 4)
+    Parameter  ->  LPAREN . IDENT ValueList RPAREN   (rule 5)
+
+    IDENT	shift, and go to state 4
+
+
+
+state 2
+
+    Start  ->  File .   (rule 1)
+
+    $default	reduce using rule 1 (Start)
+
+
+
+state 3
+
+    File  ->  Parameter .   (rule 2)
+    File  ->  Parameter . File   (rule 3)
+
+    LPAREN	shift, and go to state 1
+
+    $default	reduce using rule 2 (File)
+
+    File	go to state 5
+    Parameter	go to state 3
+
+
+
+state 4
+
+    Parameter  ->  LPAREN IDENT . RPAREN   (rule 4)
+    Parameter  ->  LPAREN IDENT . ValueList RPAREN   (rule 5)
+
+    NUM 	shift, and go to state 6
+    DEC_NUM	shift, and go to state 7
+    STRING	shift, and go to state 8
+    RPAREN	shift, and go to state 9
+
+    ValueList	go to state 10
+    Value	go to state 11
+    IntegerVal	go to state 12
+    DecimalVal	go to state 13
+    StringVal	go to state 14
+
+
+
+state 5
+
+    File  ->  Parameter File .   (rule 3)
+
+    $default	reduce using rule 3 (File)
+
+
+
+state 6
+
+    IntegerVal  ->  NUM .   (rule 11)
+
+    $default	reduce using rule 11 (IntegerVal)
+
+
+
+state 7
+
+    DecimalVal  ->  DEC_NUM .   (rule 12)
+
+    $default	reduce using rule 12 (DecimalVal)
+
+
+
+state 8
+
+    StringVal  ->  STRING .   (rule 13)
+
+    $default	reduce using rule 13 (StringVal)
+
+
+
+state 9
+
+    Parameter  ->  LPAREN IDENT RPAREN .   (rule 4)
+
+    $default	reduce using rule 4 (Parameter)
+
+
+
+state 10
+
+    Parameter  ->  LPAREN IDENT ValueList . RPAREN   (rule 5)
+
+    RPAREN	shift, and go to state 15
+
+
+
+state 11
+
+    ValueList  ->  Value .   (rule 6)
+    ValueList  ->  Value . ValueList   (rule 7)
+
+    NUM 	shift, and go to state 6
+    DEC_NUM	shift, and go to state 7
+    STRING	shift, and go to state 8
+
+    $default	reduce using rule 6 (ValueList)
+
+    ValueList	go to state 16
+    Value	go to state 11
+    IntegerVal	go to state 12
+    DecimalVal	go to state 13
+    StringVal	go to state 14
+
+
+
+state 12
+
+    Value  ->  IntegerVal .   (rule 8)
+
+    $default	reduce using rule 8 (Value)
+
+
+
+state 13
+
+    Value  ->  DecimalVal .   (rule 9)
+
+    $default	reduce using rule 9 (Value)
+
+
+
+state 14
+
+    Value  ->  StringVal .   (rule 10)
+
+    $default	reduce using rule 10 (Value)
+
+
+
+state 15
+
+    Parameter  ->  LPAREN IDENT ValueList RPAREN .   (rule 5)
+
+    $default	reduce using rule 5 (Parameter)
+
+
+
+state 16
+
+    ValueList  ->  Value ValueList .   (rule 7)
+
+    $default	reduce using rule 7 (ValueList)
+
+
+
+state 17
+
+    $   	go to state 18
+
+
+
+state 18
+
+    $   	go to state 19
+
+
+
+state 19
+
+    $default	accept

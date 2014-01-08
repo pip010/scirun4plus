@@ -1,0 +1,31 @@
+# ******************************************************************
+# VISPack. Copyright (c) 1994-2000 Ross Whitaker rtw@utk.edu       *
+# For conditions of distribution and use, see the file LICENSE.txt *
+# accompanying this distribution.                                  *
+# ******************************************************************
+
+#$Id: Makefilenolapack,v 1.1.1.1 2003/02/12 16:51:53 whitaker Exp $
+
+include ../make.inc
+
+IT = -I$(MATINCL)
+
+all:		matrix
+
+matrix:		matrix.o vector.o
+		$(C++) $(CCLIBFLAGS) $(IT) matrix.o \
+		vector.o -o libmat.a;\
+		echo "done making matrix object files"
+
+matrix.o:	$(MATHEADER) $(F2CHEADER) $(LACKHEADER) matrix.C
+		$(C++) $(CCFLAGS) $(IT) -c -o matrix.o matrix.C
+
+vector.o:	$(MATHEADER) $(F2CHEADER) $(LAPKHEADER) vector.C
+		$(C++) $(CCFLAGS) $(IT) -c -o vector.o vector.C
+
+clean::
+		rm *.o; rm -r ii_files; rm so_locations
+
+
+
+

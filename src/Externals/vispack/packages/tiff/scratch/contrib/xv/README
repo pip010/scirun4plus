@@ -1,0 +1,12 @@
+Mon Feb 10 16:31:55 PST 1992
+
+This directory contains modifications to the XV 2.00 distribution
+for supporting TIFF.  Two new files (xvtiff.c and xvtiffwr.c)
+and patches to existing files are provided.  The modified Imakefile
+assumes that a libtiff subdirectory exists in the xv directory --
+I use a symbolic link.
+
+FYI, XV 2.00 is available by anonymous ftp from export.lcs.mit.edu
+in the directory packages/X/contrib.
+
+	Sam

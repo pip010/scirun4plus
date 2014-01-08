@@ -1,0 +1,74 @@
+RELEASE NOTES
+
+Program: BioMesh3D 0.1 (BETA 1)
+Date: 9-4-2009
+
+Note:
+
+BioMesh3D is currently available as a source release.
+Download via anonymous Subversion checkout:
+
+svn checkout --username anonymous https://gforge.sci.utah.edu/svn/cibc/cibc/branches/release_4.2
+
+Supported platforms:
+
+[1] OSX: BioMesh3D 0.1 supports OSX 10.5 and can be built in either 32-bit
+and 64-bit mode.
+The X11 package needs to be installed from the installation disk to use
+the interactive BioMesh3D pipeline and the SCIRun volume rendering tools.
+Note that some of the latest releases of the X11.pkg (2.3.1) contain bugs
+that prevent BioMesh3D from running properly when compiled with 2.3.1 X11
+libraries. We use X11.pkg version 2.2.0 which works fine with our
+software.
+
+[2] Linux: BioMesh3D 0.1 supports most flavors of Linux.
+NVIDIA graphics cards and drivers are recommended. BioMesh3D is shipped
+with most thirdparty software dependencies, tools like gcc, g++,
+Subversion and CMake need to be installed separately.
+
+[3] Windows: BioMesh3D 0.1 currently runs on both 64-bit and 32-bit
+Windows Vista, although we recommend using the software on OSX or Linux.
+
+OpenGL requirement:
+
+BioMesh3D interactive pipeline and SCIRun volume rendering tools require
+OpenGL library version 2.0 or higher. Currently most Linux and OSX systems
+have a recent enough OpenGL library.
+
+System requirements:
+
+We recommend a minimum of 4 GB RAM and a dual core processor.
+
+Limitations of this version:
+
+Workarounds and further details for some limitations can be found in the
+BioMesh3D documentation.
+
+[1] The number of materials is limited to 9 domains.
+
+[2] BioMesh3D requires 3D data.
+
+[3] BioMesh3D is not currently optimized for large datasets and large
+numbers of materials. Improvements in this area are forthcoming.
+
+[4] Thin segmentations may be inaccurately meshed.
+
+[5] Anisotropic data is treated as isotropic in the tightening step in
+stage 1 of the pipeline.
+
+
+Know bugs:
+
+[1] Do not use the interactive pipeline over a forwarded X11 connection.
+
+[2] Tetgen has been known to crash on 64-bit Windows Vista when generating
+the volume mesh in stage 8 of the pipeline.
+
+[3] Extra tetrahedral elements are not always removed from material
+interfaces in stage 7 of the pipeline.
+
+
+Documentation:
+
+The BioMesh3D User Guide (pdf) is available on the CIBC wiki
+(http://www.sci.utah.edu/cibc/wiki/index.php/CIBC:Meshing).

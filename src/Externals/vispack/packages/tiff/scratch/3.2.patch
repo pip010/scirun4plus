@@ -1,0 +1,1222 @@
+#! /bin/sh
+# patch script for converting 3.2beta to 3.2
+TOP=.
+
+Patch()
+{
+    echo "Patch $1:"; patch -s $TOP/$1
+}
+
+NewFile()
+{
+    echo "New file $1"; cat >$TOP/$1
+}
+
+RmFile()
+{
+    echo "Remove $1"; rm -f $TOP/$1
+}
+
+Patch HOWTO<<'EOF'
+1c1
+< $Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+---
+> $Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+6c6
+<     sgi.com			graphics/tiff/v3.0.tar.Z
+---
+>     sgi.com			graphics/tiff/v3.2beta.tar.Z
+8,9d7
+<     ucbvax.berkeley.edu		pub/tiff/v3.0.tar.Z
+< 	(128.32.130.12)
+18c16
+<     get v3.0.tar.Z
+---
+>     get v3.2beta.tar.Z
+22c20
+<     zcat v3.0.tar.Z | tar xf -
+---
+>     zcat v3.2beta.tar.Z | tar xf -
+EOF
+Patch Makefile<<'EOF'
+1c1
+< #	$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+---
+> #	$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+3a4
+> MAKE=	make -${MAKEFLAGS}
+5a7,10
+> 	-cd libtiff; ${MAKE}
+> 	-cd tools; ${MAKE}
+> 	-cd contrib/fax2ps; ${MAKE}
+> 	-cd contrib/dbs; ${MAKE}
+8,13c13,18
+< 	-cd libtiff; make clean; rm -f Makefile
+< 	-cd tools; make clean; rm -f Makefile
+< 	-cd contrib/fax2ps; make clean
+< 	-cd contrib/dbs; make clean
+< 	-cd contrib/dbs/xtiff; make clean
+< 	-cd man/man3; make clean
+---
+> 	-cd libtiff; ${MAKE} clean; rm -f Makefile
+> 	-cd tools; ${MAKE} clean; rm -f Makefile
+> 	-cd contrib/fax2ps; ${MAKE} clean
+> 	-cd contrib/dbs; ${MAKE} clean
+> 	-cd contrib/dbs/xtiff; ${MAKE} clean
+> 	-cd man/man3; ${MAKE} clean
+EOF
+Patch README<<'EOF'
+1c1
+< $Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+---
+> $Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+3c3
+< NOTE: The file CHANGES-v3.2 has a list of changes between
+---
+> NOTE: The file CHANGES-v3.1 has a list of changes between
+6c6
+< TIFF Software "Release" 3.21 BETA
+---
+> TIFF Software "Release" 3.10 BETA
+8c8
+< This is Version 3.21 BETA of my public domain TIFF support software.
+---
+> This is Version 3.10 BETA of my public domain TIFF support software.
+377,378d376
+<     Makefile.gcc	Makefile for use with gcc (the GNU compiler)
+<     Makefile.mpw	Makefile for an Apple Macintosh with MPW
+450a449
+> libtiff/prototypes.h		stuff for ANSI function prototypes
+453,454c452,453
+< libtiff/tiffiop.h		private TIFF library definitions
+< libtiff/tiffcomp.h		OS-compatibility definitions
+---
+> libtiff/tiffioP.h		private TIFF library definitions
+> libtiff/tiffcompat.h		OS-compatibility definitions
+EOF
+Patch VERSION<<'EOF'
+1c1
+< 3.21
+---
+> 3.20
+EOF
+Patch contrib/fax2ps/defs.h<<'EOF'
+5c5
+<  * Copyright (c) 1991, 1992 by Sam Leffler.
+---
+>  * Copyright (c) 1991, 1992, 1993 by Sam Leffler.
+31c31
+< #define	CODEHASH	8209
+---
+> #define	CODEHASH	11597
+34,35c34,35
+< #define	MAXCODES	6000	/* about 75% population */
+< extern	CodeEntry codetable[MAXCODES];
+---
+> #define	MAXCODES	8600	/* about 75% population */
+> extern	CodeEntry* codetable;
+44a45
+> extern	CodePairEntry* pairtable;
+46c47
+< extern	CodePairEntry pairtable[MAXPAIRS];
+---
+> extern	int maxpairs;
+49c50
+<      (CodePairEntry*)(p) < &pairtable[MAXPAIRS])
+---
+>      (CodePairEntry*)(p) < &pairtable[maxpairs])
+EOF
+Patch contrib/fax2ps/fax2ps.1<<'EOF'
+1c1
+< .\"	$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+---
+> .\"	$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+3c3
+< .\" Copyright (c) 1991, 1992 by Sam Leffler.
+---
+> .\" Copyright (c) 1991, 1992, 1993 by Sam Leffler.
+11c11
+< .TH FAX2PS 1 "April 29, 1991"
+---
+> .TH FAX2PS 1 "January 15, 1993"
+23a24,29
+> .B \-x
+> .IR xresolution
+> ] [
+> .B \-y
+> .IR yresolution
+> ] [
+25a32,39
+> .B \-S
+> ] [
+> .B \-W
+> .IR pagewidth
+> ] [
+> .B \-H
+> .IR pageheight
+> ] [
+29c43
+< .I Fax2ps
+---
+> .I fax2ps
+34d47
+< Each page is scaled to fill an 8.5" by 11" page.
+35a49,66
+> By default, each page is scaled to reflect the
+> image dimensions and resolutions stored in the file.
+> The
+> .B \-x
+> and
+> .B \-y
+> options can be used to specify the horizontal and vertical
+> image resolutions (lines/inch), respectively.
+> If the
+> .B \-S
+> option is specified, each page is scaled to fill an output page.
+> The default output page is 8.5 by 11 inches.
+> Alternate page dimensions can be specified in inches with the
+> .B \-W
+> and
+> .B \-H
+> options.
+> .PP
+44c75
+< .I Fax2ps
+---
+> .I fax2ps
+63c94,95
+< the raster bitmap image directly.
+---
+> the raster bitmap image directly; see
+> .IR tiff2ps (1).
+65,66c97,98
+< The compressed PostScript description uses codes made
+< up from an extended alphabet of 
+---
+> The compressed PostScript description uses codes constructed
+> from an extended alphabet of 
+83d114
+< the facsimile decoding on the standard output.
+94c125
+< .I Fax2ps
+---
+> .I fax2ps
+98c129
+< PostScript.
+---
+> PostScript image.
+100c131,132
+< Should probably figure out when it is doing a poor
+---
+> .I fax2ps
+> should probably figure out when it is doing a poor
+103a136
+> .IR tiff2ps (1),
+EOF
+Patch contrib/fax2ps/fax2ps.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+6c6
+<  * Copyright (c) 1991, 1992 by Sam Leffler.
+---
+>  * Copyright (c) 1991, 1992, 1993 by Sam Leffler.
+22c22
+< CodeEntry codetable[MAXCODES];
+---
+> CodeEntry* codetable;
+26a27,28
+> int	maxcodes = 0;		/* max # codes that fit in codetable */
+> int	maxpairs = 0;		/* max # pairs that fit in pairtable */
+31a34,36
+> float	pageWidth = 8.5;	/* image page width (inches) */
+> float	pageHeight = 11.0;	/* image page length (inches) */
+> int	scaleToPage = FALSE;	/* if true, scale raster to page dimensions */
+54,56c59,68
+<     if (ncodes == MAXCODES) {
+< 	fprintf(stderr, "Panic, code table overflow\n");
+< 	exit(-1);
+---
+>     if (ncodes == maxcodes) {
+> 	maxcodes += MAXCODES;
+> 	codetable = (CodeEntry*) (maxcodes == MAXCODES ?
+> 	    malloc(maxcodes * sizeof (CodeEntry)) :
+> 	    realloc(codetable, maxcodes * sizeof (CodeEntry))
+> 	);
+> 	if (codetable == NULL) {
+> 	    fprintf(stderr, "Panic, code table overflow\n");
+> 	    exit(-1);
+> 	}
+82c94
+< CodePairEntry pairtable[MAXPAIRS];
+---
+> CodePairEntry* pairtable;
+126,128c138,147
+<     if (npairs == MAXPAIRS) {
+< 	fprintf(stderr, "Help, pair table overflow\n");
+< 	exit(-1);
+---
+>     if (npairs == maxpairs) {
+> 	maxpairs += MAXPAIRS;
+> 	pairtable = (CodePairEntry*) (maxpairs == MAXPAIRS ?
+> 	    malloc(maxpairs * sizeof (CodePairEntry)) :
+> 	    realloc(pairtable, maxpairs * sizeof (CodePairEntry))
+> 	);
+> 	if (pairtable == NULL) {
+> 	    fprintf(stderr, "Panic, pair table overflow\n");
+> 	    exit(-1);
+> 	}
+429,430c448,451
+<     bzero((char*) codehash, sizeof (codehash));
+<     bzero((char*) pairhash, sizeof (pairhash));
+---
+>     memset((char*) codehash, 0, sizeof (codehash));
+>     memset((char*) pairhash, 0, sizeof (pairhash));
+>     maxcodes = 0;
+>     maxpairs = 0;
+457,458c478,486
+<     printf("0 %d translate\n", (int)(h/yres*72.));
+<     printf("%g %g scale\n", 72./xres, -72./yres);
+---
+>     if (scaleToPage) {
+> 	float yscale = pageHeight / (h/yres);
+> 	float xscale = pageWidth / (w/xres);
+> 	printf("0 %d translate\n", (int)(yscale*(h/yres)*72.));
+> 	printf("%g %g scale\n", (72.*xscale)/xres, -(72.*yscale)/yres);
+>     } else {
+> 	printf("0 %d translate\n", (int)(72.*h/yres));
+> 	printf("%g %g scale\n", 72./xres, -72./yres);
+>     }
+475a504,511
+>     if (maxcodes > 0) {
+> 	free((char*) codetable);
+> 	codetable = NULL;
+>     }
+>     if (maxpairs > 0) {
+> 	free((char*) pairtable);
+> 	pairtable = NULL;
+>     }
+540c576
+<     while ((c = getopt(argc, argv, "p:x:y:aswz")) != -1)
+---
+>     while ((c = getopt(argc, argv, "p:x:y:W:H:aswzS")) != -1)
+541a578,586
+> 	case 'H':		/* page height */
+> 	    pageHeight = atof(optarg);
+> 	    break;
+> 	case 'S':		/* scale to page */
+> 	    scaleToPage = TRUE;
+> 	    break;
+> 	case 'W':		/* page width */
+> 	    pageWidth = atof(optarg);
+> 	    break;
+577c622
+< "usage: %s [-a] [-w] [-p pagenumber] [-x xres] [-y res] [-s] [files]\n",
+---
+> "usage: %s [-a] [-w] [-p pagenumber] [-x xres] [-y res] [-s] [-S] [-W pagewidth] [-H pageheight] [files]\n",
+593c638,639
+<     printf("%%%%BoundingBox: 0 0 %d %d\n", 11*72, (int)(8.5*72));/* XXX */
+---
+>     printf("%%%%BoundingBox: 0 0 %u %u\n",
+> 	(int)(pageHeight*72), (int)(pageWidth*72));	/* XXX */
+604c650
+< 	for (; optind < argc; optind++) {
+---
+> 	do {
+606c652,655
+< 	    if (!tif) {
+---
+> 	    if (tif) {
+> 		fax2ps(tif, npages, pages, argv[optind]);
+> 		TIFFClose(tif);
+> 	    } else
+609,613c658
+< 		continue;
+< 	    }
+< 	    fax2ps(tif, npages, pages, argv[optind]);
+< 	    TIFFClose(tif);
+< 	}
+---
+> 	} while (++optind < argc);
+618c663
+< 	strcmp(temp, "/tmp/fax2psXXXXXX");
+---
+> 	strcpy(temp, "/tmp/fax2psXXXXXX");
+EOF
+Patch contrib/fax2ps/faxdecode.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+6c6
+<  * Copyright (c) 1991, 1992 by Sam Leffler.
+---
+>  * Copyright (c) 1991, 1992, 1993 by Sam Leffler.
+240c240
+< 	bzero(sp->scanline, sp->b.rowbytes);
+---
+> 	memset(sp->scanline, 0, sp->b.rowbytes);
+258c258
+<                 bcopy(sp->scanline, sp->b.refline, sp->b.rowbytes);
+---
+>                 memcpy(sp->b.refline, sp->scanline, sp->b.rowbytes);
+284c284
+< 	bzero(sp->scanline, sp->b.rowbytes);
+---
+> 	memset(sp->scanline, 0, sp->b.rowbytes);
+287c287
+< 	bcopy(sp->scanline, sp->b.refline, sp->b.rowbytes);
+---
+> 	memcpy(sp->b.refline, sp->scanline, sp->b.rowbytes);
+535,547c535,559
+<             /*
+<              * Do the appropriate fill.  Note that we exit
+<              * this logic with the same color that we enter
+<              * with since we do 2 fills.  This explains the
+<              * somewhat obscure logic below.
+<              */
+<             if (a0 + run1 > npels)
+<                 run1 = npels - a0;
+<             if (color)
+<                 fillspan((char *)buf, a0, run1);
+< 	    if (color != sp->b.white) {
+< 		emitcode(tif, dx, a0, run1);
+< 		dx = a0 + run1;
+---
+> 	    if (run1 >= 0 && run2 >= 0) {
+> 		/*
+> 		 * Do the appropriate fill.  Note that we exit
+> 		 * this logic with the same color that we enter
+> 		 * with since we do 2 fills.  This explains the
+> 		 * somewhat obscure logic below.
+> 		 */
+> 		if (a0 + run1 > npels)
+> 		    run1 = npels - a0;
+> 		if (color)
+> 		    fillspan((char *)buf, a0, run1);
+> 		if (color != sp->b.white) {
+> 		    emitcode(tif, dx, a0, run1);
+> 		    dx = a0 + run1;
+> 		}
+> 		a0 += run1;
+> 		if (a0 + run2 > npels)
+> 		    run2 = npels - a0;
+> 		if (!color)
+> 		    fillspan((char *)buf, a0, run2);
+> 		if (!color != sp->b.white) {
+> 		    emitcode(tif, dx, a0, run2);
+> 		    dx = a0 + run2;
+> 		}
+> 		a0 += run2;
+549,558d560
+<             a0 += run1;
+<             if (a0 + run2 > npels)
+<                 run2 = npels - a0;
+<             if (!color)
+<                 fillspan((char *)buf, a0, run2);
+< 	    if (!color != sp->b.white) {
+< 		emitcode(tif, dx, a0, run2);
+< 		dx = a0 + run2;
+< 	    }
+<             a0 += run2;
+EOF
+Patch contrib/vms/readme.vms<<'EOF'
+0a1
+> 
+41,46c42,43
+<     $ CC/INCLUDE=DISK:[TIFF.LIBTIFF]/DEFINE=USE_CONST
+< This  ensures  that the  header  file is  found and  that  attributes on
+< certain  program  sections are set  correctly  when linking  against the
+< shareable TIFF library  (see below). If you get  strange linker messages
+< about   conflicting  psect   attributes,  you  have  probably  forgotten
+< /DEFINE=USE_CONST.
+---
+>     $ CC/INCLUDE=DISK:[TIFF.LIBTIFF]
+> This  ensures  that the  header  file is  found.
+56c53,54
+<     $ LINK MY_PROGRAM,DISK:[TIFF.LIBTIFF]TIFF/OPTIONS,SYS$INPUT:/OPTIONS
+---
+>     $ LINK MY_PROGRAM,SYS$INPUT:/OPTIONS
+>         DISK:[TIFF.LIBTIFF]TIFF/OPTIONS
+83a82,86
+> 
+> 
+> 
+> 
+> 
+EOF
+Patch contrib/vms/libtiff/makevms.com<<'EOF'
+39c39
+<         "TIF_DIR,TIF_DIRINFO,TIF_DIRREAD,TIF_DIRREAD,TIF_DIRWRITE,"+ -
+---
+>         "TIF_DIR,TIF_DIRINFO,TIF_DIRREAD,TIF_DIRWRITE,"+ -
+62a63
+> $       MKG3STATES:=$'THIS_DIR'MKG3STATES
+64c65
+< $       RUN MKG3STATES
+---
+> $       MKG3STATES -C
+125c126
+< $   LINK/SHAREABLE TIFFSHR/OPTIONS
+---
+> $   LINK/map/SHAREABLE TIFFSHR/OPTIONS
+EOF
+Patch contrib/vms/libtiff/tiffshr.opt<<'EOF'
+3c3,4
+< GSMATCH=LEQUAL,1,3
+---
+> ! Please update the minor version number below, when adding new routines
+> GSMATCH=LEQUAL,1,4
+9c10
+< ! Then take the object library, TIF_VERSION does not contain any entry points
+---
+> ! Then take the object library
+11c12
+< TIFF/LIBRARY/INCLUDE=TIF_VERSION
+---
+> TIFF/LIBRARY
+EOF
+Patch contrib/vms/libtiff/tiffvec.mar<<'EOF'
+2c2
+< 	.IDENT /V03-01/
+---
+> 	.IDENT /V03-02/
+36c36,43
+< 	VECTOR TIFFGetFileSize
+---
+> ;
+> ; TIFFGetFileSize was removed in version 3.2. It has been replaced by a 
+> ; dummy value that makes the program abort with a privileged instruction 
+> ; fault, in case an old program calls TIFFGetFileSize.
+> ;
+> ;	VECTOR TIFFGetFileSize
+> 	.QUAD  0
+> ;
+81a89,94
+> ;
+> ; New entries in version 3.2
+> ;
+> 	VECTOR TIFFGetVersion
+> 	VECTOR TIFFGetBitRevTable
+> 	VECTOR _TIFFmalloc	; For fax2tiff
+EOF
+Patch contrib/vms/tools/makevms.com<<'EOF'
+29c29
+< $	"BSDTYPES,MMAP_SUPPORT"
+---
+> 	"BSDTYPES,MMAP_SUPPORT"
+44c44
+<         "GIF2TIFF,PPM2TIFF,RAS2TIFF,TIFFSPLIT"
+---
+>         "GIF2TIFF,PPM2TIFF,RAS2TIFF,TIFFSPLIT,RGB2YCBCR"
+EOF
+Patch libtiff/Makefile.gcc<<'EOF'
+1c1
+< #	$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+---
+> #	$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+31,32c31,32
+< AR=	/bin/ar
+< RANLIB=	/usr/bin/ranlib
+---
+> AR=	ar
+> RANLIB=	ranlib
+EOF
+NewFile libtiff/Makefile.sco<<'EOF'
+#	$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+# Makefile for SCO Unix 3.2.4 on Intel 386/486.
+#
+# Tag Image File Format Library
+#
+# Copyright (c) 1988, 1989, 1990, 1991, 1992 Sam Leffler
+# Copyright (c) 1991, 1992 Silicon Graphics, Inc.
+# 
+# Permission to use, copy, modify, distribute, and sell this software and 
+# its documentation for any purpose is hereby granted without fee, provided
+# that (i) the above copyright notices and this permission notice appear in
+# all copies of the software and related documentation, and (ii) the names of
+# Sam Leffler and Silicon Graphics may not be used in any advertising or
+# publicity relating to the software without the specific, prior written
+# permission of Stanford and Silicon Graphics.
+# 
+# THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY 
+# WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  
+# 
+# IN NO EVENT SHALL SAM LEFFLER OR SILICON GRAPHICS BE LIABLE FOR
+# ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND,
+# OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+# WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF 
+# LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
+# OF THIS SOFTWARE.
+#
+DESTDIR=.
+#
+AR=	/bin/ar
+RANLIB=	/bin/ar ts
+NULL=
+
+IPATH=	-I.
+COPTS=	-g
+CFLAGS=	${COPTS} ${IPATH}
+#
+INCS=	tiff.h tiffio.h
+SRCS=	tif_fax3.c \
+	tif_fax4.c \
+	tif_aux.c \
+	tif_ccittrle.c \
+	tif_close.c \
+	tif_compress.c \
+	tif_dir.c \
+	tif_dirinfo.c \
+	tif_dirread.c \
+	tif_dirwrite.c \
+	tif_dumpmode.c \
+	tif_error.c \
+	tif_getimage.c \
+	tif_jpeg.c \
+	tif_flush.c \
+	tif_lzw.c \
+	tif_next.c \
+	tif_open.c \
+	tif_packbits.c \
+	tif_print.c \
+	tif_read.c \
+	tif_swab.c \
+	tif_strip.c \
+	tif_thunder.c \
+	tif_tile.c \
+	tif_unix.c \
+	tif_version.c \
+	tif_warning.c \
+	tif_write.c \
+	${NULL}
+OBJS=	tif_fax3.o \
+	tif_fax4.o \
+	tif_aux.o \
+	tif_ccittrle.o \
+	tif_close.o \
+	tif_compress.o \
+	tif_dir.o \
+	tif_dirinfo.o \
+	tif_dirread.o \
+	tif_dirwrite.o \
+	tif_dumpmode.o \
+	tif_error.o \
+	tif_getimage.o \
+	tif_jpeg.o \
+	tif_flush.o \
+	tif_lzw.o \
+	tif_next.o \
+	tif_open.o \
+	tif_packbits.o \
+	tif_print.o \
+	tif_read.o \
+	tif_swab.o \
+	tif_strip.o \
+	tif_thunder.o \
+	tif_tile.o \
+	tif_unix.o \
+	tif_version.o \
+	tif_warning.o \
+	tif_write.o \
+	${NULL}
+ALL=	libtiff.a
+
+all:	 ${ALL}
+
+${ALL}:	${OBJS}
+	${AR} rc libtiff.a $?
+	${RANLIB} libtiff.a
+
+${OBJS}: tiffio.h tiff.h tiffcomp.h tiffiop.h tiffconf.h
+tif_fax3.o: tif_fax3.c g3states.h t4.h tif_fax3.h
+
+g3states.h: mkg3states.c t4.h
+	${CC} -o mkg3states ${CFLAGS} mkg3states.c
+	./mkg3states > g3states.h
+
+install: all installh
+	-for i in ${ALL}; do \
+		${INSTALL} -c -m 644 $$i ${DESTDIR}/lib/$$i; \
+		${RANLIB} ${DESTDIR}/lib/$$i; \
+	done
+
+installh: ${INCS}
+	-for i in ${INCS}; do \
+	    h=`basename $$i`; \
+	    cmp -s $$i ${DESTDIR}/include/$$h || \
+	        ${INSTALL} -c -m 444 $$i ${DESTDIR}/include/$$h; \
+	done
+
+clean:
+	rm -f ${ALL} ${OBJS} core a.out mkg3states g3states.h
+ 
+tags:	${SRCS}
+	${CTAGS} ${SRCS}
+EOF
+Patch libtiff/mkg3states.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+46c46
+<  *	Reference: $Id: 3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+---
+>  *	Reference: $Id: 3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+258a259
+> int	packoutput = TRUE;
+269a271,273
+> 	} else if (strcmp(argv[1], "-p") == 0) {
+> 	    packoutput = FALSE;
+> 	    argc--, argv++;
+295c299
+<     int i, j;
+---
+>     int i, j, lastNonZero;
+302,310c306,332
+<     for (i = 0; i < null_mode_prefix_count; i++) {
+< 	fprintf(fd, "%s\n/* prefix %d */ {\n", outersep, i);
+< 	sep = "    ";
+< 	for (j = 0; j < 256; j++) {
+< 	    fprintf(fd, "%s%2d", sep, (int) table[i][j]);
+< 	    if (((j+1) % 16) == 0) {
+< 		fprintf(fd, ", /* %3d-%3d */\n", j-15, j);
+< 		sep = "    ";
+< 	    } else
+---
+>     if (!packoutput) {
+> 	for (i = 0; i < null_mode_prefix_count; i++) {
+> 	    fprintf(fd, "%s\n/* prefix %d */ {\n", outersep, i);
+> 	    sep = "    ";
+> 	    for (j = 0; j < 256; j++) {
+> 		fprintf(fd, "%s%2d", sep, (int) table[i][j]);
+> 		if (((j+1) % 16) == 0) {
+> 		    fprintf(fd, ", /* %3d-%3d */\n", j-15, j);
+> 		    sep = "    ";
+> 		} else
+> 		    sep = ",";
+> 	    }
+> 	    fprintf(fd, "}");
+> 	    outersep = ",";
+> 	}
+>     } else {
+> 	for (i = 0; i < null_mode_prefix_count; i++) {
+> 	    fprintf(fd, "%s{\n", outersep);
+> 	    for (j = 255; j > 0; j--)
+> 		if (table[i][j] != 0)
+> 		    break;
+> 	    sep = "";
+> 	    lastNonZero = j;
+> 	    for (j = 0; j <= lastNonZero; j++) {
+> 		fprintf(fd, "%s%d", sep, (int) table[i][j]);
+> 		if (((j+1) % 24) == 0)
+> 		    putc('\n', fd);
+311a334,336
+> 	    }
+> 	    fprintf(fd, "}");
+> 	    outersep = ",";
+313,314d337
+< 	fprintf(fd, "}");
+< 	outersep = ",";
+322c345
+<     int i, j;
+---
+>     int i, j, lastNonZero;
+329,337c352,379
+<     for (i = 0; i < horiz_mode_prefix_count; i++) {
+< 	fprintf(fd, "%s\n/* prefix %d */ {\n", outersep, i);
+< 	sep = "    ";
+< 	for (j = 0; j < 256; j++) {
+< 	    fprintf(fd, "%s%3d", sep, (int) table[i][j]);
+< 	    if (((j+1) % 14) == 0) {
+< 		fprintf(fd, ", /* %3d-%3d */\n", j-13, j);
+< 		sep = "    ";
+< 	    } else
+---
+>     if (!packoutput) {
+> 	for (i = 0; i < horiz_mode_prefix_count; i++) {
+> 	    fprintf(fd, "%s\n/* prefix %d */ {\n", outersep, i);
+> 	    sep = "    ";
+> 	    for (j = 0; j < 256; j++) {
+> 		fprintf(fd, "%s%3d", sep, (int) table[i][j]);
+> 		if (((j+1) % 14) == 0) {
+> 		    fprintf(fd, ", /* %3d-%3d */\n", j-13, j);
+> 		    sep = "    ";
+> 		} else
+> 		    sep = ",";
+> 	    }
+> 	    fprintf(fd, "\n}");
+> 	    outersep = ",";
+> 	}
+>     } else {
+> 	outersep = "";
+> 	for (i = 0; i < horiz_mode_prefix_count; i++) {
+> 	    fprintf(fd, "%s{\n", outersep);
+> 	    for (j = 255; j > 0; j--)
+> 		if (table[i][j] != 0)
+> 		    break;
+> 	    sep = "";
+> 	    lastNonZero = j;
+> 	    for (j = 0; j <= lastNonZero; j++) {
+> 		fprintf(fd, "%s%d", sep, (int) table[i][j]);
+> 		if (((j+1) % 24) == 0)
+> 		    putc('\n', fd);
+338a381,383
+> 	    }
+> 	    fprintf(fd, "}");
+> 	    outersep = ",";
+340,341d384
+< 	fprintf(fd, "\n}");
+< 	outersep = ",";
+354c397
+<     if (comment)
+---
+>     if (!packoutput && comment)
+EOF
+Patch libtiff/tif_aux.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+33a34,36
+> #ifdef COLORIMETRY_SUPPORT
+> #include <math.h>
+> #endif
+44c47
+< DECLARE3(TIFFVGetFieldDefaulted, TIFF*, tif, int, tag, va_list, ap)
+---
+> DECLARE3(TIFFVGetFieldDefaulted, TIFF*, tif, u_int, tag, va_list, ap)
+99a103,107
+> 	case TIFFTAG_EXTRASAMPLES:
+> 		*va_arg(ap, u_short *) = EXTRASAMPLE_ASSOCALPHA;
+> 	case TIFFTAG_MATTEING:
+> 		*va_arg(ap, u_short *) = td->td_matteing;
+> 		return (1);
+170c178
+< DECLARE2V(TIFFGetFieldDefaulted, TIFF*, tif, int, tag)
+---
+> DECLARE2V(TIFFGetFieldDefaulted, TIFF*, tif, u_int, tag)
+EOF
+Patch libtiff/tif_dir.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+158c158
+< DECLARE3(TIFFSetField1, TIFF*, tif, int, tag, va_list, ap)
+---
+> DECLARE3(TIFFSetField1, TIFF*, tif, u_int, tag, va_list, ap)
+470c470
+< DECLARE2(OkToChangeTag, TIFF*, tif, int, tag)
+---
+> DECLARE2(OkToChangeTag, TIFF*, tif, u_int, tag)
+495c495
+< DECLARE2V(TIFFSetField, TIFF*, tif, int, tag)
+---
+> DECLARE2V(TIFFSetField, TIFF*, tif, u_int, tag)
+522c522
+< DECLARE3(TIFFVSetField, TIFF*, tif, int, tag, va_list, ap)
+---
+> DECLARE3(TIFFVSetField, TIFF*, tif, u_int, tag, va_list, ap)
+538c538
+< DECLARE3(TIFFGetField1, TIFFDirectory*, td, int, tag, va_list, ap)
+---
+> DECLARE3(TIFFGetField1, TIFFDirectory*, td, u_int, tag, va_list, ap)
+768c768
+< DECLARE2V(TIFFGetField, TIFF*, tif, int, tag)
+---
+> DECLARE2V(TIFFGetField, TIFF*, tif, u_int, tag)
+793c793
+< DECLARE3(TIFFVGetField, TIFF*, tif, int, tag, va_list, ap)
+---
+> DECLARE3(TIFFVGetField, TIFF*, tif, u_int, tag, va_list, ap)
+813c813
+< DECLARE2V(_TIFFgetfield, TIFFDirectory*, td, int, tag)
+---
+> DECLARE2V(_TIFFgetfield, TIFFDirectory*, td, u_int, tag)
+EOF
+Patch libtiff/tif_fax3.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+552,569c552,571
+< 			/*
+< 			 * Do the appropriate fill.  Note that we exit
+< 			 * this logic with the same color that we enter
+< 			 * with since we do 2 fills.  This explains the
+< 			 * somewhat obscure logic below.
+< 			 */
+< 			if (a0 < 0)
+< 				a0 = 0;
+< 			if (a0 + run1 > npels)
+< 				run1 = npels - a0;
+< 			if (color)
+< 				fillspan((char *)buf, a0, run1);
+< 			a0 += run1;
+< 			if (a0 + run2 > npels)
+< 				run2 = npels - a0;
+< 			if (!color)
+< 				fillspan((char *)buf, a0, run2);
+< 			a0 += run2;
+---
+> 			if (run1 >= 0 && run2 >= 0) {
+> 				/*
+> 				 * Do the appropriate fill.  Note that we exit
+> 				 * this logic with the same color that we enter
+> 				 * with since we do 2 fills.  This explains the
+> 				 * somewhat obscure logic below.
+> 				 */
+> 				if (a0 < 0)
+> 					a0 = 0;
+> 				if (a0 + run1 > npels)
+> 					run1 = npels - a0;
+> 				if (color)
+> 					fillspan((char *)buf, a0, run1);
+> 				a0 += run1;
+> 				if (a0 + run2 > npels)
+> 					run2 = npels - a0;
+> 				if (!color)
+> 					fillspan((char *)buf, a0, run2);
+> 				a0 += run2;
+> 			}
+EOF
+Patch libtiff/tif_getimage.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+1152,1153c1152,1155
+< 		put = (bitspersample == 8 ?
+< 		    putRGBcontig8bittile : putRGBcontig16bittile);
+---
+> 		if (bitspersample == 8)
+> 			put = putRGBcontig8bittile;
+> 		else
+> 			put = putRGBcontig16bittile;
+1200,1201c1202,1205
+< 		put = (bitspersample == 8 ?
+< 		    putRGBseparate8bittile : putRGBseparate16bittile);
+---
+> 		if (bitspersample == 8)
+> 			put = putRGBseparate8bittile;
+> 		else
+> 			put = putRGBseparate16bittile;
+EOF
+Patch libtiff/tif_lzw.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+442a443,450
+> static void
+> DECLARE1(codeLoop, TIFF*, tif)
+> {
+> 	TIFFError(tif->tif_name,
+> 	    "LZWDecode: Bogus encoding, loop in the code table; scanline %d",
+> 	    tif->tif_row);
+> }
+> 
+451c459
+< 	int code, nbits, nextbits;
+---
+> 	int code, nbits, nextbits, len;
+474,479c482,489
+< 			} while (--residue > occ);
+< 			tp = op + occ;
+< 			do {
+< 				*--tp = codep->value;
+< 				codep = codep->next;
+< 			} while (--occ);
+---
+> 			} while (--residue > occ && codep);
+> 			if (codep) {
+> 				tp = op + occ;
+> 				do {
+> 					*--tp = codep->value;
+> 					codep = codep->next;
+> 				} while (--occ && codep);
+> 			}
+493c503
+< 		} while (--residue);
+---
+> 		} while (--residue && codep);
+555,561c565,575
+< 				} while (codep->length > occ);
+< 				sp->dec_restart = occ;
+< 				tp = op + occ;
+< 				do  {
+< 					*--tp = codep->value;
+< 					codep = codep->next;
+< 				}  while (--occ);
+---
+> 				} while (codep && codep->length > occ);
+> 				if (codep) {
+> 					sp->dec_restart = occ;
+> 					tp = op + occ;
+> 					do  {
+> 						*--tp = codep->value;
+> 						codep = codep->next;
+> 					}  while (--occ && codep);
+> 					if (codep)
+> 						codeLoop(tif);
+> 				}
+564,565c578,579
+< 			op += codep->length, occ -= codep->length;
+< 			tp = op;
+---
+> 			len = codep->length;
+> 			tp = op + len;
+572c586,591
+< 			} while (codep);
+---
+> 			} while (codep && tp > op);
+> 			if (codep) {
+> 			    codeLoop(tif);
+> 			    break;
+> 			}
+> 			op += len, occ -= len;
+EOF
+Patch libtiff/tiffio.h<<'EOF'
+1c1
+< /* $Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $ */
+---
+> /* $Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $ */
+88,91c88,91
+< extern	int TIFFGetField(TIFF*, int, ...);
+< extern	int TIFFVGetField(TIFF*, int, va_list);
+< extern	int TIFFGetFieldDefaulted(TIFF*, int, ...);
+< extern	int TIFFVGetFieldDefaulted(TIFF*, int, va_list);
+---
+> extern	int TIFFGetField(TIFF*, unsigned int, ...);
+> extern	int TIFFVGetField(TIFF*, unsigned int, va_list);
+> extern	int TIFFGetFieldDefaulted(TIFF*, unsigned int, ...);
+> extern	int TIFFVGetFieldDefaulted(TIFF*, unsigned int, va_list);
+108,109c108,109
+< extern	int TIFFSetField(TIFF*, int, ...);
+< extern	int TIFFVSetField(TIFF*, int, va_list);
+---
+> extern	int TIFFSetField(TIFF*, unsigned int, ...);
+> extern	int TIFFVSetField(TIFF*, unsigned int, va_list);
+EOF
+Patch libtiff/tiffiop.h<<'EOF'
+1c1
+< /* $Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $ */
+---
+> /* $Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $ */
+331c331
+< /* NB: the u_int casts are to silence certain ANSI-C compilers */
+---
+> /* NB: the u_long casts are to silence certain ANSI-C compilers */
+335c335
+< #define	howmany(x, y)	((((u_int)(x))+(((u_int)(y))-1))/((u_int)(y)))
+---
+> #define	howmany(x, y)	((((u_long)(x))+(((u_long)(y))-1))/((u_long)(y)))
+339c339
+< #define	roundup(x, y)	(howmany(x,y)*((u_int)(y)))
+---
+> #define	roundup(x, y)	(howmany(x,y)*((u_long)(y)))
+351c351
+< extern	int _TIFFgetfield(TIFFDirectory*, int, ...);
+---
+> extern	int _TIFFgetfield(TIFFDirectory*, u_int, ...);
+EOF
+NewFile tools/Makefile.sco<<'EOF'
+#	$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $
+#
+# Makefile for SCO Unix 3.2.4 on Intel 386/486.
+#
+# TIFF Library Tools
+#
+# Copyright (c) 1988, 1989, 1990, 1991, 1992 Sam Leffler
+# Copyright (c) 1991, 1992 Silicon Graphics, Inc.
+# 
+# Permission to use, copy, modify, distribute, and sell this software and 
+# its documentation for any purpose is hereby granted without fee, provided
+# that (i) the above copyright notices and this permission notice appear in
+# all copies of the software and related documentation, and (ii) the names of
+# Sam Leffler and Silicon Graphics may not be used in any advertising or
+# publicity relating to the software without the specific, prior written
+# permission of Stanford and Silicon Graphics.
+# 
+# THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY 
+# WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  
+# 
+# IN NO EVENT SHALL SAM LEFFLER OR SILICON GRAPHICS BE LIABLE FOR
+# ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND,
+# OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+# WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF 
+# LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
+# OF THIS SOFTWARE.
+#
+NULL=
+IPATH=	-I../libtiff
+#
+# If you don't want the public domain getopt code, then
+# simply null this out and you'll get whatever is in your
+# libc (or similar).
+#
+GETOPT=	getopt.o
+#
+# Library-wide configuration defines:
+# Note that if you change the library-wide configuration, you'll
+# need to manual force a full rebuild. 
+#
+CONF_LIBRARY=\
+	-DUSE_VARARGS=0 \
+	-DUSE_PROTOTYPES=1 \
+	-DUSE_CONST=1 \
+	${NULL}
+COPTS=	-DSYSV
+CFLAGS=	-O ${COPTS} ${IPATH}
+#
+LIBTIFF=../libtiff/libtiff.a
+LIBS=	${LIBTIFF} -lmalloc -lc_s
+MACHALL=
+OBJS=	\
+	fax2tiff.o \
+	gif2tiff.o \
+	pal2rgb.o \
+	ppm2tiff.o \
+	rgb2ycbcr.o \
+	tiff2bw.o \
+	tiff2ps.o \
+	tiffcmp.o \
+	tiffcp.o \
+	tiffdither.o \
+	tiffdump.o \
+	tiffinfo.o \
+	tiffmedian.o \
+	tiffsplit.o \
+	ras2tiff.o \
+	sgigt.o \
+	sgisv.o \
+	sgi2tiff.o \
+	${GETOPT} \
+	${NULL}
+ALL=\
+	fax2tiff \
+	gif2tiff \
+	pal2rgb \
+	ppm2tiff \
+	rgb2ycbcr \
+	tiff2bw \
+	tiff2ps \
+	tiffcmp \
+	tiffcp \
+	tiffdither \
+	tiffdump \
+	tiffinfo \
+	tiffmedian \
+	tiffsplit \
+	${MACHALL} \
+	${NULL}
+
+all:	 ${ALL}
+
+tiffinfo: tiffinfo.c ${GETOPT} ${LIBTIFF}
+	${CC} -o tiffinfo ${CFLAGS} tiffinfo.c ${GETOPT} ${LIBS}
+tiffcmp:tiffcmp.c ${GETOPT} ${LIBTIFF}
+	${CC} -o tiffcmp ${CFLAGS} tiffcmp.c ${GETOPT} ${LIBS}
+tiffcp:	tiffcp.c ${LIBTIFF}
+	${CC} -o tiffcp ${CFLAGS} tiffcp.c ${LIBS}
+tiffdump: tiffdump.c
+	${CC} -o tiffdump ${CFLAGS} tiffdump.c
+tiffmedian: tiffmedian.c ${LIBTIFF}
+	${CC} -o tiffmedian ${CFLAGS} tiffmedian.c ${LIBS}
+tiffsplit: tiffsplit.c ${LIBTIFF}
+	${CC} -o tiffsplit ${CFLAGS} tiffsplit.c ${LIBS}
+tiff2ps: tiff2ps.c ${LIBTIFF}
+	${CC} -o tiff2ps ${CFLAGS} tiff2ps.c ${LIBS} -lm
+# junky stuff...
+# convert RGB image to B&W
+tiff2bw: tiff2bw.c ${GETOPT} ${LIBTIFF}
+	${CC} -o tiff2bw ${CFLAGS} tiff2bw.c ${GETOPT} ${LIBS}
+# convert B&W image to bilevel w/ FS dithering
+tiffdither: tiffdither.c ${GETOPT} ${LIBTIFF}
+	${CC} -o tiffdither ${CFLAGS} tiffdither.c ${GETOPT} ${LIBS}
+# Sun rasterfile converter
+ras2tiff: ras2tiff.c ${LIBTIFF}
+	${CC} -o ras2tiff ${CFLAGS} ras2tiff.c ${LIBS}
+# GIF converter
+gif2tiff: gif2tiff.c ${LIBTIFF}
+	${CC} -o gif2tiff ${CFLAGS} gif2tiff.c ${LIBS} -lm
+# PBM converter
+ppm2tiff: ppm2tiff.c ${LIBTIFF}
+	${CC} -o ppm2tiff ${CFLAGS} ppm2tiff.c ${LIBS}
+# SGI image file converter
+sgi2tiff: sgi2tiff.c ${LIBTIFF}
+	${CC} -o sgi2tiff ${CFLAGS} sgi2tiff.c -limage ${LIBS}
+# Group 3 FAX file converter
+fax2tiff: fax2tiff.c ${GETOPT} ${LIBTIFF}
+	${CC} -o fax2tiff ${CFLAGS} ${CONF_LIBRARY} fax2tiff.c ${GETOPT} ${LIBS}
+# convert Palette image to RGB
+pal2rgb: pal2rgb.c ${LIBTIFF}
+	${CC} -o pal2rgb ${CFLAGS} pal2rgb.c ${LIBS}
+# convert RGB image to YCbCr
+rgb2ycbcr: rgb2ycbcr.c ${GETOPT} ${LIBTIFF}
+	${CC} -o rgb2ycbcr ${CFLAGS} rgb2ycbcr.c ${GETOPT} ${LIBS} -lm
+# SGI versions of tiffgt & tiffsv
+tiffgt:	sgigt.c ${GETOPT} ${LIBTIFF}
+	${CC} -o tiffgt ${CFLAGS} sgigt.c ${GETOPT} ${LIBS} -lgutil -lgl_s -lm
+tiffsv:	sgisv.c ${LIBTIFF}
+	${CC} -o tiffsv ${CFLAGS} sgisv.c ${LIBS} -lgutil -lgl_s -lm
+
+install: all
+	/etc/install -f /usr/local/bin -m 755 -O ${ALL}
+
+clean:
+	rm -f ${ALL} ${OBJS} core a.out ycbcr
+EOF
+Patch tools/gif2tiff.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+22c22
+< short gamtab[256];
+---
+> unsigned short gamtab[256];
+EOF
+Patch tools/rgb2ycbcr.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+39a40,43
+> #endif
+> 
+> #ifdef VMS
+> #define unlink delete
+EOF
+Patch tools/tiff2ps.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+108c108
+< static	u_short matte = 0;
+---
+> static	u_short matte;
+251c251
+< 		TIFFGetField(tif, TIFFTAG_MATTEING, &matte);
+---
+> 		TIFFGetFieldDefaulted(tif, TIFFTAG_MATTEING, &matte);
+EOF
+Patch tools/tiffdump.c<<'EOF'
+2c2
+< static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+---
+> static char rcsid[] = "$Header: /uusoc/res/image/CVS/vispack/packages/tiff/scratch/3.2.patch,v 1.1.1.1 2003/02/12 16:51:50 whitaker Exp $";
+258c258
+< 				if (h.tiff_magic != TIFF_LITTLEENDIAN) {
+---
+> 				if (h.tiff_magic == TIFF_LITTLEENDIAN) {
+294c294
+< 				if (h.tiff_magic != TIFF_LITTLEENDIAN) {
+---
+> 				if (h.tiff_magic == TIFF_LITTLEENDIAN) {
+EOF

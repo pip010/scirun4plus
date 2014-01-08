@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<application path="./" name="test_wxglade_app" class="TestApp" option="1" language="C++" top_window="main_window" encoding="UTF-8" use_gettext="0" overwrite="0" use_new_namespace="1" for_version="2.8" is_template="0">
+    <object class="MainWindow" name="main_window" base="EditFrame">
+        <style>wxSYSTEM_MENU|wxNO_BORDER|wxFULL_REPAINT_ON_RESIZE</style>
+        <title>SLIVR Example</title>
+        <menubar>1</menubar>
+        <statusbar>1</statusbar>
+        <size>573, 780</size>
+        <object class="wxMenuBar" name="main_window_menubar" base="EditMenuBar">
+            <menus>
+                <menu name="" handler="file_menu_handler" label="File">
+                    <item>
+                        <label>Quit</label>
+                        <id>QUIT_MENU_ID</id>
+                    </item>
+                </menu>
+                <menu name="" label="Selection">
+                    <item>
+                        <label>Color</label>
+                        <id>COLOR_MENU_ID</id>
+                    </item>
+                </menu>
+                <menu name="" handler="about_menu_handler" label="About">
+                    <item>
+                        <label>Info</label>
+                        <id>INFO_MENU_ID</id>
+                    </item>
+                </menu>
+            </menus>
+        </object>
+        <object class="wxStatusBar" name="main_window_statusbar" base="EditStatusBar">
+            <fields>
+                <field width="-1">main_window_statusbar</field>
+            </fields>
+        </object>
+        <object class="wxBoxSizer" name="sizer_1" base="EditBoxSizer">
+            <orient>wxHORIZONTAL</orient>
+            <object class="sizeritem">
+                <flag>wxEXPAND</flag>
+                <border>0</border>
+                <option>2</option>
+                <object class="wxBoxSizer" name="sizer_2" base="EditBoxSizer">
+                    <orient>wxVERTICAL</orient>
+                    <object class="sizeritem">
+                        <flag>wxEXPAND|wxADJUST_MINSIZE</flag>
+                        <border>0</border>
+                        <option>1</option>
+                        <object class="wxToggleButton" name="spin_tog" base="EditToggleButton">
+                            <label>Spin</label>
+                            <id>SPIN_TOG_ID</id>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxEXPAND|wxADJUST_MINSIZE</flag>
+                        <border>0</border>
+                        <option>1</option>
+                        <object class="wxToggleButton" name="blend32_tog" base="EditToggleButton">
+                            <label>32 bit Blend</label>
+                            <id>BLEND_BITS_TOG_ID</id>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxEXPAND|wxADJUST_MINSIZE</flag>
+                        <border>0</border>
+                        <option>1</option>
+                        <object class="wxToggleButton" name="shading_tog" base="EditToggleButton">
+                            <label>Shading</label>
+                            <id>SHADING_TOG_ID</id>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxEXPAND|wxADJUST_MINSIZE</flag>
+                        <border>0</border>
+                        <option>1</option>
+                        <object class="wxToggleButton" name="bmode_tog" base="EditToggleButton">
+                            <label>MIP Mode</label>
+                            <id>BLEND_MODE_ID</id>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxEXPAND|wxADJUST_MINSIZE</flag>
+                        <border>0</border>
+                        <option>1</option>
+                        <object class="wxToggleButton" name="use_2d_cmap_tog" base="EditToggleButton">
+                            <label>2D ColorMap</label>
+                            <id>CMAP_2D_ID</id>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxEXPAND</flag>
+                        <border>0</border>
+                        <option>25</option>
+                        <object class="wxStaticBoxSizer" name="samp_sizer" base="EditStaticBoxSizer">
+                            <orient>wxVERTICAL</orient>
+                            <label>Sample Rate</label>
+                            <object class="sizeritem">
+                                <flag>wxEXPAND</flag>
+                                <border>0</border>
+                                <option>1</option>
+                                <object class="wxSlider" name="sampling_rate" base="EditSlider">
+                                    <style>wxSL_VERTICAL</style>
+                                    <id>SAMPLE_RATE_ID</id>
+                                    <range>25, 1000</range>
+                                    <value>225</value>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxEXPAND|wxADJUST_MINSIZE</flag>
+                                <border>0</border>
+                                <option>0</option>
+                                <object class="wxTextCtrl" name="sample_rate_text" base="EditTextCtrl">
+                                    <id>SAMPLE_RATE_TEXT_ID</id>
+                                    <value>4.5</value>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxEXPAND</flag>
+                <border>0</border>
+                <option>10</option>
+                <object class="OGLCanvas" name="glcanvas_" base="CustomWidget">
+                    <arguments>
+                        <argument>$parent</argument>
+                        <argument>attribs</argument>
+                    </arguments>
+                </object>
+            </object>
+        </object>
+    </object>
+</application>

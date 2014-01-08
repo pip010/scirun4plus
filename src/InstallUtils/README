@@ -1,0 +1,61 @@
+If you want to build the Mac OSX app do the following:
+
+1. Get a copy of Platypus from here:
+   http://www.sveinbjorn.org/platypus#download
+
+   You can also get it via Macports. 'sudo port install platypus'
+
+   I've tested with 3.3 and 3.4.  3.3 doesn't work in the command line form, but
+   3.4 does.
+
+   After unpacking the zip file, open the Install Command Line Tool.app found in
+   "Platypus 3.4/Command Line Tool".  This will install it in /usr/local/bin.
+
+2. Configure CMAKE_INSTALL_PREFIX to point to somewhere where you can install
+   SCIRun.  Also point CMake to where platypus lives if it didn't find it.
+
+3. Run "./buildApp.sh" from within the build directory.  This will install
+   SCIRun and copy thirdparty files into the App.  All the right paths are
+   configured at cmake time and filled in from the template buildApp.template.sh
+   file.
+
+In OSX, apps are a special thing.  They allow a developer to bundle the
+executable to be run along with any supporting files such as configuration files
+and libraries.
+
+Platypus creates an app that runs a script for us.  The script is part of the
+app: <app>/Contents/Resources/script.  This script (src/InstallUtils/startup.sh)
+does several things for us.  It allows us to set environment variables based on
+the location of the app (passed as argument 1 to the script), make sure X is
+running, and start the SCIRun executable.  I used OpenOffice as a guide to
+writing this startup script.
+
+On Macs, the notion of a built in RPATH (like in windows) doesn't exist.
+Libraries are encoded with the installation name and path when compiled.  You
+can query this with 'otool -D <lib>'.  CMake is pretty clever about encoding
+this for you, but there are some options to change how the default behavior
+works.  Search for RPATH and INSTALL_NAME_DIR in the cmake man page.  When you
+link against a dylib, the linker takes the install name from the library you are
+linking against and stores that into the new library.  When you run 'otool -L
+<lib>' you are seeing all the places where libraries said they were going to be,
+not actually where the linker will eventually find them (in contrast to ldd on
+linux).  During the load phase, the OS looks for the library in the location it
+said it would be (otool -L), then it searches the DYLD_LIBRARY_PATH.  This is
+why we set the DYLD_LIBRARY_PATH in the startup.sh script.  SCIRun was compiled
+linking against libraries that specified an install location that won't exist on
+the running system.  It also means to test your app for missing libraries, you
+need to move away your thirdparty directory, as it will look for the libraries
+there before searching in the DYLD_LIBRARY_PATH and your application.  Much of
+this information came from the ld man page.  You can change all of these paths
+with the install_name_tool after compilation (thus avoiding relinking), though
+if you make the path longer, you will have needed to compile your library with
+the -headerpad_max_install_names argument (CMake adds this argument for you).
+
+When specifying a library install name, you can use a magic path
+@executable_path.  This will expand out to the path of the executable, so you
+can get paths encoded that will be relative to where your application will
+reside on disk.  You can also use this magic path in functions like fopen in
+your application to open files in paths relative to your executable.  Ideally we
+would specify @exectuable_path for library locations for scirun during
+installation (via CMake and INSTALL_NAME_DIR), but because we start scirun from
+a script, we can just set the DYLD_LIBRARY_PATH and not worry about it.

@@ -1,0 +1,55 @@
+RELEASE NOTES
+
+Program: Seg3D 1.12 
+Date: 9-4-2009
+
+Note:
+
+Supported platforms:
+
+[1] OSX: Seg3D 1.12 supports OSX 10.5 with a 32-bit version available.
+Currently the 64-bit version of OSX does not compile with wxwidgets.
+
+[2] Linux: Seg3D 1.12 supports most flavors of Linux, but requires the user to compile Seg3D from scratch.
+NVIDIA graphics cards and drivers are recommended. 
+Seg3D is shipped with most thirdparty software dependencies, but tools like gcc, g++,
+Subversion and CMake need to be installed separately.
+
+[3] Windows: Seg3D 1.12 currently runs on both 64-bit and 32-bit Windows Vista and Windows XP.
+
+OpenGL requirement:
+
+Seg3D volume rendering tools require OpenGL library version 2.0 or higher. Currently most Linux and OSX systems
+have a recent enough OpenGL library.
+
+Binary versions:
+
+[1] Binary versions are available for Windows XP/Vista and OS X 10S X 10.5.
+
+Source code:
+
+[1] Source code of Seg3D is available from https://gforge.sci.utah.edu/, use svn to checkout the latest version of the code.
+The latest code can be downloaded by:
+
+svn co https://gforge.sci.utah.edu/svn/cibc/cibc/trunk/ .
+
+Documentation:
+
+[1] Currently only the documentation of the old Seg3D version is available, and can be used as guidance
+in this new Seg3D version.  We are developing a new documentation system for our software and apologize for not having
+up to date documentation at this point.  Questions regarding Seg3D can always be posted to seg3d@sci.utah.edu
+
+
+New Features:
+
+[1] Everything now compiles using CMake.
+
+[2] This version brings 64bit capability to Windows.
+
+[3] A new configurable autosave feature has been added.  It defaults to autosaving in your home directory every 15 minutes.
+This feature is configurable by going to Edit->Preferences and selecting either Set AutoSave Interval or Set AutoSave Directory
+
+[4] A hotkey has been added for polyline tool.  Pressing delete (OSX) or backspace will delete the last point in the line.
+
+[5] When the polyline tool's fill is used with a mask region, the masked region will be filled instead of everything but the masked region.  
+Polyline fill now matches the behavior of the paintbrush tool.

@@ -1,0 +1,55 @@
+PROJECT(ITKOpenJPEG C)
+INCLUDE_REGULAR_EXPRESSION("^.*$")
+# Defines the source code for the library
+SET(OpenJPEG_SRCS
+  bio.c
+  cio.c
+  dwt.c
+  event.c
+  image.c
+  j2k.c
+  j2k_lib.c
+  jp2.c
+  jpt.c
+  mct.c
+  mqc.c
+  openjpeg.c
+  pi.c
+  raw.c
+  t1.c
+  t2.c
+  tcd.c
+  tgt.c
+)
+
+CONFIGURE_FILE(${ITKOpenJPEG_SOURCE_DIR}/.NoDartCoverage
+               ${ITKOpenJPEG_BINARY_DIR}/.NoDartCoverage)
+
+IF (BORLAND)
+  SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w-8004")
+  ADD_DEFINITIONS(-DWIN32)
+ENDIF (BORLAND)
+
+# Pass proper definition to preprocessor to generate shared lib
+IF (WIN32)
+  IF (${ITK_BUILD_SHARED_LIBS} MATCHES "SHARED")
+    ADD_DEFINITIONS(-DOPJ_EXPORTS)
+  ELSE (${ITK_BUILD_SHARED_LIBS} MATCHES "SHARED")
+    ADD_DEFINITIONS(-DOPJ_STATIC)
+  ENDIF (${ITK_BUILD_SHARED_LIBS} MATCHES "SHARED")
+ENDIF (WIN32)
+
+# Create the library
+ADD_LIBRARY(${OPJ_PREFIX}openjpeg ${ITK_BUILD_SHARED_LIBS} ${OpenJPEG_SRCS})
+
+# Install library
+IF(ITK_LIBRARY_PROPERTIES)
+  SET_TARGET_PROPERTIES(${OPJ_PREFIX}openjpeg PROPERTIES ${ITK_LIBRARY_PROPERTIES})
+ENDIF(ITK_LIBRARY_PROPERTIES)
+
+IF(NOT ITK_INSTALL_NO_LIBRARIES)
+  INSTALL(TARGETS ${OPJ_PREFIX}openjpeg
+    RUNTIME DESTINATION ${ITK_INSTALL_BIN_DIR_CM24} COMPONENT RuntimeLibraries
+    LIBRARY DESTINATION ${ITK_INSTALL_LIB_DIR_CM24} COMPONENT RuntimeLibraries
+    ARCHIVE DESTINATION ${ITK_INSTALL_LIB_DIR_CM24} COMPONENT Development)
+ENDIF(NOT ITK_INSTALL_NO_LIBRARIES)

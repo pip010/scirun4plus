@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<definition name="ScrolledView">
+  <object name="Skinner::Grid">
+    <var name="rows">2</var>
+    <var name="cols">2</var>
+
+    <var name="ScrolledView::horizontal" overwrite="no" propagate="yes">20</var>
+    <var name="ScrolledView::vertical" overwrite="no" propagate="yes">20</var>
+
+    <var name="ScrolledView::width" type="double" overwrite="no"
+         propagate="yes">1000</var>
+    <var name="ScrolledView::height" type="double" overwrite="no"
+         propagate="yes">1000</var>
+    <var name="ScrolledView::xoffset" type="double" overwrite="no"
+         propagate="yes">0.0</var>
+    <var name="ScrolledView::yoffset" type="double" overwrite="no"
+         propagate="yes">0.0</var>
+    <var name="ScrolledView::invisible_width" type="double"
+         propagate="yes">1000</var>
+    <var name="ScrolledView::invisible_height" type="double"
+         propagate="yes">1000</var>
+
+    <object name="Skinner::Box">
+      <var name="color">#00000000</var>
+      <var name="row">2</var>
+      <var name="col">2</var>
+      <var name="cell-height">$ScrolledView::horizontal</var>
+      <var name="cell-width">$ScrolledView::vertical</var>
+
+    </object>
+
+    <object name="Skinner::Frame">
+      <var name="row">2</var>
+      <var name="col">1</var>
+
+      <var name="width">0</var>
+      <var name="height">0</var>
+
+      <object name="Skinner::Box">
+        <var name="color">#999999FF</var>
+        <var name="color">#00000000</var>
+        <object name="GrabFocusRegion">
+        <object name="Slider">
+          <var name="LabeledSlider::Text::text" propagate="yes">Offset</var>
+          <var name="Slider::value" propagate="yes">$ScrolledView::xoffset</var>
+          <var name="Slider::max" propagate="yes">$ScrolledView::invisible_width</var>
+          <var name="Slider::min" propagate="yes">0</var>
+          <var name="Slider::resolution" propagate="yes">5.0</var>
+
+          <signal name="Slider::changed"
+                  target="GLWindow::mark_redraw"/>
+        </object>
+      </object>
+      </object>
+    </object>
+
+    <object name="Skinner::Frame">
+      <var name="row">1</var>
+      <var name="col">2</var>
+
+      <var name="width">0</var>
+      <var name="height">0</var>
+
+      <object name="Skinner::Box">
+        <var name="color">#999999FF</var>
+        <var name="color">#00000000</var>
+        <object name="GrabFocusRegion">
+        <object name="Slider">
+          <var name="Slider::vertical" propagate="yes">1</var>
+          <var name="Slider::value" propagate="yes">$ScrolledView::yoffset</var>
+          <var name="Slider::max" propagate="yes">$ScrolledView::invisible_height</var>
+          <var name="Slider::min" propagate="yes">0</var>
+          <var name="Slider::resolution" propagate="yes">5.0</var>
+
+          <signal name="Slider::changed"
+                  target="GLWindow::mark_redraw"/>
+        </object>
+      </object>
+      </object>
+    </object>
+
+    <object name="Skinner::Frame">
+      <var name="width">2</var>
+      <var name="height">2</var>
+
+      <object name="GrabFocusRegion">
+        <object name="Skinner::ViewSubRegion">
+          <var name="row">1</var>
+          <var name="col">1</var>
+          <var name="ViewSubRegion::x">$ScrolledView::xoffset</var>
+          <var name="ViewSubRegion::y">$ScrolledView::yoffset</var>
+          <var name="ViewSubRegion::width">$ScrolledView::width</var>
+          <var name="ViewSubRegion::height">$ScrolledView::height</var>
+          <var name="ViewSubRegion::invisible_width">$ScrolledView::invisible_width</var>
+          <var name="ViewSubRegion::invisible_height">$ScrolledView::invisible_height</var>
+
+          <object name="ScrolledView::child"/>
+        </object>
+      </object>
+    </object>
+  </object>
+</definition>
