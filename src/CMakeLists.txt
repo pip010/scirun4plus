@@ -628,7 +628,7 @@ ENDIF(NOT BUILD_SHARED_LIBS OR BUILD_STATIC_THIRDPARTY)
 # SCIRun Packages to enable (must enable packages when building core for now)
 # DV Fix need error checking to make sure SCIRun gets included
 
-SET(LOAD_PACKAGE "SCIRun,BioPSE,Teem,MatlabInterface" CACHE STRING "Building SCIRun, BioPSE, Teem, and MatlabInterface packages by default.")
+SET(LOAD_PACKAGE "SCIRun,BioPSE,Teem,MatlabInterface,CoilModeler" CACHE STRING "Building SCIRun, BioPSE, Teem, and MatlabInterface, CoilModeler packages by default.")
 STRING(REGEX MATCH "MatlabInterface" MATLABINTERFACE_INCLUDED ${LOAD_PACKAGE})
 IF (MATLABINTERFACE_INCLUDED)
   ADD_DEFINITIONS(-DWITH_MATLAB)

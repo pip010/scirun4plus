@@ -26,62 +26,25 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# CMakeLists.txt for Dataflow/Modules/Math
+# CMakeLists.txt for Packages/BioPSE/Dataflow/Modules/Modeling
 
-SET(Dataflow_Modules_Math_SRCS
-  CreateScalarMatrix.cc
-  AddLinkedNodesToLinearSystem.cc
-  AddKnownsToLinearSystem.cc
-  RemoveZerosFromMatrix.cc
-  SortMatrix.cc
-  RemoveZeroRowsAndColumns.cc
-  AppendMatrix.cc
-  BuildNoiseColumnMatrix.cc
-  CreateGeometricTransform.cc
-  ChooseMatrix.cc
-  ComputeSVD.cc
-  ConvertMatrixType.cc
-  CollectMatrices.cc
-  ReportColumnMatrixMisfit.cc
-  EvaluateLinAlgBinary.cc
-  EvaluateLinAlgUnary.cc
-  EvaluateLinAlgGeneral.cc
-  ReportRootMeanSquareError.cc
-  GetColumnOrRowFromMatrix.cc
-  SolveMinNormLeastSqSystem.cc
-  SolveLinearSystem.cc
-  GetSubmatrix.cc
-  SetSubmatrix.cc
-  ConvertMaskVectorToMappingMatrix.cc
-  ConvertMappingMatrixToMaskVector.cc
-  CreateMatrix.cc
-  ReportMatrixColumnMeasure.cc
-  ReportMatrixInfo.cc
-  ReportMatrixRowMeasure.cc
-  ReorderMatrixByCuthillMcKee.cc
-  ReorderMatrixByReverseCuthillMcKee.cc
-  ResizeMatrix.cc
-  SelectSubMatrix.cc
-  ModelGenericCoil.cc
-  SolveBiotSavartContour.cc
+SET(Packages_CoilModeler_Dataflow_Modules_Modeling_SRCS
+  GenericCoil.cc
 )
 
-SCIRUN_ADD_LIBRARY(Dataflow_Modules_Math ${Dataflow_Modules_Math_SRCS})
+SCIRUN_ADD_LIBRARY(Packages_CoilModeler_Dataflow_Modules_Modeling ${Packages_BioPSE_Dataflow_Modules_Modeling_SRCS})
 
-TARGET_LINK_LIBRARIES(Dataflow_Modules_Math
-  Core_Algorithms_Util
-  Core_Algorithms_Math
-  Core_Algorithms_FiniteElements
-  Core_Algorithms_Converter
+TARGET_LINK_LIBRARIES(Packages_CoilModeler_Dataflow_Modules_Modeling
+  #Packages_BioPSE_Core_Algorithms_Forward
+  #Packages_BioPSE_Core_Algorithms_NumApproximation
+  #Packages_BioPSE_Core_Datatypes
+  Core_Basis
   Core_Datatypes
   Core_Exceptions
   Core_Geom
-  Core_GeomInterface
   Core_Geometry
+  Core_GeomInterface
   Dataflow_GuiInterface
-  Dataflow_Widgets
-  Core_Math
-  Core_Parser
   Core_Persistent
   Core_Thread
   Dataflow_TkExtensions
@@ -90,10 +53,8 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_Math
   ${TK_LIBRARY}
   ${GL_LIBRARY}
   ${M_LIBRARY}
-  ${PETSC_UNI_LIBRARY}
-  ${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Dataflow_Modules_Math)
+  ADD_DEFINITIONS(-DBUILD_Packages_CoilModeler_Dataflow_Modules_Modeling)
 ENDIF(BUILD_SHARED_LIBS)
