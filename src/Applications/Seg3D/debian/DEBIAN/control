@@ -1,0 +1,18 @@
+Package: seg3d
+Version: 1.9-1ubuntu0
+Section: contrib/science
+Priority: optional
+Architecture: amd64
+Depends: libc6
+Maintainer: Michael Callahan <callahan@sci.utah.edu>
+Description: Interactive tool for segmenting volume data
+ Seg3D is a free, open-source volume editing and processing tool under
+ development by the Center for Integrative Biomedical Computing at the
+ University of Utah Scientific Computing and Imaging (SCI)
+ Institute.  Seg3D combines a flexible manual segmentation interface
+ with powerful higher-dimensional image processing and segmentation
+ algorithms from the Insight Toolkit, such as nonlinear image
+ denoising, edge-detection, statistical flood filling, morphological
+ operations, and level-set segmentation algorithms.  Users can explore
+ and label image volumes using configurable, orthogonal slice view
+ windows, and 3D volume rendering.  See www.seg3d.org for details.

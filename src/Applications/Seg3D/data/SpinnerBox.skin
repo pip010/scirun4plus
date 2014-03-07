@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<definition name="SpinnerBox" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <object name="ShadowedBox">
+    <var name="SpinnerBox::outside" propagate="yes" overwrite="no">#00000000</var>
+    <var name="SpinnerBox::inside" propagate="yes" overwrite="no">#000000AA</var>
+    <var name="ShadowedBox::outside" propagate="yes">$SpinnerBox::outside</var>
+    <var name="ShadowedBox::inside" propagate="yes">$SpinnerBox::inside</var>
+    <var name="SpinnerBox::value" propagate="yes" overwrite="no">20</var>
+    <var name="SpinnerBox::resolution" propagate="yes" overwrite="no">1</var>
+    <var name="SpinnerBox::text_size" propagate="yes" overwrite="no">15</var>
+    <var name="SpinnerBox::text" propagate="yes" overwrite="no">123</var>
+
+    <var name="ShadowedBox::shadow_N_size"
+         propagate="yes" overwrite="yes">2</var>
+    <var name="ShadowedBox::shadow_S_size"
+         propagate="yes" overwrite="yes">2</var>
+    <var name="ShadowedBox::shadow_E_size"
+         propagate="yes" overwrite="yes">2</var>
+    <var name="ShadowedBox::shadow_W_size"
+         propagate="yes" overwrite="yes">2</var>
+
+    <var name="border-size1" propagate="yes">3</var>
+    <var name="border-size2" propagate="yes">3</var>
+    <var name="hilite_shadow" propagate="yes" overwrite="no">#FFFFFFFF</var>
+    <var name="hilite_shadow_clear" propagate="yes" overwrite="no">#FFFFFF00</var>
+
+    <definition name="ShadowedBox::child">
+      <object name="Skinner::FocusRegion">
+        <var name="FocusRegion::focused" propagate="yes">0</var>
+        <var name="focus">$FocusRegion::focused</var>
+
+        <signal name="FocusRegion::focus"
+                target="Arithmetic::set_value">
+          <var name="variable">$SpinnerBox::inside</var>
+          <var name="value">$hilite_shadow</var>
+        </signal>
+
+        <signal name="FocusRegion::focus"
+                target="Arithmetic::set_value">
+          <var name="variable">$SpinnerBox::outside</var>
+          <var name="value">$hilite_shadow_clear</var>
+        </signal>
+
+        <signal name="FocusRegion::focus"
+                target="GLWindow::mark_redraw"/>
+
+        <signal name="FocusRegion::unfocus"
+                target="Arithmetic::set_value">
+          <var name="variable">$SpinnerBox::inside</var>
+          <var name="value">#333333FF</var>
+        </signal>
+
+        <signal name="FocusRegion::unfocus"
+                target="Arithmetic::set_value">
+          <var name="variable">$SpinnerBox::outside</var>
+          <var name="value">#00000000</var>
+        </signal>
+
+        <signal name="FocusRegion::unfocus"
+                target="GLWindow::mark_redraw"/>
+
+        <object name="Skinner::Frame">
+          <var name="color1">#000000FF</var>
+          <var name="color2">#000000FF</var>
+          <var name="width">1</var>
+          <var name="height">1</var>
+
+        <object name="Skinner::Grid">
+          <var name="rows">1</var>
+          <var name="cols">2</var>
+
+          <object name="Skinner::Grid">
+            <var name="rows">2</var>
+            <var name="cols">1</var>
+
+            <var name="row">1</var>
+            <var name="col">2</var>
+
+            <var name="cell-width">15</var>
+
+            <xi:include href="ArrowButton.skin" parse="xml"/>
+
+            <object name="ArrowButton">
+              <var name="row">1</var>
+              <var name="col">1</var>
+              <var name="ArrowButton::degrees" propagate="yes">90</var>
+              <var name="Button::Frame::width" propagate="yes">0</var>
+
+              <signal name="Button::clicked"
+                      target="Arithmetic::add">
+                <var name="variable">$SpinnerBox::variable</var>
+                <var name="amount">$SpinnerBox::resolution</var>
+              </signal>
+              <signal name="Button::clicked"
+                      target="Skinner::Redraw"/>
+            </object>
+
+            <object name="ArrowButton">
+              <var name="row">2</var>
+              <var name="col">1</var>
+              <var name="ArrowButton::degrees" propagate="yes">270</var>
+              <var name="Button::Frame::width" propagate="yes">0</var>
+
+              <signal name="Button::clicked"
+                      target="Arithmetic::subtract">
+                <var name="variable">$SpinnerBox::variable</var>
+                <var name="amount">$SpinnerBox::resolution</var>
+              </signal>
+              <signal name="Button::clicked"
+                      target="Skinner::Redraw"/>
+            </object>
+          </object>
+
+          <object name="Skinner::Box">
+            <var name="row">1</var>
+            <var name="col">1</var>
+
+            <var name="color">#FFFFFFFF</var>
+            <object name="Skinner::ViewSubRegion">
+              <object name="Skinner::TextEntry">
+                <var name="variable">$SpinnerBox::variable</var>
+                <var name="text">$SpinnerBox::variable</var>
+                <var name="cursor">$FocusRegion::focused</var>
+                <var name="size">$SpinnerBox::text_size</var>
+                <var name="anchor">E</var>
+                <var name="numeric">1</var>
+                <var name="fgcolor">#000000FF</var>
+                <var name="bgcolor">#00000080</var>
+                <var name="shadow">0</var>
+              </object>
+            </object>
+          </object>
+        </object>
+        </object>
+      </object>
+    </definition>
+  </object>
+</definition>

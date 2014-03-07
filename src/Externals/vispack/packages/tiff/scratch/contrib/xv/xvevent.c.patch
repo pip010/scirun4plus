@@ -1,0 +1,42 @@
+*** /tmp/,RCSt1a12858	Fri Feb 21 15:43:18 1992
+--- xvevent.c	Fri Feb 21 15:34:05 1992
+***************
+*** 145,150 ****
+--- 145,151 ----
+        else if (client_event->window == ctrlW) CtrlBox(0);
+        else if (client_event->window == dirW)  DirBox(0);
+        else if (client_event->window == psW)   PSDialog(0);
++       else if (client_event->window == tiffW) TIFFDialog(0);
+  #ifdef HAVE_JPEG
+        else if (client_event->window == jpegW) JPEGDialog(0);
+  #endif
+***************
+*** 165,170 ****
+--- 166,172 ----
+      
+      if (PUCheckEvent  (event)) break;   /* event has been processed */
+      if (PSCheckEvent  (event)) break;   /* event has been processed */
++     if (TIFFCheckEvent(event)) break;   /* event has been processed */
+  #ifdef HAVE_JPEG
+      if (JPEGCheckEvent(event)) break;   /* event has been processed */
+  #endif
+***************
+*** 220,225 ****
+--- 222,228 ----
+  
+      if (PUCheckEvent  (event)) break;
+      if (PSCheckEvent  (event)) break;
++     if (TIFFCheckEvent(event)) break;
+  #ifdef HAVE_JPEG
+      if (JPEGCheckEvent(event)) break;
+  #endif
+***************
+*** 367,372 ****
+--- 370,376 ----
+  
+      if (PUCheckEvent  (event)) break;
+      if (PSCheckEvent  (event)) break;
++     if (TIFFCheckEvent(event)) break;
+  #ifdef HAVE_JPEG
+      if (JPEGCheckEvent(event)) break;
+  #endif

@@ -1,0 +1,70 @@
+# CFITSIO -- Update the CFITSIO library.
+# copied from the fitsio mkpkg by jdd 12 sept 1996
+#
+#  this is a sample IRAF mkfile which builds a local version of the CFITSIO lib.
+
+$call update
+$exit
+
+update:
+	$checkout libcfitsio.a ftoolsbin$
+	$update   libcfitsio.a
+	$checkin  libcfitsio.a ftoolsbin$
+	;
+
+updateftools:
+	#Extra target for building fitsio inside the FTOOLS distribution
+        $checkout libcfitsio.a  ftoolsbin$
+        $update   libcfitsio.a
+        $checkin  libcfitsio.a  ftoolsbin$
+	;
+
+cfitsio:
+	# Update fitsio subdirectory if new version of cfitsio.c installed.
+	$ifolder (splitc/cfileio.c, cfileio.c)
+	    $echo "update cfitsio splitc subdirectory..."
+            $iffile(splitc/cfileio.c)
+                !\rm splitc/*
+                $delete splitc/mkpkg
+            $else
+                !mkdir splitc
+	        !./configure
+            $endif
+	    $copy buffers.c splitc/cfileio.c
+	    $copy cfileio.c splitc/cfileio.c
+	    $copy checksum.c splitc/cfileio.c
+	    $copy fitscore.c splitc/cfileio.c
+	    $copy editcol.c splitc/cfileio.c
+	    $copy edithdu.c splitc/cfileio.c
+	    $copy getkey.c splitc/cfileio.c
+	    $copy modkey.c splitc/cfileio.c
+	    $copy putkey.c splitc/cfileio.c
+	    $copy scalnull.c splitc/cfileio.c
+	    $copy swapproc.c splitc/cfileio.c
+	    $copy wcsutil.c splitc/wcsutil.c
+	    !cp getcol*.c splitc/
+	    !cp putcol*.c splitc/
+	    !cp *.h splitc/
+	    !cp *.h ../include
+            !cd splitc
+            !echo '$checkout libcfitsio.a ../libcfitsio.a' > splitc/mkpkg
+            !echo '$update   libcfitsio.a' >> splitc/mkpkg
+            !echo '$checkin libcfitsio.a ../libcfitsio.a' >> splitc/mkpkg
+            !echo ' ' >> splitc/mkpkg
+            !echo 'libcfitsio.a:' >> splitc/mkpkg
+            !cd splitc; ls -1 *.c | sed 's/^/ /' >> mkpkg
+            !echo '  ;' >> splitc/mkpkg
+	$endif
+	;
+
+libcfitsio.a:
+	 $ifeq (hostid, unix)
+	    # cheat and use Makefile....
+	    $call cfitsio
+	    @splitc
+	$else
+	    # simply compile the files on VMS systems.
+	    !@makevms.com
+	$endif
+
+	;

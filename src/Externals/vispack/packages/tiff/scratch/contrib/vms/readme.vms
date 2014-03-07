@@ -1,0 +1,59 @@
+Installation and use of the TIFF library and tools under VMS
+
+It is assumed that you have unpacked the tar file into a VMS directory tree,
+in this text called DISK:[TIFF].
+
+Installation:
+1) Move the VMS specific files to their proper directories
+    $ SET DEFAULT DISK:[TIFF.CONTRIB.VMS]
+    $ RENAME [.LIBTIFF]*.* [-.-.LIBTIFF]
+    $ RENAME [.TOOLS]*.* [-.-.TOOLS]
+2) Compile the library
+    $ SET DEFAULT DISK:[TIFF.LIBTIFF]
+    $ @MAKEVMS
+3) Compile the tools
+    $ SET DEFAULT DISK:[TIFF.LIBTIFF]
+    $ @MAKEVMS
+4) Define the programs
+    $ DEFINE TIFFSHR DISK:[TIFF.LIBTIFF]TIFFSHR
+    $ TIFFCP    :==$DISK:[TIFF.TOOLS]TIFFCP
+    $ TIFFCMP   :==$DISK:[TIFF.TOOLS]TIFFCMP
+    $ TIFFINFO  :==$DISK:[TIFF.TOOLS]TIFFINFO
+    $ TIFFDUMP  :==$DISK:[TIFF.TOOLS]TIFFDUMP
+    $ TIFF2PS   :==$DISK:[TIFF.TOOLS]TIFF2PS
+    $ TIFFDITHER:==$DISK:[TIFF.TOOLS]TIFFDITHER
+    $ TIFF2BW   :==$DISK:[TIFF.TOOLS]TIFF2BW
+    $ TIFFMEDIAN:==$DISK:[TIFF.TOOLS]TIFFMEDIAN
+    $ FAX2TIFF  :==$DISK:[TIFF.TOOLS]FAX2TIFF
+    $ GIF2TIFF  :==$DISK:[TIFF.TOOLS]GIF2TIFF
+    $ PAL2RGB   :==$DISK:[TIFF.TOOLS]PAL2RGB
+You will want to add these lines to your LOGIN.COM file, after changing the
+name of the directory that you have used on your machine.
+
+
+Linking your own program to the TIFF library
+
+You can link to a library in two ways: Either using the shareable library,
+or using the object library. This gives the following possibilities
+
+1) Using the shareable TIFF library
+    $ LINK MY_PROGRAM,DISK:[TIFF.LIBTIFF]TIFF/OPTIONS
+
+2) Using the TIFF object library and shareable C run time library
+    $ LINK MY_PROGRAM,DISK:[TIFF.LIBTIFF]TIFF/LIBRARY,SYS$INPUT/OPTIONS
+        SYS$SHARE:VAXCRTL/SHAREABLE
+
+3) Using the TIFF object library and object C run time library
+    $ LINK MY_PROGRAM,DISK:[TIFF.LIBTIFF]TIFF/LIBRARY,-
+        SYS$LIBRARY:VAXCRTL/LIBRARY
+
+(You may think of a fourth possibility, but that is not possible)
+
+Method 1 uses the shortest link time and smallest .EXE files, but it requires 
+that TIFFSHR is defined as above at link time and *at*run*time*.
+
+Method 2 gives somewhat longer link time and .EXE files, but does not require
+TIFFSHR to be defined.
+
+Method 3 gives even longer link times and .EXE files, it not recommended unless
+you are going to use your program on a machine without a shareable C library.

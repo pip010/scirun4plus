@@ -1,0 +1,14 @@
+? diff.out
+Index: itkBase.c
+===================================================================
+RCS file: /cvsroot/incrtcl/incrTcl/itk/generic/Attic/itkBase.c,v
+retrieving revision 1.1.2.1
+diff -r1.1.2.1 itkBase.c
+131c131
+<     if (Tcl_PkgRequire(interp, "Itcl", ITCL_VERSION, 1) == NULL) {
+---
+>     if (Tcl_PkgRequire(interp, "itcl", ITCL_VERSION, 1) == NULL) {
+236c236
+<     return Tcl_PkgProvideEx(interp, "Itk", ITK_VERSION,
+---
+>     return Tcl_PkgProvideEx(interp, "itk", ITK_VERSION,

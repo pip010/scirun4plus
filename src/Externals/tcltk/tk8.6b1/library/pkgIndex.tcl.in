@@ -1,0 +1,27 @@
+if {[catch {package present Tcl	@PACKAGE_VERSION@}]} { return }
+
+set exec_path [ info nameofexecutable ]
+set exec_dir [ file dirname $exec_path ]
+
+if {[file exists [file join $dir .. @PKG_LIB_FILE@]]} {
+package ifneeded Tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $dir .. @PKG_LIB_FILE@] Tk]
+package ifneeded tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $dir .. @PKG_LIB_FILE@] tk]
+} else {
+if {[file exists [file join $exec_dir .. lib @PKG_LIB_FILE@]]} {
+package ifneeded Tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $exec_dir .. lib @PKG_LIB_FILE@] Tk]
+package ifneeded tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $exec_dir .. lib @PKG_LIB_FILE@] tk]
+} else {
+if {[file exists [file join $exec_dir .. lib Release @PKG_LIB_FILE@]]} {
+package ifneeded Tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $exec_dir .. lib Release @PKG_LIB_FILE@] Tk]
+package ifneeded tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $exec_dir .. lib Release @PKG_LIB_FILE@] tk]
+} else {
+if {[file exists [file join $exec_dir .. lib Debug @PKG_LIB_FILE@]]} {
+package ifneeded Tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $exec_dir .. lib Debug @PKG_LIB_FILE@] Tk]
+package ifneeded tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $exec_dir .. lib Debug @PKG_LIB_FILE@] tk]
+} else {
+package ifneeded Tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $exec_dir @PKG_LIB_FILE@] Tk]
+package ifneeded tk @PACKAGE_VERSION@@TK_PATCH_LEVEL@	[list load [file join $exec_dir @PKG_LIB_FILE@] tk]
+}
+}
+}
+}

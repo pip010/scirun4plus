@@ -1,0 +1,81 @@
+Allocate and initialize a JPEG decompression object
+
+Specify the source of the compressed data (eg, a file) 
+
+Call jpeg_read_header() to obtain image info 
+
+* For example, the application can choose an output scaling ratio that will
+fit the image into the available screen size.
+
+
+Set parameters for decompression
+
+jpeg_start_decompress(...); 
+
+while (scan lines remain to be read) 
+
+jpeg_read_scanlines(...); 
+
+jpeg_finish_decompress(...); 
+
+Release the JPEG decompression object
+
+Before diving into procedural details, it is helpful to understand the
+image data format that the JPEG library expects or returns. 
+
+The standard input image format is a rectangular array of pixels, with
+each pixel having the same number of "component" or "sample" values (color
+channels).  You must specify how many components there are and the
+colorspace interpretation of the components.  Most applications will use
+RGB data (three components per pixel) or grayscale data (one component per
+pixel). PLEASE NOTE THAT RGB DATA IS THREE SAMPLES PER PIXEL, GRAYSCALE
+ONLY ONE. A remarkable number of people manage to miss this, only to find
+that their programs don't work with grayscale JPEG files. 
+
+There is no provision for colormapped input.  JPEG files are always
+full-color or full grayscale (or sometimes another colorspace such as
+CMYK).  You can feed in a colormapped image by expanding it to full-color
+format.  However JPEG often doesn't work very well with source data that
+has been colormapped, because of dithering noise.  This is discussed in
+more detail in the JPEG FAQ and the other references mentioned in the
+README file. 
+
+Pixels are stored by scanlines, with each scanline running from left to
+right.  The component values for each pixel are adjacent in the row; for
+example, R,G,B,R,G,B,R,G,B,... for 24-bit RGB color.  Each scanline is an
+array of data type JSAMPLE --- which is typically "unsigned char", unless
+you've changed jmorecfg.h.  (You can also change the RGB pixel layout, say
+to B,G,R order, by modifying jmorecfg.h.  But see the restrictions listed
+in that file before doing so.) 
+
+A 2-D array of pixels is formed by making a list of pointers to the starts
+of scanlines; so the scanlines need not be physically adjacent in memory.
+Even if you process just one scanline at a time, you must make a
+one-element pointer array to conform to this structure.  Pointers to
+JSAMPLE rows are of type JSAMPROW, and the pointer to the pointer array is
+of type JSAMPARRAY. 
+
+The library accepts or supplies one or more complete scanlines per call. 
+It is not possible to process part of a row at a time.  Scanlines are
+always processed top-to-bottom.  You can process an entire image in one
+call if you have it all in memory, but usually it's simplest to process
+one scanline at a time. 
+
+For best results, source data values should have the precision specified
+by BITS_IN_JSAMPLE (normally 8 bits).  For instance, if you choose to
+compress data that's only 6 bits/channel, you should left-justify each
+value in a byte before passing it to the compressor.  If you need to
+compress data that has more than 8 bits/channel, compile with
+BITS_IN_JSAMPLE = 12. (See "Library compile-time options", later.) 
+
+The data format returned by the decompressor is the same in all details,
+except that colormapped output is supported.  (Again, a JPEG file is never
+colormapped.  But you can ask the decompressor to perform on-the-fly color
+quantization to deliver colormapped output.)  If you request colormapped
+output then the returned data array contains a single JSAMPLE per pixel;
+its value is an index into a color map.  The color map is represented as a
+2-D JSAMPARRAY in which each row holds the values of one color component,
+that is, colormap[i][j] is the value of the i'th color component for pixel
+value (map index) j.  Note that since the colormap indexes are stored in
+JSAMPLEs, the maximum number of colors is limited by the size of JSAMPLE
+(ie, at most 256 colors for an 8-bit JPEG library).

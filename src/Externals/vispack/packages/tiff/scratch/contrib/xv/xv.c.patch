@@ -1,0 +1,76 @@
+*** xv.c	Thu Jan  2 18:03:38 1992
+--- /usr/people/sam/xv-2.00/xv.c	Wed Feb  5 17:43:25 1992
+***************
+*** 85,93 ****
+  #define PBM     3
+  #define XBM     4
+  #define SUNRAS  5
+  
+  #ifdef HAVE_JPEG
+! #define JFIF    6
+  #endif
+  
+  
+--- 85,94 ----
+  #define PBM     3
+  #define XBM     4
+  #define SUNRAS  5
++ #define	TIFF	6
+  
+  #ifdef HAVE_JPEG
+! #define JFIF    7
+  #endif
+  
+  
+***************
+*** 193,198 ****
+--- 194,200 ----
+  #ifdef HAVE_JPEG
+    jpegW = (Window) NULL;
+  #endif
++   tiffW = (Window) NULL;
+    imap = ctrlmap = gmap = 0;
+  
+    ch_offx = ch_offy = p_offx = p_offy = 0;
+***************
+*** 737,742 ****
+--- 739,746 ----
+  
+    /* create the ps window */
+    CreatePSD(NULL);
++   /* create the tiff window */
++   CreateTIFFW();
+  
+  #ifdef HAVE_JPEG
+    CreateJPEGW();
+***************
+*** 1012,1017 ****
+--- 1016,1023 ----
+  
+    else if (magicno[0]==0x59 && (magicno[1]&0x7f)==0x26 &&
+  	   magicno[2]==0x6a && (magicno[3]&0x7f)==0x15) filetype = SUNRAS;
++   else if ((magicno[0]=='M' && magicno[1]=='M') ||
++ 	   (magicno[0]=='I' && magicno[1]=='I')) filetype = TIFF;
+  
+  #ifdef HAVE_JPEG
+    else if (magicno[0]==0xff && magicno[1]==0xd8 && 
+***************
+*** 1033,1038 ****
+--- 1039,1045 ----
+    case PBM:    i = LoadPBM(filename,ncols);     break;
+    case XBM:    i = LoadXBM(filename,ncols);     break;
+    case SUNRAS: i = LoadSunRas(filename, ncols); break;
++   case TIFF:   i = LoadTIFF(filename,ncols);	break;
+  #ifdef HAVE_JPEG
+    case JFIF:   i = LoadJFIF(filename, ncols);   break;
+  #endif
+***************
+*** 1451,1456 ****
+--- 1458,1464 ----
+      if (!mainW) FatalError("can't create window!");
+  
+      XSetTransientForHint(theDisp, psW, mainW);
++     XSetTransientForHint(theDisp, tiffW, mainW);
+  #ifdef HAVE_JPEG
+      XSetTransientForHint(theDisp, jpegW, mainW);
+  #endif

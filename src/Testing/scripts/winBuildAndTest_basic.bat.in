@@ -1,0 +1,6 @@
+"@Subversion_SVN_EXECUTABLE_NATIVE@" update ..
+"@CMAKE_COMMAND_NATIVE@" ..\src
+@BUILD_COMMAND@
+cd Release
+for %%f in (dir *_Tests.exe) do %%f
+pause

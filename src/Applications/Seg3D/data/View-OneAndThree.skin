@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<definition name="View-OneAndThree">
+  <object name="Skinner::Collection">
+    <object name="GLWindow::RenderRegion" id="View-OneAndThree">
+      <object name="GreyFrame">
+        <var name="GreyFrame::color" propagate="yes">$background_color</var>
+        <definition name="GreyFrame::child">
+          <object name="Skinner::Grid">
+
+            <var name="rows">5</var>
+            <var name="cols">3</var>
+
+            <var name="window-gap" propagate="yes">5</var>
+
+            <var name="bgcolor" propagate="yes">#00000000</var>
+
+            <signal name="Grid::resized" target="GLWindow::redraw_drawable">
+              <var name="region">View-OneAndThree</var>
+            </signal>
+
+            <object name="Skinner::Collection">
+              <var name="row">1</var>
+              <var name="col">1</var>
+              <var name="cell-width">$window-gap</var>
+              <var name="cell-height">$window-gap</var>
+            </object>
+
+            <object name="Skinner::Collection">
+              <var name="row">3</var>
+              <var name="col">2</var>
+              <var name="cell-height">$window-gap</var>
+              <var name="resize-vertical">1</var>
+            </object>
+
+            <object name="Skinner::Collection">
+              <var name="row">5</var>
+              <var name="col">3</var>
+              <var name="cell-width">$window-gap</var>
+              <var name="cell-height">$window-gap</var>
+            </object>
+
+            <object name="View">
+              <var name="row">2</var>
+              <var name="col">2</var>
+              <var name="cell-height">0.66</var>
+              <var name="View::visible" propagate="yes"
+                   overwrite="no">3D View</var>
+            </object>
+
+            <object name="Skinner::Grid">
+              <var name="rows">1</var>
+              <var name="cols">5</var>
+
+              <var name="row">4</var>
+              <var name="col">2</var>
+
+              <signal name="Grid::resized" target="GLWindow::redraw_drawable">
+                <var name="region">View-OneAndThree</var>
+              </signal>
+
+              <object name="Skinner::Collection">
+                <var name="row">1</var>
+                <var name="col">2</var>
+                <var name="cell-width">$window-gap</var>
+                <var name="resize-horizontal">1</var>
+              </object>
+
+              <object name="Skinner::Collection">
+                <var name="row">1</var>
+                <var name="col">4</var>
+                <var name="cell-width">$window-gap</var>
+                <var name="resize-horizontal">1</var>
+              </object>
+
+              <object name="View">
+                <var name="row">1</var>
+                <var name="col">1</var>
+                <var name="View::visible" propagate="yes"
+                     overwrite="no">Sagittal</var>
+              </object>
+
+              <object name="View">
+                <var name="row">1</var>
+                <var name="col">3</var>
+                <var name="View::visible" propagate="yes"
+                     overwrite="no">Axial</var>
+              </object>
+
+              <object name="View">
+                <var name="row">1</var>
+                <var name="col">5</var>
+                <var name="View::visible" propagate="yes"
+                     overwrite="no">Coronal</var>
+              </object>
+            </object>
+          </object>
+        </definition>
+      </object>
+    </object>
+  </object>
+</definition>
+

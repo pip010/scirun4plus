@@ -1,0 +1,143 @@
+/* src/bltConfig.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
+#cmakedefine HAVE_SYS_WAIT_H
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+/* #undef pid_t */
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+/* #undef size_t */
+
+/* Define if you have the ANSI C header files.  */
+#cmakedefine STDC_HEADERS
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#cmakedefine TIME_WITH_SYS_TIME
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+
+#if !defined __LITTLE_ENDIAN__
+#define WORDS_BIGENDIAN
+#endif
+
+/* Define if DBL_EPSILON is not defined in float.h */
+#cmakedefine BLT_DBL_EPSILON
+
+/* Define if drand48 isn't declared in math.h. */
+#cmakedefine NEED_DECL_DRAND48
+
+/* Define if srand48 isn't declared in math.h. */
+#cmakedefine NEED_DECL_SRAND48
+
+/* Define if strdup isn't declared in a standard header file. */
+#cmakedefine NEED_DECL_STRDUP
+
+/* Define if j1 isn't declared in a standard header file. */
+#cmakedefine NEED_DECL_J1
+
+/* Define if union wait type is defined incorrectly.  */
+#undef HAVE_UNION_WAIT
+
+/* Define if isfinite is found in libm.  */
+#cmakedefine HAVE_ISFINITE
+
+/* The number of bytes in a int.  */
+#cmakedefine SIZEOF_INT @SIZEOF_INT@
+
+/* The number of bytes in a long.  */
+#cmakedefine SIZEOF_LONG @SIZEOF_LONG@
+
+/* The number of bytes in a long long.  */
+#cmakedefine SIZEOF_LONG_LONG @SIZEOF_LONG_LONG@
+
+/* The number of bytes in a void *.  */
+#cmakedefine SIZEOF_VOID_P @SIZEOF_VOID_P@
+
+/* Define if you have the XExtendedMaxRequestSize function.  */
+#undef HAVE_XEXTENDEDMAXREQUESTSIZE
+
+/* Define if you have the drand48 function.  */
+#cmakedefine HAVE_DRAND48
+
+/* Define if you have the finite function.  */
+#cmakedefine HAVE_FINITE
+
+/* Define if you have the isnan function.  */
+#cmakedefine HAVE_ISNAN
+
+/* Define if you have the srand48 function.  */
+#cmakedefine HAVE_SRAND48
+
+/* Define if you have the strcasecmp function.  */
+#cmakedefine HAVE_STRCASECMP
+
+/* Define if you have the strdup function.  */
+#cmakedefine HAVE_STRDUP
+
+/* Define if you have the strncasecmp function.  */
+#cmakedefine HAVE_STRNCASECMP
+
+/* Define if you have the <ctype.h> header file.  */
+#cmakedefine HAVE_CTYPE_H
+
+/* Define if you have the <errno.h> header file.  */
+#cmakedefine HAVE_ERRNO_H
+
+/* Define if you have the <float.h> header file.  */
+#cmakedefine HAVE_FLOAT_H
+
+/* Define if you have the <ieeefp.h> header file.  */
+#cmakedefine HAVE_IEEEFP_H
+
+/* Define if you have the <inttypes.h> header file.  */
+#cmakedefine HAVE_INTTYPES_H
+
+/* Define if you have the <jpeglib.h> header file.  */
+#cmakedefine HAVE_JPEGLIB_H
+
+/* Define if you have the <limits.h> header file.  */
+#cmakedefine HAVE_LIMITS_H
+
+/* Define if you have the <malloc.h> header file.  */
+#cmakedefine HAVE_MALLOC_H
+
+/* Define if you have the <math.h> header file.  */
+#cmakedefine HAVE_MATH_H
+
+/* Define if you have the <memory.h> header file.  */
+#cmakedefine HAVE_MEMORY_H
+
+/* Define if you have the <setjmp.h> header file.  */
+#cmakedefine HAVE_SETJMP_H
+
+/* Define if you have the <stdlib.h> header file.  */
+#cmakedefine HAVE_STDLIB_H
+
+/* Define if you have the <string.h> header file.  */
+#cmakedefine HAVE_STRING_H
+
+/* Define if you have the <sys/param.h> header file.  */
+#cmakedefine HAVE_SYS_PARAM_H
+
+/* Define if you have the <sys/time.h> header file.  */
+#cmakedefine HAVE_SYS_TIME_H
+
+/* Define if you have the <sys/wait.h> header file.  */
+#cmakedefine HAVE_SYS_WAIT_H
+
+/* Define if you have the <unistd.h> header file.  */
+#cmakedefine HAVE_UNISTD_H
+
+/* Define if you have the <waitflags.h> header file.  */
+#cmakedefine HAVE_WAITFLAGS_H
+
+/* Define if you have the m library (-lm).  */
+#cmakedefine HAVE_LIBM
+
+/* Define if you have the nsl library (-lnsl).  */
+#cmakedefine HAVE_LIBNSL
+
+/* Define if you have the socket library (-lsocket).  */
+#cmakedefine HAVE_LIBSOCKET

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<definition name="ColorPicker">
+<object name="Skinner::Collection">
+  <var name="ColorPicker::hue" propagate="yes" overwrite="no">0</var>
+  <var name="ColorPicker::saturation" propagate="yes" overwrite="no">0</var>
+  <var name="ColorPicker::value" propagate="yes" overwrite="no">100</var>
+
+  <var name="ColorPicker::red" propagate="yes" overwrite="no">255</var>
+  <var name="ColorPicker::green" propagate="yes" overwrite="no">255</var>
+  <var name="ColorPicker::blue" propagate="yes" overwrite="no">255</var>
+  <var name="ColorPicker::alpha" propagate="yes" overwrite="no">1.0</var>
+  <var name="ColorPicker::color" propagate="yes" overwrite="no">#FFFFFFFF</var>
+
+  <object name="Skinner::Grid">
+    <var name="rows">9</var>
+    <var name="cols">1</var>
+
+    <object name="Skinner::Grid">
+      <var name="row">1</var>
+      <var name="col">1</var>
+
+      <var name="rows">1</var>
+      <var name="cols">2</var>
+
+      <object name="Skinner::ColorPicker">
+        <var name="row">1</var>
+        <var name="col">1</var>
+      </object>
+
+      <object name="Skinner::Grid">
+        <var name="row">1</var>
+        <var name="col">2</var>
+        <var name="cell-width">60</var>
+        <var name="rows">1</var>
+        <var name="cols">1</var>
+        <object name="Skinner::Collection">
+          <var name="row">1</var>
+          <var name="col">1</var>
+
+          <object name="Skinner::Checkerboard">
+            <var name="Checkerboard::width">20</var>
+            <var name="Checkerboard::height">20</var>
+            <var name="Checkerboard::color1">#AAAAAAFF</var>
+            <var name="Checkerboard::color2">#444444FF</var>
+          </object>
+
+          <object name="Skinner::Box">
+            <var name="color">$ColorPicker::color</var>
+            <object name="Skinner::Frame">
+              <var name="color2">#CCCCCC80</var>
+              <var name="color1">#44444480</var>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+
+    <object name="ClearBorder">
+      <var name="row">2</var>
+      <var name="col">1</var>
+      <var name="cell-height">12</var>
+      <object name="Skinner::Box">
+        <var name="color">#000000FF</var>
+      </object>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">3</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+
+      <var name="LabeledSlider::Text::text" propagate="yes">Hue</var>
+      <var name="Slider::value"
+           propagate="yes">$ColorPicker::hue</var>
+      <var name="Slider::max" propagate="yes">360</var>
+      <var name="Slider::min" propagate="yes">0</var>
+      <var name="Slider::resolution" propagate="yes">1.0</var>
+
+      <signal name="Slider::changed"
+              target="ColorPicker::hsv_changed"/>
+
+    </object>
+    <object name="LabeledSlider">
+      <var name="row">4</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Saturation</var>
+      <var name="Slider::value"
+           propagate="yes">$ColorPicker::saturation</var>
+      <var name="Slider::max" propagate="yes">100</var>
+      <var name="Slider::min" propagate="yes">0</var>
+      <var name="Slider::resolution" propagate="yes">1.0</var>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">5</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Value</var>
+      <var name="Slider::value"
+           propagate="yes">$ColorPicker::value</var>
+      <var name="Slider::max" propagate="yes">100</var>
+      <var name="Slider::min" propagate="yes">0</var>
+      <var name="Slider::resolution" propagate="yes">1.0</var>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">6</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Red</var>
+      <var name="Slider::value"
+           propagate="yes">$ColorPicker::red</var>
+      <var name="Slider::max" propagate="yes">255</var>
+      <var name="Slider::min" propagate="yes">0</var>
+      <var name="Slider::resolution" propagate="yes">1.0</var>
+
+      <signal name="Slider::changed"
+              target="ColorPicker::rgba_changed"/>
+
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">7</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Green</var>
+      <var name="Slider::value"
+           propagate="yes">$ColorPicker::green</var>
+      <var name="Slider::max" propagate="yes">255</var>
+      <var name="Slider::min" propagate="yes">0</var>
+      <var name="Slider::resolution" propagate="yes">1.0</var>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">8</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Blue</var>
+      <var name="Slider::value"
+           propagate="yes">$ColorPicker::blue</var>
+      <var name="Slider::max" propagate="yes">255</var>
+      <var name="Slider::min" propagate="yes">0</var>
+      <var name="Slider::resolution" propagate="yes">1.0</var>
+    </object>
+
+    <object name="LabeledSlider">
+      <var name="row">9</var>
+      <var name="col">1</var>
+      <var name="cell-height">25</var>
+
+      <var name="LabeledSlider::Text::text"
+           propagate="yes">Alpha</var>
+      <var name="Slider::value"
+           propagate="yes">$ColorPicker::alpha</var>
+      <var name="Slider::max" propagate="yes">1.0</var>
+      <var name="Slider::min" propagate="yes">0</var>
+      <var name="Slider::resolution" propagate="yes">0.01</var>
+    </object>
+
+  </object>
+  </object>
+</definition>

@@ -1,0 +1,13 @@
+echo Statically linking Seg3D for `uname -s` `uname -m`
+/usr/bin/c++ -static-libgcc -ftemplate-depth-50 -no-cpp-precomp -Wno-long-double -ftemplate-depth-50 -no-cpp-precomp -Wno-long-double -O3 -DNDEBUG -headerpad_max_install_names -fPIC -framework Carbon ${DIR}/bin/StandAlone/Apps/Seg3D/CMakeFiles/Seg3D.dir/main.o -o ${DIR}/bin/Seg3D.app/Contents/MacOS/Seg3D -L${DIR}/thirdparty.bin/3.0.0/Darwin-powerpc/gcc-4.0.1-32bit/lib/InsightToolkit -L${DIR}/bin/lib -L${DIR}/thirdparty.bin/3.0.0/Darwin-powerpc/gcc-4.0.1-32bit/lib -lPainter -lm -framework OpenGL -framework AGL -lteem -lCore_Matlab -lCore_Algorithms_Visualization -lCore_Basis -lCore_Bundle -lCore_Containers -lCore_Datatypes -lCore_Events -lCore_Exceptions -lCore_Geom -lCore_Geometry -lCore_Math -lCore_Persistent -lCore_Skinner -lCore_Thread -lCore_Util -lCore_Volume -lCore_Malloc -lITKCommon -lITKBasicFilters -lITKIO -lCore_ImportExport -lCore_Events -lCore_Algorithms_Fields -lCore_Algorithms_Converter -lCore_Algorithms_Util -lCore_Bundle -lCore_Algorithms_Visualization -lmpege -lCore_Math -lCore_XMLUtil ${DIR}/thirdparty.bin/3.0.0/Darwin-powerpc/gcc-4.0.1-32bit/lib/libxml2.a -lCore_Geom ${DIR}/thirdparty.bin/3.0.0/Darwin-powerpc/gcc-4.0.1-32bit/lib/libfreetype.a -lCore_Datatypes -lCore_Basis -framework vecLib -framework Carbon -lCore_Geometry ${DIR}/thirdparty.bin/3.0.0/Darwin-powerpc/gcc-4.0.1-32bit/lib/libpng.a -lCore_Persistent ${DIR}/thirdparty.bin/3.0.0/Darwin-powerpc/gcc-4.0.1-32bit/lib/libz.a -lCore_Util -lCore_Containers -framework OpenGL -framework AGL -lm -lteem -lCore_Thread -lCore_Exceptions -lITKNrrdIO -litkgdcm -litkjpeg12 -litkjpeg16 -litkopenjpeg -litkpng -litktiff -litkjpeg8 -lITKSpatialObject -lITKNumerics -lITKCommon -litkvnl_inst -litkvnl_algo -litkv3p_netlib -litkvnl -litkvcl -lm -lpthread -framework AppKit -lITKMetaIO -litksys -lITKDICOMParser -lITKEXPAT -lITKniftiio -lITKznz -litkzlib -lm -liconv
+mkdir -p $DIR/tmp
+rm -rf $DIR/tmp/*
+mv $DIR/bin/Seg3D.app $DIR/tmp
+version=`$svnbin info $DIR/src | grep Revision | cut -d" " -f 2`
+archive=$DIR/Seg3D-r${version}-OSX-`uname -m`.dmg
+echo "archive: $archive"
+hdiutil create -ov -fs HFS+ -srcfolder $DIR/tmp -volname Seg3D "$archive"
+mv $DIR/tmp/Seg3D.app $DIR/bin
+rmdir $DIR/tmp
+echo scp "$archive" "$library"
+scp "$archive" "$library"

@@ -1,0 +1,2 @@
+cp splash-base.png ../data/splash-seg3d.png
+mogrify -fill grey90 -pointsize 24 -annotate +305+267 'Version 1.11.0' ../data/splash-seg3d.png

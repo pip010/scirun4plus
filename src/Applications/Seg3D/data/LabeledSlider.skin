@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE skinner PUBLIC "-//Skinner/Drawable DTD" "skinner.dtd">
+
+<definition name="LabeledSlider">
+  <object name="Skinner::Grid">
+    <var name="rows">1</var>
+    <var name="cols">2</var>
+
+    <var name="LabeledSlider::Text::text"
+         propagate="yes" overwrite="no">Label:</var>
+    <var name="LabeledSlider::Text::size"
+         propagate="yes" overwrite="no">15</var>
+
+    <var name="LabeledSlider::Text::width"
+         propagate="yes" overwrite="no">70</var>
+
+    <var name="Slider::resolution" overwrite="no"
+         propagate="yes">1.0</var>
+
+    <object name="Skinner::Text">
+      <var name="row">1</var>
+      <var name="col">1</var>
+      <var name="cell-width">$LabeledSlider::Text::width</var>
+      <var name="">1</var>
+      <var name="anchor">E</var>
+      <var name="shadow">1</var>
+      <var name="offsetx">-1</var>
+      <var name="offsety">1</var>
+      <var name="fgcolor">#AAAAAAFF</var>
+      <var name="bgcolor">#000000FF</var>
+      <var name="text">$LabeledSlider::Text::text</var>
+      <var name="size">$LabeledSlider::Text::size</var>
+    </object>
+
+    <object name="Skinner::Box">
+      <var name="row">1</var>
+      <var name="col">2</var>
+
+      <var name="Slider::min" type="double"
+           propagate="yes" overwrite="no">0</var>
+      <var name="Slider::max" type="double"
+           propagate="yes" overwrite="no">100</var>
+
+      <var name="color">#00000000</var>
+      <signal name="button_1_clicked" target="GLWindow::redraw_drawable"/>
+
+      <object name="Skinner::Grid">
+        <var name="rows">1</var>
+        <var name="cols">2</var>
+
+        <object name="Skinner::Frame">
+          <var name="row">1</var>
+          <var name="col">1</var>
+
+          <var name="width">2</var>
+          <var name="height">3</var>
+
+          <var name="color1">#00000000</var>
+          <var name="color2">#00000000</var>
+
+          <object name="Skinner::Slider">
+            <var name="row">1</var>
+            <var name="col">1</var>
+
+            <signal name="Slider::value_changed"
+                    target="Slider::changed"/>
+
+            <object name="Skinner::Frame">
+              <var name="width">1</var>
+              <var name="height">1</var>
+              <var name="color1">#00000000</var>
+              <var name="color2">#00000000</var>
+
+              <object name="Shadow">
+                <var name="Shadow::bevel">7</var>
+                <var name="Shadow::color" propagate="yes">#000000FF</var>
+                <var name="Shadow::clear" propagate="yes">#000000FF</var>
+              </object>
+
+              <object name="Skinner::Frame">
+                <var name="width">1</var>
+                <var name="height">1</var>
+                <var name="color1">#00000000</var>
+                <var name="color2">#00000000</var>
+                <object name="Shadow">
+                  <var name="Shadow::bevel">7</var>
+                  <var name="Shadow::color" propagate="yes">#FFFFFFFF</var>
+                  <var name="Shadow::clear" propagate="yes">#FFFFFFA0</var>
+                </object>
+              </object>
+            </object>
+
+            <object name="Slider::SliderButton">
+              <var name="SliderButton::width">20</var>
+              <object name="Shadow">
+                <var name="Shadow::bevel">7</var>
+                <var name="Shadow::color" propagate="yes">#00000080</var>
+                <var name="Shadow::clear" propagate="yes">#00000080</var>
+              </object>
+
+              <object name="Skinner::Frame">
+                <var name="width">1</var>
+                <var name="height">1</var>
+                <var name="color1">#00000000</var>
+                <var name="color2">#00000000</var>
+                <object name="Shadow">
+                  <var name="Shadow::bevel">7</var>
+                  <var name="Shadow::color" propagate="yes">#AAAAAAFF</var>
+                  <var name="Shadow::clear" propagate="yes">#AAAAAA80</var>
+                </object>
+              </object>
+            </object>
+
+          </object>
+
+        </object>
+        <object name="SpinnerBox">
+          <var name="row">1</var>
+          <var name="col">2</var>
+          <var name="cell-width">55</var>
+          <var name="SpinnerBox::variable"
+               propagate="yes">$Slider::value</var>
+          <var name="SpinnerBox::resolution"
+               propagate="yes">$Slider::resolution</var>
+
+          <var name="SpinnerBox::text_size"
+               propagate="yes">$LabeledSlider::Text::size</var>
+        </object>
+
+      </object>
+    </object>
+  </object>
+</definition>
+

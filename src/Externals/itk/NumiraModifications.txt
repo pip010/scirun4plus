@@ -1,0 +1,6 @@
+Modifications
+-------------
+
+NOTE: Modified code marked with NUMIRA_MODIFICATION_BEGIN and NUMIRA_MODIFICATION_END
+
+- Fixed DICOM export of "0028|0106" and "0028|0107" tags (itkGDCMImageIO.cxx line 1906)

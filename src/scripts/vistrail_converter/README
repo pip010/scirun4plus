@@ -1,0 +1,6 @@
+run gen_init.py from this directory. 
+
+python gen_init.py
+   
+The resulting __init__.py file needs to be  placed inside ~/.vistrails/userpackages/SCIRun/ and then can be added into vistrails from the Edit/preferences 
+menu.

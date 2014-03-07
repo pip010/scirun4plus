@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<definition name="ShadowedBox">
+  <object name="Skinner::Collection">
+
+    <var name="ShadowedBox::shadow_N_size"
+         propagate="yes" overwrite="no">3</var>
+    <var name="ShadowedBox::shadow_S_size"
+         propagate="yes" overwrite="no">9</var>
+    <var name="ShadowedBox::shadow_E_size"
+         propagate="yes" overwrite="no">6</var>
+    <var name="ShadowedBox::shadow_W_size"
+         propagate="yes" overwrite="no">6</var>
+    <var name="ShadowedBox::outside" propagate="yes"
+         overwrite="no">#00000000</var>
+    <var name="ShadowedBox::inside" propagate="yes"
+         overwrite="no">#333333FF</var>
+
+    <var name="border-size1" propagate="yes" overwrite="no">11</var>
+    <var name="border-size2" propagate="yes" overwrite="no">11</var>
+
+    <object name="Shadow" id="shadowedgrid">
+      <var name="Shadow::color" propagate="yes">$ShadowedBox::inside</var>
+      <var name="Shadow::clear" propagate="yes">$ShadowedBox::outside</var>
+      <var name="Shadow::bevel1" propagate="yes">$border-size1</var>
+      <var name="Shadow::bevel2" propagate="yes">$border-size2</var>
+    </object>
+
+    <object name="Skinner::Grid">
+      <var name="rows">3</var>
+      <var name="cols">3</var>
+
+      <object name="Skinner::Collection">
+        <var name="row">1</var>
+        <var name="col">1</var>
+
+        <var name="cell-height">$ShadowedBox::shadow_N_size</var>
+        <var name="cell-width">$ShadowedBox::shadow_W_size</var>
+      </object>
+
+      <object name="Skinner::Collection">
+        <var name="row">3</var>
+        <var name="col">3</var>
+
+        <var name="cell-height">$ShadowedBox::shadow_S_size</var>
+        <var name="cell-width">$ShadowedBox::shadow_E_size</var>
+      </object>
+
+      <object name="Skinner::Collection">
+        <var name="row">2</var>
+        <var name="col">2</var>
+        <var name="ShadowedBox::shadow_N_size">3</var>
+        <var name="ShadowedBox::shadow_S_size">9</var>
+        <var name="ShadowedBox::shadow_E_size">6</var>
+        <var name="ShadowedBox::shadow_W_size">6</var>
+        <var name="ShadowedBox::outside"></var>
+        <var name="ShadowedBox::inside">#333333FF</var>
+        <object name="ShadowedBox::child"/>
+      </object>
+    </object>
+
+  </object>
+</definition>
+

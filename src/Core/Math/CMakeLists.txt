@@ -1,0 +1,71 @@
+#
+#  For more information, please see: http://software.sci.utah.edu
+# 
+#  The MIT License
+# 
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  University of Utah.
+# 
+#  
+#  Permission is hereby granted, free of charge, to any person obtaining a
+#  copy of this software and associated documentation files (the "Software"),
+#  to deal in the Software without restriction, including without limitation
+#  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#  and/or sell copies of the Software, and to permit persons to whom the
+#  Software is furnished to do so, subject to the following conditions:
+# 
+#  The above copyright notice and this permission notice shall be included
+#  in all copies or substantial portions of the Software.
+# 
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+#  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#  DEALINGS IN THE SOFTWARE.
+#
+
+# Sources of Core/Math classes
+
+SET(Core_Math_SRCS
+  CubicPWI.cc 
+  Gaussian.cc
+  LinAlg.c
+  LinearPWI.cc
+  Mat.c
+  MiscMath.cc
+  MusilRNG.cc
+  PiecewiseInterp.cc
+  TrigTable.cc
+  sci_lapack.cc
+  fft.c	
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Math)
+ENDIF(BUILD_SHARED_LIBS)
+
+SCIRUN_ADD_LIBRARY(Core_Math ${Core_Math_SRCS} )
+
+# DV Fix defining below libraries
+TARGET_LINK_LIBRARIES(Core_Math 
+  Core_Exceptions 
+  Core_Util
+  ${M_LIBRARY}
+  ${DL_LIBRARY}
+  ${LAPACK_LIBRARY}
+  ${CBLAS_LIBRARY}
+  ${FBLAS_LIBRARY}
+  ${FORTRAN_LIBRARY})
+
+IF(BUILD_TESTING)
+  ADD_SUBDIRECTORY(Tests)
+ENDIF(BUILD_TESTING)
+  
+# TODO: linking atlas is probably redundant, so disabling for now
+#IF(HAVE_LAPACK AND NOT APPLE)
+#  # atlas and cblas libraries are both in OS X's vecLib framework
+#  TARGET_LINK_LIBRARIES(Core_Math
+#    ${ATLAS_LIBRARY})
+#ENDIF(HAVE_LAPACK AND NOT APPLE)

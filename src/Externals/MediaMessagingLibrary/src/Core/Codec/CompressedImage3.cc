@@ -1,0 +1,108 @@
+/*
+ For more information, please see: http://software.sci.utah.edu
+ 
+ The MIT License
+ 
+ Copyright (c) 2011 Scientific Computing and Imaging Institute,
+ University of Utah.
+ 
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+ */
+
+
+#include <Core/Codec/Codec.h>
+#include <Core/Codec/CompressedImage3.h>
+
+namespace Core {
+	
+	CompressedImage3::CompressedImage3( size_t width, size_t height, BufferHandle buffer) :
+		Image3( width, height, buffer ),
+		is_keyframe_( true ),
+		codec_type_( UNKNOWN_CODEC_TYPE_C ),
+		codec_serial_id_( 0 )
+	{}
+	
+
+	CompressedImage3::CompressedImage3( size_t width, size_t height, CodecTypeID codec_type,
+		CodecSerialID codec_serial_id, BufferHandle buffer ) :
+			Image3( width, height, buffer ),
+			is_keyframe_( true ),
+			codec_type_( codec_type ),
+			codec_serial_id_( codec_serial_id )
+	{}
+	
+	CompressedImage3::~CompressedImage3() {}
+	
+	bool CompressedImage3::get_is_keyframe() const
+	{
+		return this->is_keyframe_;
+	}
+	
+	void CompressedImage3::set_is_keyframe( bool is_keyframe )
+	{
+		this->is_keyframe_ = is_keyframe;
+	}
+	
+	CodecTypeID CompressedImage3::get_codec_type() const
+	{
+		return this->codec_type_;
+	}
+	
+	void CompressedImage3::set_codec_type( CodecTypeID codec_type )
+	{
+		this->codec_type_ = codec_type;
+	}
+	
+	CodecSerialID CompressedImage3::get_codec_serial_id () const
+	{
+		return this->codec_serial_id_;
+	}
+	
+	void CompressedImage3::set_codec_serial_id( CodecSerialID codec_serial_id )
+	{
+		this->codec_serial_id_ = codec_serial_id;
+	}
+	
+	CompressedImage3Handle CompressedImage3::New( size_t width, size_t height, BufferHandle buf )
+	{
+		try {
+			
+			return CompressedImage3Handle( new CompressedImage3( width, height, buf ) );
+			
+		} catch ( ... ) {
+			return CompressedImage3Handle();
+		}
+	}
+	
+	
+CompressedImage3Handle CompressedImage3::New( size_t width, size_t height, CodecTypeID codec_type,
+	CodecSerialID codec_serial_id, BufferHandle buf )
+{
+	try {
+		return CompressedImage3Handle( new CompressedImage3( width, height, codec_type, 
+			codec_serial_id, buf ) );
+		
+	} catch ( ... ) {
+		return CompressedImage3Handle();
+	}
+}
+	
+	
+} // namespace Core

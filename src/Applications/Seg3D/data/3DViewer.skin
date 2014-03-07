@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+   This skin defines the 3D projection view and all of the buttons in it.
+   There is another file call PainterWindow which is used for the 2D
+   orthographic view. Both sit on top of the view skin.
+-->
+
+<definition name="3DViewer">
+  <object name="FocusBox">
+    <var name="3DViewer::show_tools" propagate="yes" overwrite="no">0</var>
+
+    <signal name="FocusBox::focus"
+            target="Arithmetic::set_value">
+      <var name="variable">$3DViewer::show_tools</var>
+      <var name="value">1</var>
+    </signal>
+
+    <signal name="FocusBox::unfocus"
+            target="Arithmetic::set_value">
+      <var name="variable">$3DViewer::show_tools</var>
+      <var name="value">0</var>
+    </signal>
+
+    <definition name="FocusBox::child">
+      <object name="Skinner::Collection">
+        <object name="GLWindow::RenderRegion">
+          <var name="RenderRegion::id" propagate="yes">$id</var>
+
+          <object name="GreyFrame">
+
+            <var name="GreyFrame::color" propagate="yes">#999999FF</var>
+
+            <definition name="GreyFrame::child">
+              <object name="Skinner::Collection">
+
+            <object name="Skinner::SceneGraph">
+
+              <signal name="SceneGraph::need_redraw"
+                      target="GLWindow::redraw_drawable">
+                <var name="region">$RenderRegion::id</var>
+              </signal>
+
+              <object name="Skinner::Grid">
+                <var name="cols">2</var>
+                <var name="rows">1</var>
+
+                <object name="GrabFocusRegion">
+                  <var name="col">2</var>
+                  <var name="row">1</var>
+                  <var name="cell-width">25</var>
+
+                  <object name="Skinner::Grid">
+                    <var name="visible">$3DViewer::show_tools</var>
+                    <var name="col">2</var>
+                    <var name="row">1</var>
+                    <var name="cell-width">25</var>
+
+                    <var name="cols">1</var>
+                    <var name="rows">10</var>
+
+                    <object name="GrabFocusRegion">
+                      <var name="col">1</var>
+                      <var name="row">7</var>
+                      <var name="cell-height">25</var>
+
+                      <object name="EyeCheckButton">
+                        <var name="CheckButton::state"
+                             propagate="yes">$Painter::volume_visible</var>
+                        <var name="ImageFrameButton::on_filename" propagate="yes"
+                             overwrite="no">icon-volume.png</var>
+                        <var name="ImageFrameButton::off_filename" propagate="yes"
+                             overwrite="no">icon-volume.png</var>
+                        <signal name="Button::clicked"
+                                target="Painter::ShowVolumeRendering2"/>
+                      </object>
+                    </object>
+
+                    <object name="GrabFocusRegion">
+                      <var name="col">1</var>
+                      <var name="row">8</var>
+                      <var name="cell-height">25</var>
+
+                      <object name="EyeCheckButton">
+                        <var name="CheckButton::state"
+                             propagate="yes">$Painter::isosurface_visible</var>
+                        <var name="ImageFrameButton::on_filename" propagate="yes"
+                             overwrite="no">icon-isosurface.png</var>
+                        <var name="ImageFrameButton::off_filename" propagate="yes"
+                             overwrite="no">icon-isosurface.png</var>
+                        <signal name="Button::clicked"
+                                target="GLWindow::mark_redraw"/>
+                      </object>
+                    </object>
+
+                    <object name="GrabFocusRegion">
+                      <var name="col">1</var>
+                      <var name="row">9</var>
+                      <var name="cell-height">25</var>
+
+                      <object name="EyeCheckButton">
+                        <var name="CheckButton::state"
+                             propagate="yes">$Painter::slices_visible</var>
+                        <var name="ImageFrameButton::on_filename" propagate="yes"
+                             overwrite="no">icon-planes.png</var>
+                        <var name="ImageFrameButton::off_filename" propagate="yes"
+                             overwrite="no">icon-planes.png</var>
+                        <signal name="Button::clicked"
+                                target="GLWindow::mark_redraw"/>
+                      </object>
+                    </object>
+
+                    <object name="GrabFocusRegion">
+                      <var name="col">1</var>
+                      <var name="row">10</var>
+                      <var name="cell-height">25</var>
+
+                      <object name="ImageFrameButton">
+                        <var name="ImageFrameButton::filename" propagate="yes"
+                             overwrite="no">icon-resizeexpand.png</var>
+                        <signal name="Button::clicked"
+                                target="SceneGraph::Autoview"/>
+                        <signal name="Button::clicked"
+                                target="GLWindow::mark_redraw"/>
+                      </object>
+                    </object>
+
+                  </object>
+                </object>
+              </object>
+            </object>
+            <object name="3DViewer::overlay"/>
+            </object>
+        </definition>
+          </object>
+          </object>
+
+      </object>
+    </definition>
+  </object>
+</definition>

@@ -1,0 +1,29 @@
+include ../make.inc
+LIBDIR  = -L$(LIB)/mat
+RPATH = -rpath $(LIB)/mat
+LIBS = -lm
+INCLDIR = -I$(INCL)/mat
+
+MATHEADER = $(MATINCL)/matrix.h
+F2CHEADER = $(MATINCL)/f2c.h
+LAPKHEADER = $(MATINCL)/lapack.h
+
+all:		matrix
+
+matrix:		matrix.o vector.o
+		$(C++) $(CCLIBFLAGS) $(RPATH) $(LIBDIR) $(INCLDIR) matrix.o \
+		vector.o -o libmat.a;\
+		chgperm
+
+matrix.o:	$(MATHEADER) $(F2CHEADER) $(LACKHEADER) matrix.C
+		$(C++) $(CCFLAGS) $(INCLDIR) -c -o matrix.o matrix.C
+
+vector.o:	$(MATHEADER) $(F2CHEADER) $(LAPKHEADER) vector.C
+		$(C++) $(CCFLAGS) $(INCLDIR) -c -o vector.o vector.C	
+
+clean::
+	rm *.o; rm -r ii_files; rm so_locations
+
+
+
+

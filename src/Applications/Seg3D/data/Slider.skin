@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+-->
+
+<!DOCTYPE skinner PUBLIC "-//Skinner/Drawable DTD" "skinner.dtd">
+
+<definition name="Slider">
+  <object name="Skinner::Box">
+    <var name="Slider::resolution" overwrite="no"
+         propagate="yes">1.0</var>
+
+    <var name="Slider::vertical" overwrite="no" propagate="yes">0</var>
+
+    <var name="Slider::min" type="double"
+         propagate="yes" overwrite="no">0</var>
+    <var name="Slider::max" type="double"
+         propagate="yes" overwrite="no">100</var>
+
+    <var name="color">#00000000</var>
+    <signal name="button_1_clicked" target="GLWindow::redraw_drawable"/>
+
+    <object name="Skinner::Slider">
+      <var name="row">1</var>
+      <var name="col">1</var>
+
+      <object name="ClearBorder">
+        <var name="ClearBorder::width">1</var>
+        <var name="ClearBorder::height">1</var>
+
+        <object name="Shadow">
+          <var name="Shadow::bevel">7</var>
+          <var name="Shadow::color" propagate="yes">#000000FF</var>
+          <var name="Shadow::clear" propagate="yes">#000000FF</var>
+        </object>
+
+        <object name="ClearBorder">
+          <var name="ClearBorder::width">1</var>
+          <var name="ClearBorder::height">1</var>
+          <object name="Shadow">
+            <var name="Shadow::bevel">7</var>
+            <var name="Shadow::color" propagate="yes">#FFFFFFFF</var>
+            <var name="Shadow::clear" propagate="yes">#FFFFFFA0</var>
+          </object>
+        </object>
+      </object>
+
+      <object name="Slider::SliderButton">
+        <var name="SliderButton::width">40</var>
+        <object name="Shadow">
+          <var name="Shadow::bevel">7</var>
+          <var name="Shadow::color" propagate="yes">#00000080</var>
+          <var name="Shadow::clear" propagate="yes">#00000080</var>
+        </object>
+
+        <object name="ClearBorder">
+          <var name="ClearBorder::width">1</var>
+          <var name="ClearBorder::height">1</var>
+          <object name="Shadow">
+            <var name="Shadow::bevel">7</var>
+            <var name="Shadow::color" propagate="yes">#8080CCFF</var>
+            <var name="Shadow::clear" propagate="yes">#8080CC80</var>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+</definition>
+

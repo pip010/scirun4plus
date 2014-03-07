@@ -1,0 +1,6 @@
+1) Standard library bad_alloc's are not handled as a general rule.
+2) Leave true warnings as WARN macros.
+3) When distinguishing between warnings and errors, think about how it would be
+handled if it could be caught at compile time.
+4) An exception must be generated when the behavior of a function on its 
+operands is undefined.
