@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
       }
       particle_sys->freezeIntersection();
       particle_sys->writePointFile(intersection);
+      cout << "DEBUG write to file" << endl;
     } else {
       particle_sys->freezeIntersection();
     }

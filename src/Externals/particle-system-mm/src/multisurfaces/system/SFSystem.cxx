@@ -226,6 +226,7 @@ SFSystem::SFSystem( const char *param_file )
                               _intersection[i].init_with_ptcl,
                               modulo );
     cerr << "done initializePointsWithMesh" << endl;
+    
     //******************************
     // populate the domain
     //******************************
@@ -239,13 +240,16 @@ SFSystem::SFSystem( const char *param_file )
     if ( _intersection[i].optimize_ptcl )
     {
       ops[num_ops++] = new ApproximateNeighborhoods( 6 );
+      
       if ( _intersection[i].num_materials == 4 )
         ops[num_ops++] = new SurfaceConstraint(threshold);
       else
         ops[num_ops++] = new AdaptiveDtSurfaceDistribution(threshold);
+        
       ops[num_ops++] = new GlobalSurfaceEnergyNA();
     }
 
+cout << "DEBUG num_materials: " << _intersection[i].num_materials << endl;
     
     // create the optimizer
     Optimize *optimizer = new Optimize( ops, num_ops );
