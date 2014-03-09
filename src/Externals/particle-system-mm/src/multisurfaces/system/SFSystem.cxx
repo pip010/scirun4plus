@@ -174,21 +174,22 @@ SFSystem::SFSystem( const char *param_file )
                            NORMALIZED_IDEAL_DISTANCE_2 );
     }
 
+// decreased the precision by 1 to all, try relaxing the algo
     // optimizer variables
-    float threshold = 10.0e-6;
+    float threshold = 10.0e-5;
     int modulo = 4;
     if ( _intersection[i].num_materials == 1 )
-      threshold = 1.0e-6;
+      threshold = 1.0e-5;
     else if ( _intersection[i].num_materials == 2 )
     {
-      threshold = 1.0e-5;
+      threshold = 1.0e-4;
       //modulo = 2;
     }
     else if ( _intersection[i].num_materials == 3 )
-      threshold = 1.0e-5;
+      threshold = 1.0e-4;
     else if ( _intersection[i].num_materials == 4 )
     {
-      threshold = 1.0e-4;
+      threshold = 1.0e-3;
       modulo = 2;
     }
     
