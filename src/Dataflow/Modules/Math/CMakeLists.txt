@@ -62,6 +62,8 @@ SET(Dataflow_Modules_Math_SRCS
   ReorderMatrixByReverseCuthillMcKee.cc
   ResizeMatrix.cc
   SelectSubMatrix.cc
+  ModelGenericCoil.cc
+  SolveBiotSavartContour.cc
 )
 
 SCIRUN_ADD_LIBRARY(Dataflow_Modules_Math ${Dataflow_Modules_Math_SRCS})
