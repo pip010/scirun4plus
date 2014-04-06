@@ -173,7 +173,7 @@ SFSystem::SFSystem( const char *param_file )
                            _start, _end, 0,
                            NORMALIZED_IDEAL_DISTANCE_2 );
     }
-
+//PIP
 // decreased the precision by 1 to all, try relaxing the algo
     // optimizer variables
     float threshold = 10.0e-5;
@@ -184,7 +184,7 @@ SFSystem::SFSystem( const char *param_file )
     {
       threshold = 1.0e-4;
       //modulo = 2;
-    }
+    }	
     else if ( _intersection[i].num_materials == 3 )
       threshold = 1.0e-4;
     else if ( _intersection[i].num_materials == 4 )
@@ -216,9 +216,10 @@ SFSystem::SFSystem( const char *param_file )
     // if past memory threshold, multiply binning radius by appropriate factor to reduce # of bins
     // TODO: find a more versatile fix for this problem
     radius = radius*4;
+    cout << "creating Neighborhood " << endl;
     Neighborhood<DynamicSurfacePoint>* n = 
       new neighborhood_type( radius, d_start, d_end );
-    cerr << "created Neighborhood " << endl;
+    cout << "created Neighborhood " << endl;
     domain->neighborhood( n, radius );
 
     initializePointsWithMesh( _intersection[i].mesh_filename, points, 
@@ -226,13 +227,13 @@ SFSystem::SFSystem( const char *param_file )
                               _intersection[i].max_sf,
                               _intersection[i].init_with_ptcl,
                               modulo );
-    cerr << "done initializePointsWithMesh" << endl;
+    cout << "done initializePointsWithMesh" << endl;
     
     //******************************
     // populate the domain
     //******************************
     domain->populateDomain( points );
-    cerr << "done populateDomain" << endl;
+    cout << "done populateDomain" << endl;
     // optimizations
     Optimization **ops=NULL;
     ops = new Optimization*[4]; 
@@ -254,14 +255,16 @@ cout << "DEBUG num_materials: " << _intersection[i].num_materials << endl;
     
     // create the optimizer
     Optimize *optimizer = new Optimize( ops, num_ops );
-    cerr << "created optimizer" << endl;
+    cout << "created optimizer" << endl;
     // and initialize the system
     _intersection[i].ps->init( domain, optimizer, points );
-    cerr << "intersection init" << endl;
+    cout << "intersection init" << endl;
   }
 
   _current_intersection = -1;
   freezeIntersection();
+  
+  cout << "DEBUG point size: " <<  _intersection[_current_intersection].ps->points().size()<< endl;
 }
 
 SFSystem::~SFSystem()

@@ -69,13 +69,15 @@ void Optimize::optimize( svector<DynamicSurfacePoint*> &points )
 
   for ( int i = 0; i < _num_ops; i++ )
   {
-	  cout << "DEBUG START op " << i << endl;
-	  tprint();
+	  //DEBUG pip
+	  //cout << "DEBUG START op " << i << endl;
+	  //tprint();
 	  
     _optimizations[i]->optimize( points );
     
-	  cout << "DEBUG END op " << i  << endl;
-	  tprint();
+	//DEBUG pip
+	  //cout << "DEBUG END op " << i  << endl;
+	  //tprint();
     
     if ( !_optimizations[i]->optimized()  )
       return;

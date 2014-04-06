@@ -21,6 +21,7 @@ namespace custom_class
 
     unsigned int size() const { return _vector.size(); };
     void resize(unsigned int size) { _vector.resize(size); };
+    void reserve(unsigned int size) { _vector.reserve(size); };
     bool empty() const { return _vector.empty(); };
     void clear() { _vector.clear(); };
     T& front();

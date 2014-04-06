@@ -327,6 +327,8 @@ void DynamicSurfacePoint::computeNeighborhoodAverageForce(
     _neighborhood_force = f/(float)neighbors.size(); 
   else
     _neighborhood_force = 0.0;
+    
+    std::cout << " (BANG) DynamicSurfacePoint::computeNeighborhoodAverageForce neighbors.size() : " << neighbors.size() << std::endl;
 }
 
 //------------------------------------------------------------------------

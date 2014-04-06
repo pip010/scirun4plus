@@ -9,6 +9,20 @@
 
 //using namespace std;
 
+
+template <class T>
+Bin<T>::Bin() 
+{ 
+_neighbors.reserve(30); 
+}
+ 
+template <class T>
+Bin<T>::~Bin() 
+{
+	//cout << "_neighbors count : " <<  _neighbors.size() << "   _elements count : " <<    _elements.size() << std::endl;
+}
+
+
 //------------------------------------------------------------------------
 // Function    : Bin::addElement
 // Description : add an element to the list
@@ -60,6 +74,8 @@ BinningStructure<dim,T>::BinningStructure( float bin_w,
 
   // and create the appropriate number of bins
   _bins = new Bin<T>[numBins()];
+  
+  cout << "BinningStructure num bins: " << numBins() << std::endl;
 }
 
 //------------------------------------------------------------------------
