@@ -24,7 +24,11 @@ class SCISHARE BiotSavartSolverAlgo : public AlgoBase
     {}
     
     //! Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
+    bool run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata);
+
+  protected:
+    //! Biot-Savart Contour Piece-wise integration
+    bool IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata);
 };
 
 } // end namespace BiotSavartSolverAlgo

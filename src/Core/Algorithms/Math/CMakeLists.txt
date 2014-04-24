@@ -58,6 +58,8 @@ SET(Core_Algorithms_Math_SRCS
   SortMatrix/SortMatrix.cc
   BiotSavartSolver/BiotSavartSolver.cc
   BiotSavartSolver/BiotSavartSolver.h
+  BiotSavartSolver/ModelGenericCoilAlgo.cc
+  BiotSavartSolver/ModelGenericCoilAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Math ${Core_Algorithms_Math_SRCS})

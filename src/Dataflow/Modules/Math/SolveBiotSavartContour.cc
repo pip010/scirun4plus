@@ -30,12 +30,14 @@
 #include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Math/BiotSavartSolver/BiotSavartSolver.h>
 
-//! The module class
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/FieldInformation.h>
 
-//! We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
+#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
 
@@ -65,6 +67,7 @@ void SolveBiotSavartContour::execute()
 {
   //! Define dataflow handles:
   FieldHandle meshField;
+  FieldHandle meshOutField;
   FieldHandle coilField;
   MatrixHandle matrixdata(0);
   
@@ -73,23 +76,37 @@ void SolveBiotSavartContour::execute()
   if(!(get_input_handle("Coil",coilField,true))) return;
 
   //! Data is only computed if the output port is connected:
-  bool need_matrix_data = oport_connected("BField");
+  bool need_matrix_data = oport_connected("VectorBField");
+  bool need_field_data = oport_connected("MeshBField");
+  
 
   //! Only do work if needed:
   if (inputs_changed_ ||
-      (!oport_cached("BField") && need_matrix_data))
+      (!oport_cached("BField") && (need_field_data || need_matrix_data) ))
   {    
     update_state(Executing);
     
-    if( need_matrix_data) 
+    if( need_field_data) 
     {
       //! Run algorithm
-      if(!(algo_.run(meshField,matrixdata))) return;
+      if(!(algo_.run(meshField,coilField,meshOutField,matrixdata))) return;
     }
 
-    //! If port is not connected at time of execute, send down a null handle
-    //! send data downstream:
-    send_output_handle("BField", matrixdata);
+    if(need_field_data)
+    {
+        //! If port is not connected at time of execute, send down a null handle
+        //! send data downstream:
+        send_output_handle("MeshBField", meshOutField);      
+    }
+
+    if(need_matrix_data)
+    {
+        //! If port is not connected at time of execute, send down a null handle
+        //! send data downstream:
+        send_output_handle("VectorBField", matrixdata);
+    }
+
+    status("_END_MODULE_");
 
   }
 }

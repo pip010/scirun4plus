@@ -40,12 +40,12 @@
     <inputs lastportdynamic="no">
     </inputs>
     <outputs>
-	  <port>
+	    <port>
         <name>Mesh</name>
         <datatype>SCIRun::Field</datatype>
       </port>
       <port>
-        <name>matrix</name>
+        <name>Matrix</name>
         <datatype>SCIRun::Matrix</datatype>
       </port>
     </outputs>

@@ -265,7 +265,19 @@ if __name__ == "__main__" :
 
 	if MAX_SIZING_FIELD != "" :
 		max_sizing_field = MAX_SIZING_FIELD
-	  
+	
+	#pip was not passed down to optimize-particles-system
+	if SIZING_SCALE_VAR != "" :
+		sizing_scale_var = SIZING_SCALE_VAR
+
+	if ROI_X != "" :
+		roi_x = ROI_X
+	
+	if ROI_Y != "" :
+		roi_y = ROI_Y
+		
+	if ROI_Z != "" :
+		roi_z = ROI_Z
 
 	psys_txt = [
 			"ENERGY                  radial\n",
@@ -275,7 +287,10 @@ if __name__ == "__main__" :
 			"BASE_FILE_NAME          %s/%s/particle_params.txt\n" % (cwd,dnm),
 			"INIT_NUM_POINTS         5\n", #unused
 			"MAX_SF                  %f\n" % max_sizing_field,
-			"SIZING_SCALE            %f\n" % 0.4
+			"SIZING_SCALE            %f\n" % sizing_scale_var,
+			"ROI_X           		 %f\n" % roi_x,
+			"ROI_Y            		 %f\n" % roi_y,
+			"ROI_Z            		 %f\n" % roi_z,
 			]
 
 	f = open(os.path.join(dnm,'psystem_input.txt'), 'w')

@@ -40,11 +40,13 @@ DynamicSurfacePoint::DynamicSurfacePoint( Domain *d, ParticleSystem *sys,
   _storage_int = 0;
 
   _max_stretch = MAX_VALUE;
+  
+  cout << "constructor" << endl;
 }
 
 DynamicSurfacePoint::DynamicSurfacePoint( const DynamicSurfacePoint &that )
   : SurfacePoint() 
-{ *this = that; }
+{ *this = that;cout << "copy-constructor" << endl; }
 
 DynamicSurfacePoint::DynamicSurfacePoint() : SurfacePoint() 
 { 
@@ -66,6 +68,8 @@ DynamicSurfacePoint::DynamicSurfacePoint() : SurfacePoint()
   _storage_int = 0;
 
   _max_stretch = MAX_VALUE;
+  
+  cout << "empty-constructor" << endl;
 }
 
 //------------------------------------------------------------------------
