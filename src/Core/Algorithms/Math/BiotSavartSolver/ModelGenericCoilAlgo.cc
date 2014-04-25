@@ -29,6 +29,7 @@
 #include <Core/Algorithms/Math/BiotSavartSolver/ModelGenericCoilAlgo.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
+#include <Core/Math/MiscMath.h>
 
 #include <vector>
 
@@ -36,7 +37,9 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool ModelGenericCoilAlgo::run(FieldHandle& meshFieldHandle, MatrixHandle& params)
+bool 
+ModelGenericCoilAlgo::
+run(FieldHandle& meshFieldHandle, MatrixHandle& params)
 {
   //MatrixHandle mat = params.dense();
   if (params.get_rep() == 0)
@@ -186,6 +189,26 @@ ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, boo
 */
   
   return (true);
+}
+
+std::vector<Vector>
+ModelGenericCoilAlgo::
+GenerateCircleContour(Vector pos,double r,uint nsegments)
+{
+  //(x + r*cos(alpha), y + r*sin(alpha)
+  double pi = atan(1)*4;
+  double anglePerSegment = 2*M_PI/nsegments;
+  std::vector<Vector> circlexy(nsegments+1);
+
+  for(int i = 0; i < nsegments; i++)
+  {
+    //circlexy[i] = new THREE.Vector3(x + r * Math.cos(anglePerSegment*i), y + r * Math.sin(anglePerSegment*i), z);
+    circlexy[i].Set(pos.x() + r * cos(anglePerSegment*i), pos.y() + r * sin(anglePerSegment*i), pos.z());
+  }
+
+  circlexy[nsegments] = circlexy[0];
+
+  return circlexy;
 }
 
 } // end namespace SCIRunAlgo

@@ -2,6 +2,8 @@
 #include <Core/Algorithms/Math/BiotSavartSolver/BiotSavartSolver.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColMajMatrix.h>
+#include <Core/Math/MiscMath.h>
 //#include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Core/Datatypes/FieldInformation.h>
 #include <string>
@@ -74,6 +76,7 @@ namespace SCIRunAlgo {
 	BiotSavartSolverAlgo::
 	IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata)
 	{
+		//Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
 
 		bool status = false;
 		VMesh* vmesh = mesh->vmesh();
@@ -85,8 +88,11 @@ namespace SCIRunAlgo {
 	  	FieldInformation fimesh(mesh);
 	  	FieldInformation ficoil(coil);
 		
-		VMesh::size_type size = vfield->num_values();
-		VMesh::size_type esize = vfield->num_evalues();
+		//VMesh::size_type size = vfield->num_values();
+		//VMesh::size_type esize = vfield->num_evalues();
+
+		double gamma = 1.0;
+
 
 		//algo->remark("REMARK");
 		if( !vcoil->is_curvemesh() )
@@ -109,24 +115,99 @@ namespace SCIRunAlgo {
 		}
 		*/
 
-	    VMesh::Node::size_type nnodes;
-  		vmesh->size(nnodes);
+	    VMesh::Node::size_type modelSize;
+  		vmesh->size(modelSize);
+
+	    VMesh::Node::size_type coilSize;
+  		vcoil->size(coilSize);
   		
   		//just a check
-  		int tmp = vmesh->num_nodes();
-  		assert(tmp == nnodes);
+  		int tmpNN = vmesh->num_nodes();
+  		assert(tmpNN == modelSize);
+  		//
 
+  		assert(modelSize > 0 && coilSize > 1);
 
+  		//WRITE Matrix
+  		//DenseMatrixGeneric<double> mat((int)modelSize,3);
+  		//MatrixHandle matH = mat.dense();
+  		MatrixHandle mat = new DenseColMajMatrix(modelSize,3);
 
   		vmesh->synchronize(Mesh::NODES_E);
 
 //READ
-  		Point p;
-  		for(VMesh::Node::index_type i = 0; i < nnodes; i++)
+  		std::vector<Vector> _results(modelSize);
+  		Point modelNode;
+  		Point coilNode;
+
+  		for(VMesh::Node::index_type iM = 0; 
+  			iM < modelSize; 
+  			iM++)
   		{
-  			vmesh->get_node(p,i);
-  			std::cout << p << std::endl;
+  			vmesh->get_node(modelNode,iM);  			
+  			std::cout << "model_node: " << modelNode << std::endl;//DEBUG
+
+			for(VMesh::Node::index_type iC0 = 0, iC1 =1; 
+				iC1 < coilSize; 
+				iC0++, iC1++)
+			{
+				vcoil->get_node(coilNode,iC0);
+				std::cout << "\t coil_node: " << coilNode << std::endl;//DEBUG
+
+				Vector coilNodeThis(coilNode);
+
+				vcoil->get_node(coilNode,iC1);
+
+				Vector coilNodeNext(coilNode);
+
+				//Length of the curve element
+				Vector diffNodes = coilNodeNext - coilNodeThis;
+				double lenSegment = diffNodes.length();
+
+				int numIntegrPoints = AdjustNumberOfIntegrationPoints(0.5,lenSegment);
+
+				std::vector<Vector> integrPoints(numIntegrPoints);
+				
+				// curve discretization
+				for(int iip = 0; iip < numIntegrPoints; iip++)
+				{
+					integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, (double)iip / (double)numIntegrPoints );
+
+					std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
+				}
+
+				
+				// integration step over line segment				
+				for(int iip = 0; iip < numIntegrPoints -1; iip++)
+				{
+					//Vector connecting the infinitesimal curve-element			
+					Vector Rxyz = integrPoints[iip] - Vector(modelNode);
+
+					//Infinitesimal curve-element components
+					Vector dLxyz = integrPoints[iip+1] - integrPoints[iip];
+
+					//Modules
+					double dLn = dLxyz.length();
+					double Rn = Rxyz.length();
+
+					//Biot-Savart
+					Vector dB = Cross(Rxyz,dLxyz) * (gamma/4/M_PI/Rn/Rn/Rn);
+
+					//std::cout << "\t\t dB: " << dB << std::endl;//DEBUG
+						
+					//Add increment to the main field
+					//results[i] = numeric.add(results[i], numeric.mul(dB, params.loops) );
+					_results[iM] = _results[iM] + dB;
+				
+				}
+
+				std::cout << "\t\t B: " << _results[iM] << std::endl;//DEBUG
+
+
+			}
   		}
+
+
 
 //WRITE
   		fimesh.make_vector();
@@ -148,21 +229,47 @@ namespace SCIRunAlgo {
 
 		VField* ofield = outmesh->vfield();
 
-		for (VMesh::Node::index_type i=0; i< nnodes; i++)
+		for (VMesh::Node::index_type i=0; i< modelSize; i++)
 		{
-			Vector v(0.1,0.2,(double)(i*10));
-			ofield->set_value(v,i);
+			//Vector v(0.1,0.2,(double)(i*10));
+			ofield->set_value(_results[(int)i],i);
 		}
 
-//WRITE Matrix
-	  	//MatrixHandle mat = new DenseMatrixGeneric(4,4);
-	  	//outdata = mat->dense();
+
 
 		
 
 		status = true;
 		
 		return status;
+	}
+
+	int
+	BiotSavartSolverAlgo::
+	AdjustNumberOfIntegrationPoints(double step, double len)
+	{
+		assert(step < len);
+		int minNP = 3;//more than 1 for sure
+		int maxNP = 100;//no more than 1000 i guess
+		int NP = 0;
+		bool over = false;
+		bool under = false;
+
+		do
+		{
+			under = NP < minNP ? true : false;
+			over = NP > maxNP ? true : false; 
+
+			if(under) step*=0.5;
+			if(over) step*=1.5;
+
+			NP=Ceil(len/step);
+
+			std::cout << "\t integration step : " << step << std::endl;//DEBUG
+
+		}while( under || over );
+
+		return NP;
 	}
 	
 	/*
@@ -241,6 +348,24 @@ namespace SCIRunAlgo {
 		self.postMessage({ID: e.data.ID, code:'sim', output:results});
 		self.postMessage({ID: e.data.ID, code:'finished'});
 	}
+
+
+	function AdjustPointDistribution(segmentL)
+{
+	//var len_ds = len/ds;
+	var discretizationStep = 0.1;
+	var NP = Math.ceil(segmentL/discretizationStep);
+	var minNP = 3;//more than 1
+
+
+	while(NP < minNP){
+		//log("Integration step is too big: "+ discretizationStep.toString() + "(readjusting)");
+		discretizationStep*=0.5;
+		NP=Math.ceil(segmentL/discretizationStep);
+	}
+
+	return NP;
+}
 	*/
 	
 
