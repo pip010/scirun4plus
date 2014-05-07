@@ -1,8 +1,13 @@
 #include <cstdlib>
 #include <iostream>
 
+
+
+
 using namespace custom_class;
 using namespace std;
+
+
 
 //------------------------------------------------------------------------
 // Function    : Constructor
@@ -35,9 +40,11 @@ template <class T>
 void ApproximateStaticNeighborhood<T>::populateNeighborhood(const svector<T*> 
                                                            points)
 {
+
   for ( unsigned int i = 0; i < points.size(); i++ )
     _bins->addElementToBin( _bins->whichBin(points[i]->position()), 
                             points[i] );
+
 }
 
 //------------------------------------------------------------------------
@@ -75,11 +82,15 @@ template <class T>
 void ApproximateStaticNeighborhood<T>::movingLocation( T* const point,
                                                       const vector_type &new_pos )
 {
+
+  lock_guard<mutex> guardian(lock);
+
   int old_bin = _bins->whichBin( point->position() );
   int new_bin = _bins->whichBin( new_pos );
 
   if ( new_bin != old_bin )
   {
+	//cout << " M " <<endl;
     _bins->removeElementFromBin( old_bin, point );
     _bins->addElementToBin( new_bin, point );
   }

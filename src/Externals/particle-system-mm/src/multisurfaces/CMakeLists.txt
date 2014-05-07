@@ -34,3 +34,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${OPENGL_INCLUDE_DIR} ../glew/in
 #ADD_SUBDIRECTORY(features)
 ADD_SUBDIRECTORY(system)
 ADD_SUBDIRECTORY(run-particle-system)
+
+
+#added by P.Petrov 2014 (required by c++11 std::thread on LINUX)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")

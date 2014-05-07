@@ -38,6 +38,9 @@ public:
   int _idim, _jdim, _ijdim;
 };
 
+//P.Petrov 2014
+//changed to multidim arary to avoid index computation every time
+//also why using float hard tyed when defined as templated class by type T?
 template <class T> 
 class array3D 
 {
@@ -45,36 +48,75 @@ public:
   //--------------------------------------------------------------------
   // constructors and assignment
   array3D() 
-  { _idim=_jdim=_kdim=_ijdim=_ijkdim=0; _array = NULL; };
+  { 
+      _idim=_jdim=_kdim=_ijdim=_ijkdim=0; 
+      _array = 0; 
+  };
+    
   array3D(int idim, int jdim, int kdim)
-  { _array=NULL; resize( idim, jdim, kdim ); };
-  array3D(const array3D &rhs) 
-  { *this = rhs; };
+  { 
+      _array=0; resize( idim, jdim, kdim ); 
+  };
+
   ~array3D() 
-  { if (_array) delete [] _array; };
+  { 
+      if ( _array )
+      {
+           // De-Allocate memory to prevent memory leak
+          for (int i = 0; i < _idim; ++i) {
+            for (int j = 0; j < _jdim; ++j)
+              delete [] _array[i][j];
+        
+            delete [] _array[i];
+          }
+          delete [] _array;
+      }
+  };
 
   array3D& operator = (const array3D &rhs);
   array3D& operator = (float rhs);
 
   void resize(int idim, int jdim, int kdim)
-  { if ( _array ) delete _array; 
+  { 
+      if ( _array )
+      {
+           // De-Allocate memory to prevent memory leak
+          for (int i = 0; i < idim; ++i) {
+            for (int j = 0; j < jdim; ++j)
+              delete [] _array[i][j];
+        
+            delete [] _array[i];
+          }
+          delete [] _array;
+      }
+      
     _idim=idim; _jdim=jdim; _kdim=kdim; 
     _ijdim=idim*jdim; _ijkdim=_ijdim*kdim;
-    _array = new T[_ijkdim]; }; 
+    
+    //_array = new T[_ijkdim];
+        
+      // Allocate memory
+      _array = new T**[idim];
+      for (int i = 0; i < idim; ++i) {
+        _array[i] = new T*[jdim];   
+        for (int j = 0; j < jdim; ++j)
+          _array[i][j] = new T[kdim];
+      }
+  }; 
+  
   void size(int &idim, int &jdim, int &kdim)
   { idim = _idim; jdim = _jdim; kdim = _kdim; };
 
   //--------------------------------------------------------------------
   // array indexing
   inline T& operator () (int i, int j, int k) 
-  { return _array[i+j*_idim+k*_ijdim]; };
+  { return _array[i][j][k]; };
   inline const T& operator () (int i, int j, int k) const 
-  { return _array[i+j*_idim+k*_ijdim]; };
+  { return _array[i][j][k]; };
 
-  float  *_array;
+  T  ***_array;
   int _idim, _jdim, _kdim, _ijdim, _ijkdim;
 };
-
 
 template <class T> 
 class array4D 

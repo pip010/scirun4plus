@@ -10,10 +10,11 @@
 #include <system/systemExports.h>
 
 #include <system/domain/Surface.h>
-#include <features/mtxlib.h>
 #include <features/multiDarrays.h>
 #include <system/defines.h>
 #include <system/domain/Kernel.h>
+
+#include <features/mtxlib.h>
 
 #include <constants.h>
 
@@ -52,7 +53,14 @@ namespace particle_sys
     array2D<float> _field;
     int _xdim, _ydim;
 #endif
+    //P.Petrov 2014
+    //ignoring kernel (use inlined functions instead)
     Kernel *_kernel, *_kernelD;
+    float CubicBSpline_w(const vec<4> &p, const vec<4> &tau) const;
+    float CubicBSplineD_w(const vec<4> &p, const vec<3> &tau) const;
+    matrix<4,4> M;
+    matrix<4,3> MD;
+    //
 
     float _min_sf, _max_sf;
 

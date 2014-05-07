@@ -34,7 +34,8 @@ namespace particle_sys
     // the function is called to perform one iteration of optimization
     void optimize(custom_class::svector<DynamicSurfacePoint*> &points);
 
-
+// protected:
+//    void parallelKernel(custom_class::svector<DynamicSurfacePoint*> &points, unsigned int start,  unsigned int  end);
 
   private:
     SurfaceConstraint *_constraint;

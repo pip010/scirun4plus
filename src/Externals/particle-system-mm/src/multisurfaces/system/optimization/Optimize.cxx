@@ -47,7 +47,10 @@ void Optimize::init( custom_class::svector<DynamicSurfacePoint*> &points,
                     int num_iterations )
 {
   for ( int i = 0; i < _num_ops; i++ )
+  {
+	  cout << "Optimize::init [" << i+1 << "|" << _num_ops << "]" << endl;
     _optimizations[i]->init( points, num_iterations );
+  }
 }
 
 //------------------------------------------------------------------------

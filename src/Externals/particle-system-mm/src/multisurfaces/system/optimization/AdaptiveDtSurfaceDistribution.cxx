@@ -10,6 +10,11 @@
 #include <system/optimization/SurfacePopulationController.h>
 #include <system/optimization/AdaptiveDtSurfaceDistribution.h>
 
+//C++11
+#include <thread>
+#include <functional>
+#include <mutex>
+
 #ifdef _WIN32
 #pragma warning (disable : 4244)
 #endif
@@ -37,6 +42,21 @@ AdaptiveDtSurfaceDistribution::~AdaptiveDtSurfaceDistribution()
   delete _constraint;
 }
 
+void parallelKernel(std::vector<DynamicSurfacePoint*> &points,SurfaceConstraint* constraint )
+{
+	for ( unsigned j = 0; j < points.size(); j++ )
+	{
+	  constraint->projectOntoSurface( points[j] );
+	  
+	  if ( points[j]->moved_outside() )
+	  {
+		 cout << "[[[SHABANG]]]" ;
+		(points[j]->system())->removePoint( j );
+		  j--;
+	  }
+	}
+} 
+
 //------------------------------------------------------------------------
 // Function    : init
 // Description : initialize the Points by projecting them onto the Surface
@@ -44,24 +64,87 @@ AdaptiveDtSurfaceDistribution::~AdaptiveDtSurfaceDistribution()
 void AdaptiveDtSurfaceDistribution::init( 
   svector<DynamicSurfacePoint*> &points, int num_iterations )
 {
+  //P.Petrov 2014 attempt at parallelization
+  //Thread t1;
+  //Thread t2;
+/*
+  unsigned int  size = points.size();
+  std::vector<DynamicSurfacePoint*> t1v(points._vector.begin(), points._vector.begin() + points._vector.size()/2);
+  std::vector<DynamicSurfacePoint*> t2v(points._vector.begin() + points._vector.size()/2, points._vector.end());
+  
   while ( num_iterations-- )
+  {
+
+  
+	if(size > 1000)
+    {
+	  cout << "Recommend to go parallel for: " << t1v.size() <<"  "<< t2v.size() << "|||" << num_iterations << endl;
+	
+	
+	  thread t1(parallelKernel,std::ref(t1v),_constraint);
+	  thread t2(parallelKernel,std::ref(t2v),_constraint);
+	  t1.join();
+	  t2.join();
+	  
+	  cout << "\nNEXT ITER\n";
+	}
+	//else if( size > 100)
+	//{
+	//  thread t1(parallelKernel,std::ref(points),_constraint,0,size);
+	//  t1.join();
+	//}
+	else
+	{
+		parallelKernel(points._vector,_constraint);
+	}
+	
+	for ( unsigned j = 0; j < size; j++ )
+	{
+	  // check if the Point needs to be removed from the System
+	  if ( points[j]->moved_outside() )
+	  {
+		(points[j]->system())->removePoint( j );
+		  j--;
+	  }
+	}
+	
+ }
+    */
+    
+
+   //OLD CODE
+  while ( num_iterations-- )
+  {
     for ( unsigned j = 0; j < points.size(); j++ )
     {
+		//cout << " I"; 
       _constraint->projectOntoSurface( points[j] );
-
+		
       // check if the Point needs to be removed from the System
       if ( points[j]->moved_outside() )
       {
         (points[j]->system())->removePoint( j );
 	      j--;
+	      //cout<< " R";
       }
     }
-
+}
+ 
+ /*
+ cout << endl;
+ 
+     for ( unsigned j = 0; j < points.size(); j++ )
+    {
+		cout << *(points[j]) << endl;
+	}
+  
+ cout << endl;
+ */
   // now, make sure the points are all within the threshold of the
   //   surface
   if ( !points.empty() )
   {
-    cout << points.size() << endl;
+    //cout << points.size() << endl;
     points[0]->system()->cleanUpSystem( _F_threshold );
   }
 }

@@ -22,6 +22,9 @@ int main(int argc, char *argv[]) {
       {  
 			particle_sys.optimize();
 			iter++;
+			
+			cout << "optimize-particle-system [" << iter << "|" << num_iters << "] iteration." << std::endl;
+			
 			if (particle_sys.optimized()) 
 			{ 
 			  particle_sys.resetLambdas();
@@ -31,7 +34,7 @@ int main(int argc, char *argv[]) {
       cout << "optimize-particle-system finished after [" << iter << "|" << num_iters << "] iterations." << std::endl;
       particle_sys.freezeIntersection();
       particle_sys.writePointFile(intersection);
-      cout << "DEBUG write to file" << endl;
+      //cout << "DEBUG write to file" << endl;
     } 
     else
     {

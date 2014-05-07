@@ -4,6 +4,7 @@
 #include <system/defines.h>
 #include <system/particles/DynamicSurfacePoint.h>
 
+
 #ifdef _WIN32
 #pragma warning( disable : 4244 4305 4267 )
 #endif
@@ -41,12 +42,12 @@ DynamicSurfacePoint::DynamicSurfacePoint( Domain *d, ParticleSystem *sys,
 
   _max_stretch = MAX_VALUE;
   
-  cout << "constructor" << endl;
+  //cout << "constructor" << endl;
 }
 
 DynamicSurfacePoint::DynamicSurfacePoint( const DynamicSurfacePoint &that )
   : SurfacePoint() 
-{ *this = that;cout << "copy-constructor" << endl; }
+{ *this = that; }
 
 DynamicSurfacePoint::DynamicSurfacePoint() : SurfacePoint() 
 { 
@@ -69,7 +70,7 @@ DynamicSurfacePoint::DynamicSurfacePoint() : SurfacePoint()
 
   _max_stretch = MAX_VALUE;
   
-  cout << "empty-constructor" << endl;
+  //cout << "empty-constructor" << endl;
 }
 
 //------------------------------------------------------------------------
@@ -331,8 +332,6 @@ void DynamicSurfacePoint::computeNeighborhoodAverageForce(
     _neighborhood_force = f/(float)neighbors.size(); 
   else
     _neighborhood_force = 0.0;
-    
-    std::cout << " (BANG) DynamicSurfacePoint::computeNeighborhoodAverageForce neighbors.size() : " << neighbors.size() << std::endl;
 }
 
 //------------------------------------------------------------------------
@@ -357,7 +356,9 @@ void DynamicSurfacePoint::move( const vector_type &new_pos )
   // notify the Domain that the Point will be moving to a new 
   //   location (if this isn't a temporary point!)
   if ( !_temporary )
+  {
     _domain->movingToNewPosition( this, new_pos );
+  }
 
   // set the new position
   _position = new_pos;

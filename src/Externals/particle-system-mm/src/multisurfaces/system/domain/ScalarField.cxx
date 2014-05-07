@@ -54,6 +54,18 @@ ScalarField::ScalarField( const char *df_file_base,
   
     }
 
+	//P.Petrov 2014
+	M.set(   vec<4>(-1.0, 3.0,-3.0, 1.0),
+             vec<4>( 3.0,-6.0, 0.0, 4.0),
+             vec<4>(-3.0, 3.0, 3.0, 1.0),
+             vec<4>( 1.0, 0.0, 0.0, 0.0) ); 
+	 M /= 6.0;
+	 MD.set( vec<3>(-1.0, 2.0,-1.0),
+             vec<3>( 3.0,-4.0, 0.0),
+             vec<3>(-3.0, 2.0, 1.0),
+             vec<3>( 1.0, 0.0, 0.0) ); 
+     MD /= 2.0;
+  	//-------------------------------------------------
 
   switch ( kernel )
   {
@@ -78,6 +90,16 @@ ScalarField::~ScalarField()
 {
   delete _kernel;
   delete _kernelD;
+}
+
+inline float ScalarField::CubicBSpline_w(const vec<4> &p, const vec<4> &tau) const
+{
+	return DotProduct(p*M,tau);
+}
+
+inline float ScalarField::CubicBSplineD_w(const vec<4> &p, const vec<3> &tau) const
+{
+	return DotProduct(p*MD,tau);
 }
 
 //------------------------------------------------------------------------
@@ -124,6 +146,7 @@ bool ScalarField::computeSurfacePointParams( const vector_type &pos,
 
 
   // assuming a 4^3 support
+  /*
   vec<4> x, y, z, yDx, yDy, yDz, zDx, zDy, zDz;
   for ( int slice = -1; slice <= 2; slice++ )
   {
@@ -154,7 +177,38 @@ bool ScalarField::computeSurfacePointParams( const vector_type &pos,
   params._Fx(0) = _kernel->w( zDx, tau_z )/_scale[0];
   params._Fx(1) = _kernel->w( zDy, tau_z )/_scale[1];
   params._Fx(2) = _kernelD->w( zDz, tau_zD )/_scale[2];
+  */
+  vec<4> x, y, z, yDx, yDy, yDz, zDx, zDy, zDz;
+  for ( int slice = -1; slice <= 2; slice++ )
+  {
+    for ( int row = -1; row <= 2; row++ )
+    {
+      // set the x values
+      for ( int element = -1; element <= 2; element++ )
+      {
+        x[element+1] = _field( min(max(llc_x+element,0),(_xdim-1)), 
+                               min(max(llc_y+row,0),(_ydim-1)), 
+                               min(max(llc_z+slice,0),(_zdim-1)) );
+      }
+      y[row+1]   = CubicBSpline_w( x, tau_x );
 
+      yDx[row+1] = CubicBSplineD_w( x, tau_xD );
+      yDy[row+1] = y[row+1];
+      yDz[row+1] = y[row+1];
+    }
+    z[slice+1]  = CubicBSpline_w( y, tau_y );
+
+    zDx[slice+1] = CubicBSpline_w( yDx, tau_y );
+    zDy[slice+1] = CubicBSplineD_w( yDy, tau_yD );
+    zDz[slice+1] = CubicBSpline_w( yDz, tau_y );
+  }
+
+  params._F = CubicBSpline_w( z, tau_z ) - _isovalue;
+
+  params._Fx(0) = CubicBSpline_w( zDx, tau_z )/_scale[0];
+  params._Fx(1) = CubicBSpline_w( zDy, tau_z )/_scale[1];
+  params._Fx(2) = CubicBSplineD_w( zDz, tau_zD )/_scale[2];
+  
   //
   // linearly interpolate the sizing field
   //

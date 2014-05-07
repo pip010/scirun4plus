@@ -60,6 +60,18 @@ vec<3> CrossProduct( const vec<3> &a, const vec<3> &b )
                  a[0]*b[1] - a[1]*b[0] );
 }
 
+template<>
+float DotProduct(const vec<4> &a, const vec<4> &b)
+{
+  return a(0)*b(0) + a(1)*b(1) + a(2)*b(2) + a(3)*b(3);
+}
+
+template<>
+float DotProduct(const vec<3> &a, const vec<3> &b)
+{
+return a(0)*b(0) + a(1)*b(1) + a(2)*b(2);
+}
+
 /************************************************************************/
 
 
@@ -170,7 +182,6 @@ matrix<2,2>::operator*=(const matrix<2,2> &rhs)
   return *this;
 }
 
-
 template<>
 matrix<2,2> operator*( const matrix<2,2> &a, const matrix<2,2> &b )
 {
@@ -211,6 +222,45 @@ operator*( const matrix<3,3> &a, const matrix<3,3> &b )
   return ret;
 }
 
+template <>
+vec<4> operator * ( const matrix<4,4> &m, const vec<4> &v )
+{
+  vec<r> ret(0.0);
+  for ( int i = 0; i < 4; i++ )
+    for ( int j = 0; j < 4; j++ )
+      ret(i) += m(i,j)*v(j);
+  return ret;
+}
+
+template <>
+vec<4> operator * ( const vec<4> &v, const matrix<4,4> &m )
+{
+  vec<c> ret(0.0);
+  for ( int i = 0; i < 4; i++ )
+    for ( int j = 0; j < 4; j++ )
+      ret(i) += v(j)*m(j,i);
+  return ret;
+}
+
+template <>
+vec<3> operator * ( const matrix<4,3> &m, const vec<3> &v )
+{
+  vec<r> ret(0.0);
+  for ( int i = 0; i < 4; i++ )
+    for ( int j = 0; j < 3; j++ )
+      ret(i) += m(i,j)*v(j);
+  return ret;
+}
+
+template <>
+vec<3> operator * ( const vec<3> &v, const matrix<4,3> &m )
+{
+  vec<c> ret(0.0);
+  for ( int i = 0; i < 4; i++ )
+    for ( int j = 0; j < 3; j++ )
+      ret(i) += v(j)*m(j,i);
+  return ret;
+}
 
 //-------------------------------------------------------------------------
 // function   : matrix methods

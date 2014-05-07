@@ -261,14 +261,18 @@ SFSystem::SFSystem( const char *param_file )
       ops[num_ops++] = new GlobalSurfaceEnergyNA();
     }
 
-cout << "DEBUG num_materials: " << _intersection[i].num_materials << endl;
+	//cout << "DEBUG num_materials: " << _intersection[i].num_materials << endl;
     
     // create the optimizer
+    cout << "creating optimizer ..." << endl;
     Optimize *optimizer = new Optimize( ops, num_ops );
-    cout << "created optimizer" << endl;
+    cout << "created optimizer." << endl;
+    
     // and initialize the system
+	cout << "init optimizer ..." << endl;
     _intersection[i].ps->init( domain, optimizer, points );
-    cout << "intersection init" << endl;
+    cout << "inited optimizer." << endl;
+
   }
 
   _current_intersection = -1;

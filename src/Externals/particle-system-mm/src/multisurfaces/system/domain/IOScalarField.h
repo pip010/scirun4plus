@@ -50,6 +50,8 @@ namespace particle_sys
   private:
     Surface **_indicators;
     int _num_indicators, _main_indicator;
+    float *f;
+    vector_type *fx;
 
     float interp_max(const float* const f, int num_values) const;
     void  interp_max_D(const float* const f, const vec<3>* const fx, 

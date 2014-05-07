@@ -3,6 +3,9 @@
 
 #include <iostream>
 
+
+
+
 //float DegToRad(float a) { return a*0.01745329252f;};
 //float RadToDeg(float a) { return a*57.29577951f;};
 
@@ -144,9 +147,9 @@ public:
   //--------------------------------------------------------------------
   // array indexing
   float& operator () (unsigned int i, unsigned int j) 
-  { return x[i*c+j]; };
+  { return map[i][j]; };
   const float& operator () (unsigned int i, unsigned int j) const 
-  { return x[i*c+j]; };
+  { return map[i][j]; };
 
   //--------------------------------------------------------------------
   // basic arithmetic
@@ -164,7 +167,12 @@ public:
   float trace() const;
   float norm() const;
  
-  float x[r*c];
+  //float x[r*c];
+  
+      union {
+        float x[r*c];
+        float map[r][c];
+    };
 };
 
 //----------------------------------------------------------------------
@@ -263,5 +271,10 @@ std::ostream& operator << (std::ostream& outs,
 
 
 #include "mtxlib.T"
+
+typedef  matrix<4,4> MAT44;
+typedef  matrix<4,3> MAT43;
+typedef  vec<4> VEC4;
+typedef  vec<3> VEC3;
 
 #endif // __MTXLIB_H__
