@@ -37,6 +37,7 @@ import os
 import time
 import glob
 import shutil
+import pdb
 
 if sys.version_info[0] < 3 :
 	from thread import start_new_thread
@@ -86,7 +87,7 @@ def wait_on_procs(procs) :
 				print("%d processes are complete of %d pid:%d" % (ndone, len(procs), p.pid))
 		count = count + 1
 
-def start_proc(optimize_ps_cmmd,procs,max_procs) :
+def start_proc(optimize_ps_cmmd,procs,max_procs,n_proc) :
 	#print("Start Proc: len(procs:%d Cmmd:%s\n"% (len(procs),optimize_ps_cmmd))
 	if (len(procs) >= max_procs) :
 		done = False
@@ -97,13 +98,18 @@ def start_proc(optimize_ps_cmmd,procs,max_procs) :
 					done = True
 					procs.remove(p)
 					break
+	procstdout = "procs" + str(n_proc) + ".log"
+	optimize_ps_cmmd = optimize_ps_cmmd + " > " + procstdout
+	print("**** parallel process console output: " + optimize_ps_cmmd)
+	#pdb.set_trace()
 	proc = subprocess.Popen(optimize_ps_cmmd,  shell=True, bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=model_output_path)
+
 	Utils.rec_pid(proc.pid)
 	procs.append(proc)
 	# the output from processes need to be dumped or the
 	# buffer fills up and it sleeps.
-	print("starting thread to dump")
-	print(proc)
+	#print("starting thread to dump")
+	#print(proc)
 	start_new_thread(dump_log, (proc, ))
 	
 
@@ -300,7 +306,7 @@ if __name__ == "__main__" :
 	# now run rendersf3d on the resulting junctions directory
 	optimize_ps_cmmd = r'"%s" %s %s 0 %s' % (os.path.join(binary_path,"optimize-particle-system"), os.path.join("junctions","psystem_input.txt"), num_particle_iters, g_nquads+g_ntrips-1)
 	print("**** running command: %s\n" % optimize_ps_cmmd)
-	Utils.do_system(optimize_ps_cmmd,print_only,use_shell)
+	#Utils.do_system(optimize_ps_cmmd,print_only,use_shell)
 
 	# Now copy the junctions results for the quads and triples back to the
 	# input_seed_path files (but need to map names!)
@@ -308,8 +314,8 @@ if __name__ == "__main__" :
 	# and call optimize_ps_cmd just for that interface #
 
 	print("**** copying quad and tri junctions back into seeds folder\n")
-	for i in range(0, g_nquads+g_ntrips) :
-		shutil.copyfile(g_quad_tri_juncs[i], g_quad_tri_seeds[i])
+	#for i in range(0, g_nquads+g_ntrips) :
+	#	shutil.copyfile(g_quad_tri_juncs[i], g_quad_tri_seeds[i])
 	
 	procs = []
 
@@ -319,9 +325,11 @@ if __name__ == "__main__" :
 
 		optimize_ps_cmmd = r'"%s" %s %s %s %s ' % (os.path.join(binary_path,"optimize-particle-system"), os.path.join("junctions","psystem_input.txt"), num_particle_iters, i, i)
 		
-		start_proc(optimize_ps_cmmd,procs,max_procs)
-
 		print("**** parallel process %s of %s: %s\n"%(i-g_nquads-g_ntrips+1,g_ndoubs,optimize_ps_cmmd))
+		
+		start_proc(optimize_ps_cmmd,procs,max_procs,i-g_nquads-g_ntrips+1)
+
+		
 
 	wait_on_procs(procs)
 

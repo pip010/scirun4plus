@@ -11,9 +11,11 @@
 #include <system/optimization/AdaptiveDtSurfaceDistribution.h>
 
 //C++11
+//#define NEW_MP
 #include <thread>
 #include <functional>
 #include <mutex>
+#include <iomanip>
 
 #ifdef _WIN32
 #pragma warning (disable : 4244)
@@ -67,10 +69,12 @@ void AdaptiveDtSurfaceDistribution::init(
   //P.Petrov 2014 attempt at parallelization
   //Thread t1;
   //Thread t2;
-/*
+
   unsigned int  size = points.size();
   std::vector<DynamicSurfacePoint*> t1v(points._vector.begin(), points._vector.begin() + points._vector.size()/2);
   std::vector<DynamicSurfacePoint*> t2v(points._vector.begin() + points._vector.size()/2, points._vector.end());
+  
+  #ifdef NEW_MP
   
   while ( num_iterations-- )
   {
@@ -109,10 +113,14 @@ void AdaptiveDtSurfaceDistribution::init(
 	}
 	
  }
-    */
     
+#else
 
    //OLD CODE
+   float totalIters = num_iterations * points.size();
+   float p  = 0; 
+   float pcur = 0;
+   
   while ( num_iterations-- )
   {
     for ( unsigned j = 0; j < points.size(); j++ )
@@ -127,8 +135,21 @@ void AdaptiveDtSurfaceDistribution::init(
 	      j--;
 	      //cout<< " R";
       }
+      
+      pcur = ( num_iterations * j + j ) / totalIters;
+      
+      if( pcur - p > 0.04f)
+      {
+		  p = pcur;
+		  cout.width(5);
+		  cout << endl << setiosflags(ios::fixed) << setprecision(2) << p*100;
+	  }
     }
-}
+    
+    cout << endl;
+  }
+  
+#endif
  
  /*
  cout << endl;
@@ -140,6 +161,7 @@ void AdaptiveDtSurfaceDistribution::init(
   
  cout << endl;
  */
+ 
   // now, make sure the points are all within the threshold of the
   //   surface
   if ( !points.empty() )
@@ -147,6 +169,9 @@ void AdaptiveDtSurfaceDistribution::init(
     //cout << points.size() << endl;
     points[0]->system()->cleanUpSystem( _F_threshold );
   }
+  
+
+  
 }
 
 //------------------------------------------------------------------------
