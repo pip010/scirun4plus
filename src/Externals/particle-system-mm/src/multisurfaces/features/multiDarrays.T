@@ -60,6 +60,58 @@ array3D<T>& array3D<T>::operator = ( float rhs )
     
   return *this;
 }
+/*
+//-------------------------------------------------------------------------
+// function   : = operators
+// description: 
+//-------------------------------------------------------------------------
+template <class T>
+array3D<T>& array3D<T>::operator = ( const array3D &rhs )
+{
+  if ( !(_idim == rhs._idim) || 
+       !(_jdim == rhs._jdim) || 
+       !(_kdim == rhs._kdim) )
+    resize( rhs._idim, rhs._jdim, rhs._kdim );
+
+ // for ( int i = 0; i < _ijkdim; i++ )
+ //   _array[i] = rhs._array[i];
+ 
+	for (int i = 0; i < _idim; ++i) 
+	{
+		for (int j = 0; j < _jdim; ++j)
+		{
+			for (int k = 0; k < _kdim; ++k) 
+			{
+			_array[i][j][k] = rhs._array[i][j][k];
+			}
+		}
+	}
+            
+    
+  return *this;
+}
+
+template <class T>
+array3D<T>& array3D<T>::operator = ( float rhs )
+{
+ // for ( int i = 0; i < _ijkdim; i++ )
+ //   _array[i] = rhs;
+
+ 	for (int i = 0; i < _idim; ++i) 
+	{
+		for (int j = 0; j < _jdim; ++j)
+		{
+			for (int k = 0; k < _kdim; ++k) 
+			{
+			_array[i][j][k] = rhs;
+			}
+		}
+	}
+    
+  return *this;
+}
+
+*/
 
 
 /************************************************************************/

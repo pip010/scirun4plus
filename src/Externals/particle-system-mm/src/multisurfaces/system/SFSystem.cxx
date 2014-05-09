@@ -64,7 +64,7 @@ SFSystem::SFSystem( const char *param_file )
   // now, pass all the variables in by reference to the file reader
   int energy;
   char i_file[350];
-  float ROI[3];
+  float ROI[] = {0.0f,0.0f,0.0f};
   readParamFile( param_file, _file_name, energy, max_allowed_sf,
                  _initial_sf,
                  _init_num_points, _num_materials, _num_intersections, 
@@ -673,9 +673,9 @@ void SFSystem::readParamFile( const char *param_file, char *s,
                               int &init_num_pts, int &num_surfaces,
                               int &num_intersections,
                               char *i_file,
-                              float roi_x,
-                              float roi_y,
-                              float roi_z
+                              float& roi_x,
+                              float& roi_y,
+                              float& roi_z
                                )
 {
   // read in the file

@@ -184,12 +184,12 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
   float energy, lambda, max_movement, energy_tmp;
   vector_type force, dx, old_position, old_normal;
   bool keep_iterating;
-  clock_t st, elapsed, tmp;
-  st = clock();
-  elapsed = st;
+  //clock_t st, elapsed, tmp;
+  //st = clock();
+  //elapsed = st;
 
-  double s1, s2, s3; //3 sections to profile inside iteration loop
-  s1 = s2 = s3 = 0.0l; //3 sections to profile inside iteration loop
+  //double s1, s2, s3; //3 sections to profile inside iteration loop
+  //s1 = s2 = s3 = 0.0l; //3 sections to profile inside iteration loop
   size_t size_pnts = points.size();
 
   vector<int> delP;
@@ -210,9 +210,9 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
                                                    old_normal, dx );
 
     // profiling the function...
-    tmp = clock();
-    s1 += (double)(tmp - elapsed)/(double)CLOCKS_PER_SEC;
-    elapsed = tmp;
+    //tmp = clock();
+    //s1 += (double)(tmp - elapsed)/(double)CLOCKS_PER_SEC;
+    //elapsed = tmp;
 
     // check if the movement is too big
     max_movement = 2.0*points[i]->radius();
@@ -260,9 +260,9 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
     //    
 
     // profiling the function...
-    tmp = clock();
-    s2 += (double)(tmp - elapsed)/(double)CLOCKS_PER_SEC;
-    elapsed = tmp;
+    //tmp = clock();
+    //s2 += (double)(tmp - elapsed)/(double)CLOCKS_PER_SEC;
+    //elapsed = tmp;
 
     // CASE 1
     if ( energy_tmp > energy ) 
@@ -364,9 +364,9 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
       delP.push_back(i);
     }
     // profiling the function...
-    tmp = clock();
-    s3 += (double)(tmp - elapsed)/(double)CLOCKS_PER_SEC;
-    elapsed = tmp;
+    //tmp = clock();
+    //s3 += (double)(tmp - elapsed)/(double)CLOCKS_PER_SEC;
+    //elapsed = tmp;
 
   } // for ( int i = 0; i < points.size(); i++ ) ...
 

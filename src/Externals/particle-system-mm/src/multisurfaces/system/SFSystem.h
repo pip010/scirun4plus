@@ -127,9 +127,9 @@ namespace particle_sys
                        int &init_num_pts,
                        int &num_surfaces, int &num_intersections,
                        char *i_file,
-                       float roix,
-                       float roiy,
-                       float roiz
+                       float& roix,
+                       float& roiy,
+                       float& roiz
                        ); 
 
     void initializePointsWithMesh(const char* basename, 

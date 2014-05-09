@@ -427,7 +427,7 @@ void ScalarField::readNrrdFile( const char *df_file_base)
                     _xdim, _ydim, _zdim,
                     _centers[0], _centers[1], _centers[2]);
   
-  cout<<"this is the first scale"<< _scale[0]<<" "<< _scale[1]<<" "<< _scale[2]<<endl;  
+  cout<<"this is the first scale "<< _scale[0]<<" "<< _scale[1]<<" "<< _scale[2]<<endl;  
   
    
   _d_start = 0.0;

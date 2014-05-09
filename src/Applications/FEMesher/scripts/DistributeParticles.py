@@ -275,15 +275,23 @@ if __name__ == "__main__" :
 	#pip was not passed down to optimize-particles-system
 	if SIZING_SCALE_VAR != "" :
 		sizing_scale_var = SIZING_SCALE_VAR
+	else:
+		sizing_scale_var = 1.0
 
 	if ROI_X != "" :
 		roi_x = ROI_X
+	else:
+		roi_x = 0.5
 	
 	if ROI_Y != "" :
 		roi_y = ROI_Y
+	else:
+		roi_y = 0.5
 		
 	if ROI_Z != "" :
 		roi_z = ROI_Z
+	else:
+		roi_z = 0.5
 
 	psys_txt = [
 			"ENERGY                  radial\n",
@@ -306,7 +314,7 @@ if __name__ == "__main__" :
 	# now run rendersf3d on the resulting junctions directory
 	optimize_ps_cmmd = r'"%s" %s %s 0 %s' % (os.path.join(binary_path,"optimize-particle-system"), os.path.join("junctions","psystem_input.txt"), num_particle_iters, g_nquads+g_ntrips-1)
 	print("**** running command: %s\n" % optimize_ps_cmmd)
-	#Utils.do_system(optimize_ps_cmmd,print_only,use_shell)
+	Utils.do_system(optimize_ps_cmmd,print_only,use_shell)
 
 	# Now copy the junctions results for the quads and triples back to the
 	# input_seed_path files (but need to map names!)
@@ -314,8 +322,8 @@ if __name__ == "__main__" :
 	# and call optimize_ps_cmd just for that interface #
 
 	print("**** copying quad and tri junctions back into seeds folder\n")
-	#for i in range(0, g_nquads+g_ntrips) :
-	#	shutil.copyfile(g_quad_tri_juncs[i], g_quad_tri_seeds[i])
+	for i in range(0, g_nquads+g_ntrips) :
+		shutil.copyfile(g_quad_tri_juncs[i], g_quad_tri_seeds[i])
 	
 	procs = []
 

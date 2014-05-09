@@ -285,6 +285,8 @@ while [[ "$1" != "" ]]; do
             buildtype="Debug";;
         --release)
             buildtype="Release";;
+        --hybrid)
+            buildtype="RelWithDebInfo";;        
         --without-itk) 
             builditk="0";;
         --without-tetgen)
