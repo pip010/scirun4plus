@@ -6,8 +6,14 @@
 #include <Core/Math/MiscMath.h>
 //#include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Core/Datatypes/FieldInformation.h>
+
+#include <Core/Thread/Barrier.h>
+#include <Core/Thread/Thread.h>
+
 #include <string>
 #include <cassert>
+
+#include <boost/lexical_cast.hpp>
 
 //! Namespace used for SCIRun Algorithmic layer
 namespace SCIRunAlgo {
@@ -15,144 +21,92 @@ namespace SCIRunAlgo {
 	using namespace SCIRun;
 
 
-	
-	//bool 
-	//GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output);
-
-	//! Run the global algorithm routine
-	bool 
-	BiotSavartSolverAlgo::
-	run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata)
+	// Helper class
+	class BSVHelper
 	{
-	  algo_start("BiotSavartSolver");
+	  public:
+
+	    // Constructor needed as Barrier needs to have name
+	    BSVHelper(AlgoBase* algo) :
+	      ref_cnt(0),
+	      algo(algo),
+	      barrier("BSVHelper Barrier"),
+	      mutex("BSVHelper Mutex"),
+	      results()
+	    {
+	    }
+
+        //! Local entry function, Biot-Savart Contour Piece-wise integration
+		bool IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata);
+
+	    int ref_cnt;
+
+	  private:
+
+		// ref to the executing algorithm context
+	    AlgoBase* algo;
+
+	    // model miscs.
+	    VMesh* vmesh;
+	    VField* vfield;
+	    size_type modelSize;
+
+		// coil miscs.
+	    VMesh* vcoil;
+	    size_type coilSize;
+
+//TBR
+	    MatrixHandle rhsmatrixhandle;
+	    DenseMatrix* rhsmatrix;
+//
+
+	  	// parallel essential primitives 
+	    Barrier barrier;
+	    Mutex mutex;
+	    unsigned int numprocessors;
+	    std::vector<bool> success;
+
+	    std::vector<Vector> results;
+
+
+		//! TODO
+	    int AdjustNumberOfIntegrationPoints(double step, double len);
+
+	    //! Entry point for the parallel version
+		void kernel(int proc_num);
 	  
-	  //! Check whether we have fields.
-	  if (mesh.get_rep() == 0)
-	  {
-		error("No input domain field");
-		algo_end(); return (false);
-	  }
-  	  if (coil.get_rep() == 0)
-	  {
-		error("No input coil source field");
-		algo_end(); return (false);
-	  }
-	  
-	  //! Construct a class with all the type information of this field
-	  //FieldInformation fiMesh(mesh);
-	  //FieldInformation fiCoil(coil);
+	};
 
-//NEDDED?
-	  //! Check whether we have data
-	  //if (fiMesh.is_nodata())
-	  //{
-		//error("Field does not contain any data");
-		//algo_end(); return (false);
-	  //}
-	  
-	  //! Depending on the data type select a sub algorithm
-	  /*
-	  if (fi.is_scalar())
-		return(GetScalarFieldDataV(this,input,output));
-
-	  else if (fi.is_vector())
-		return(GetVectorFieldDataV(this,input,output));
-
-	  else if (fi.is_tensor())
-		return(GetTensorFieldDataV(this,input,output));
-
-	*/
-
-	  if( !IntegrateBiotSavart(mesh,coil,outmesh,outdata) )
-	  {
-  		error("Aborted during integration");
-	  	algo_end(); return (false);
-	  }
-
-	  algo_end(); return (true);
-	}
-	
-	bool 
-	BiotSavartSolverAlgo::
-	IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata)
+	void
+	BSVHelper::
+	kernel( int proc_num )
 	{
-		//Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
-
-		bool status = false;
-		VMesh* vmesh = mesh->vmesh();
-		assert(vmesh);
-		VMesh* vcoil = coil->vmesh();
-		assert(vcoil);
-		VField* vfield = mesh->vfield();
-		assert(vfield);
-	  	FieldInformation fimesh(mesh);
-	  	FieldInformation ficoil(coil);
-		
-		//VMesh::size_type size = vfield->num_values();
-		//VMesh::size_type esize = vfield->num_evalues();
-
-		double gamma = 1.0;
+		assert(proc_num >= 0);
 
 
-		//algo->remark("REMARK");
-		if( !vcoil->is_curvemesh() )
-		{
-			error("Only curve mesh type is accepted for coil geometry.");
-			return status;
-		}
-	  
-	    /*
-		Vector val;
-		int k = 0;
-		for (VMesh::index_type i=0; i<size; i++)
-		{
-		vfield->get_value(val,i);
-		//dataptr[k] = val.x();
-		//dataptr[k+1] = val.y();
-		//dataptr[k+2] = val.z();
-		algo->status(val.get_string());
-		k+=3;
-		}
-		*/
-
-	    VMesh::Node::size_type modelSize;
-  		vmesh->size(modelSize);
-
-	    VMesh::Node::size_type coilSize;
-  		vcoil->size(coilSize);
-  		
-  		//just a check
-  		int tmpNN = vmesh->num_nodes();
-  		assert(tmpNN == modelSize);
-  		//
-
-  		assert(modelSize > 0 && coilSize > 1);
-
-  		//WRITE Matrix
-  		//DenseMatrixGeneric<double> mat((int)modelSize,3);
-  		//MatrixHandle matH = mat.dense();
-  		MatrixHandle mat = new DenseColMajMatrix(modelSize,3);
-
-  		vmesh->synchronize(Mesh::NODES_E);
-
-//READ
-  		std::vector<Vector> _results(modelSize);
-  		Point modelNode;
+		Point modelNode;
   		Point coilNode;
 
-  		for(VMesh::Node::index_type iM = 0; 
-  			iM < modelSize; 
+  		double gamma = 1.0;
+
+		const index_type begins = (modelSize * proc_num) / numprocessors;
+		const index_type ends  = (modelSize * (proc_num+1)) / numprocessors;
+
+		try{
+
+  		for(index_type iM = begins; 
+  			iM < ends; 
   			iM++)
   		{
   			vmesh->get_node(modelNode,iM);  			
-  			std::cout << "model_node: " << modelNode << std::endl;//DEBUG
+  			//std::cout << "model_node: " << modelNode << std::endl;//DEBUG
 
-			for(VMesh::Node::index_type iC0 = 0, iC1 =1; 
+			for(index_type iC0 = 0, iC1 =1; 
 				iC1 < coilSize; 
 				iC0++, iC1++)
 			{
 				vcoil->get_node(coilNode,iC0);
-				std::cout << "\t coil_node: " << coilNode << std::endl;//DEBUG
+				//std::cout << "\t coil_node: " << coilNode << std::endl;//DEBUG
 
 				Vector coilNodeThis(coilNode);
 
@@ -164,6 +118,7 @@ namespace SCIRunAlgo {
 				Vector diffNodes = coilNodeNext - coilNodeThis;
 				double lenSegment = diffNodes.length();
 
+				// TODO optimize via promoting to member scope in case a constant is not vaiable for varying line segments lenght
 				int numIntegrPoints = AdjustNumberOfIntegrationPoints(0.5,lenSegment);
 
 				std::vector<Vector> integrPoints(numIntegrPoints);
@@ -171,9 +126,9 @@ namespace SCIRunAlgo {
 				// curve discretization
 				for(int iip = 0; iip < numIntegrPoints; iip++)
 				{
-					integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, (double)iip / (double)numIntegrPoints );
+					integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, static_cast<double>(iip) / static_cast<double>(numIntegrPoints) );
 
-					std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
+					//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
 				}
 
 				
@@ -197,55 +152,36 @@ namespace SCIRunAlgo {
 						
 					//Add increment to the main field
 					//results[i] = numeric.add(results[i], numeric.mul(dB, params.loops) );
-					_results[iM] = _results[iM] + dB;
+					results[iM] += dB;
 				
 				}
 
-				std::cout << "\t\t B: " << _results[iM] << std::endl;//DEBUG
+				//std::cout << "\t\t B: " << _results[iM] << std::endl;//DEBUG
 
 
 			}
   		}
 
-
-
-//WRITE
-  		fimesh.make_vector();
-		fimesh.make_lineardata();
-
-
-	  	outmesh = CreateField(fimesh,mesh->mesh());		
-		//outmesh->copy_properties(mesh.get_rep());
-
-
-
-
-		if (outmesh.get_rep() == 0) 
+  			  success[proc_num] = true;
+		}
+		catch (...)
 		{
-		error("Could not create output field and output interface");
-		//algo_end(); 
-		return status;
-		}  
-
-		VField* ofield = outmesh->vfield();
-
-		for (VMesh::Node::index_type i=0; i< modelSize; i++)
-		{
-			//Vector v(0.1,0.2,(double)(i*10));
-			ofield->set_value(_results[(int)i],i);
+			algo->error(std::string("BuildFEVolRHS crashed while mapping"));
+		  success[proc_num] = false;
 		}
 
+  
+		//! check point
+		barrier.wait(numprocessors);
 
+		// Bail out if one of the processes failed
+		for (size_t q=0; q<numprocessors;q++) 
+			if (success[q] == false) return;
 
-		
-
-		status = true;
-		
-		return status;
-	}
+  	}
 
 	int
-	BiotSavartSolverAlgo::
+	BSVHelper::
 	AdjustNumberOfIntegrationPoints(double step, double len)
 	{
 		assert(step < len);
@@ -265,107 +201,259 @@ namespace SCIRunAlgo {
 
 			NP=Ceil(len/step);
 
-			std::cout << "\t integration step : " << step << std::endl;//DEBUG
+			std::cout << "\t integration step : " << step << std::endl;//DEBUG TODO TBR
 
 		}while( under || over );
 
 		return NP;
 	}
+
 	
-	/*
-		if (e.data.code == "sim") 
+	//bool 
+	//GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output);
+
+	//! Run the global algorithm routine
+	bool 
+	BiotSavartSolverAlgo::
+	run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata)
 	{
-		var params = e.data.params;
-		var numPointsDomain = e.data.points.length;
-		var numPointsCurv = e.data.curve.length;
-		var L = e.data.curve;
-		var results = new Array(numPointsDomain);
-		
-		//for each point in the input calculate induction
-		for(i = 0; i < numPointsDomain; i++)
+		algo_start("BiotSavartSolver");
+
+		//! Check whether we have fields.
+		if (mesh.get_rep() == 0)
 		{
-			var point = e.data.points[i];
-			results[i] = [0,0,0];
-			
-			for(c = 0; c < numPointsCurv-1; c++)
-			{
-				//Length of the curve element
-				var diflen = numeric.sub(L[c],L[c+1]);
-				var len = numeric.norm2(diflen);
-
-				//Number of points for the curve-element discretization
-				//var len_ds = numeric.div(len,params.ds);
-				//var Npi = Math.ceil(len/params.ds);
-				var Npi = AdjustPointDistribution(len);
-
-				//AVOID ERROR HERE
-				//if(Npi < 3){
-				//	log("ERROR Integration step is too big!!");
-				//}
-
-				//Curve-element discretization
-				var Lx = numeric.linspace(L[c][0], L[c+1][0], Npi);
-				var Ly = numeric.linspace(L[c][1], L[c+1][1], Npi);
-				var Lz = numeric.linspace(L[c][2], L[c+1][2], Npi);
-
-				var Ldiscrete = new Array(Npi);
-				for(ci = 0;ci< Npi; ci++)
-				{
-					Ldiscrete[ci] = [Lx[ci],Ly[ci],Lz[ci]];
-				}
-
-				//Integration
-				for(s = 0;s<Npi-1;s++)
-				{
-					//Vector connecting the infinitesimal curve-element			
-					var Rxyz = numeric.sub(Ldiscrete[s] , point);
-
-					//Infinitesimal curve-element components
-					var dLxyz = numeric.sub(Ldiscrete[s+1] , Ldiscrete[s]);
-
-					//Modules
-					var dLn = numeric.norm2(dLxyz);
-					var Rn = numeric.norm2(Rxyz);
-
-					//Biot-Savart
-					var dB = numeric.mul( crossprod(Rxyz,dLxyz), 
-						params.gamma/4/params.pi/Rn/Rn/Rn);
-
-					//Debug
-					//log("BS dB: "+dB);
-						
-					//Add increment to the main field
-					results[i] = numeric.add(results[i], numeric.mul(dB, params.loops) );
-				}
-			}
-			
-			//Debug
-			//log("result [i]:value ::"+i+":"+results[i]);
-			
-			self.postMessage({code:'progress'});
+			error("No input domain field");
+			algo_end(); return (false);
 		}
+		  
+	  	if (coil.get_rep() == 0)
+		{
+			error("No input coil source field");
+			algo_end(); return (false);
+		}
+
+		if( !coil->vmesh()->is_curvemesh() )
+		{
+			error("Only curve mesh type is accepted for coil geometry.");
+			return (false);
+		}
+
+
+		Handle<BSVHelper> helper = new BSVHelper(this);
+
+		if( !helper->IntegrateBiotSavart(mesh,coil,outmesh,outdata) )
+		{
+			error("Aborted during integration");
+			algo_end(); return (false);
+		}
+
+		algo_end(); return (true);
+	}
+	
+	bool 
+	BSVHelper::
+	IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata)
+	{
+		//Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
+
+		bool status = false;
+
+		this->vmesh = mesh->vmesh();
+		assert(vmesh);
+
+		this->vcoil = coil->vmesh();
+		assert(vcoil);
+
+		this->vfield = mesh->vfield();
+		assert(vfield);
+
+	  	FieldInformation fimesh(mesh);
+	  	FieldInformation ficoil(coil);
 		
-		self.postMessage({ID: e.data.ID, code:'sim', output:results});
-		self.postMessage({ID: e.data.ID, code:'finished'});
+		//VMesh::size_type size = vfield->num_values();
+		//VMesh::size_type esize = vfield->num_evalues();
+
+		//double gamma = 1.0;
+
+
+	  	this->numprocessors = Thread::numProcessors();
+	  	int numproc = this->algo->get_int("num_processors");
+	  	algo->remark("number of processors:  " + boost::lexical_cast<std::string>(numproc));
+
+	  	if (numproc > 0) { numprocessors = numproc; }
+
+
+	  	numprocessors = 1;
+	  
+	    /*
+		Vector val;
+		int k = 0;
+		for (VMesh::index_type i=0; i<size; i++)
+		{
+		vfield->get_value(val,i);
+		//dataptr[k] = val.x();
+		//dataptr[k+1] = val.y();
+		//dataptr[k+2] = val.z();
+		algo->status(val.get_string());
+		k+=3;
+		}
+		*/
+
+
+		// get number of nodes for the model
+  		modelSize = vmesh->num_nodes();
+  		//vmesh->size( modelSize );
+
+		// get numbder of nodes for the coil
+  		coilSize = vcoil->num_nodes();
+  		//vcoil->size( coilSize );
+  		
+  		// basic assumption
+  		assert(modelSize > 0 && coilSize > 1);
+
+  		//WRITE Matrix
+  		//DenseMatrixGeneric<double> mat((int)modelSize,3);
+  		//MatrixHandle matH = mat.dense();
+  		MatrixHandle mat = new DenseColMajMatrix(modelSize,3);
+
+  		vmesh->synchronize(Mesh::NODES_E);
+
+//READ
+  		results.resize(modelSize);
+  		
+  		
+
+		success.resize(numprocessors,true);
+
+		// Start the multi threaded
+		Thread::parallel(this, &BSVHelper::kernel,numprocessors);
+		for (size_t j=0; j<success.size(); j++)
+		{
+		if (success[j] == false) return (false);
+		}
+
+
+
+//WRITE
+  		fimesh.make_vector();
+		fimesh.make_lineardata();
+
+
+	  	outmesh = CreateField(fimesh,mesh->mesh());		
+		//outmesh->copy_properties(mesh.get_rep());
+
+
+
+
+		if (outmesh.get_rep() == 0) 
+		{
+		algo->error("Could not create output field and output interface");
+		//algo_end(); 
+		return status;
+		}  
+
+		VField* ofield = outmesh->vfield();
+
+		for (VMesh::Node::index_type i=0; i< modelSize; i++)
+		{
+			//Vector v(0.1,0.2,(double)(i*10));
+			ofield->set_value(results[i],i);
+		}
+
+
+	  success.resize(numprocessors,true);
+
+	  // Start the multi threaded FEMVolRHS builder.
+	  //Thread::parallel( this, &BSVBuilder::parallel, numprocessors );
+	  for (size_t j=0; j<success.size(); j++)
+	  {
+	    if (success[j] == false) return (false);
+	  }
+
+	  outdata = rhsmatrixhandle;
+
+		
+
+		status = true;
+		
+		return status;
 	}
 
 
-	function AdjustPointDistribution(segmentL)
-{
-	//var len_ds = len/ds;
-	var discretizationStep = 0.1;
-	var NP = Math.ceil(segmentL/discretizationStep);
-	var minNP = 3;//more than 1
 
+	
+/*
+	bool
+	BSVHelper::build(FieldHandle input, 
+	                          MatrixHandle vtable,
+	                          MatrixHandle& output)
+	{
+	  // Get virtual interface to data
+	  field = input->vfield();
+	  mesh  = input->vmesh();
 
-	while(NP < minNP){
-		//log("Integration step is too big: "+ discretizationStep.toString() + "(readjusting)");
-		discretizationStep*=0.5;
-		NP=Math.ceil(segmentL/discretizationStep);
+	  // Determine the number of processors to use:
+
+	  numprocessors = Thread::numProcessors();
+	  int numproc = this->algo->get_int("num_processors");
+	  if (numproc > 0) { numprocessors = numproc; }
+	  
+	  
+	  // We added a second system of adding a vector table, using a matrix
+	  // Convert that matrix into the vector table
+	  if (vtable.get_rep())
+	  {
+	    vectors_.clear();
+	    DenseMatrix* mat = vtable->dense();
+	    MatrixHandle temphandle = mat;
+	    // Only if we can convert it into a dense matrix, otherwise skip it
+	    if (mat)
+	    {
+	      double* data = mat->get_data_pointer();
+	      size_type m = mat->nrows();
+	      size_type n = mat->ncols();
+	      Vector V;
+
+	      // Case the table has isotropic values
+	      if (mat->ncols() == 1)
+	      {
+	        for (size_type p=0; p<m;p++)
+	        {
+	          V[0] = data[p*n+0];
+	          V[1] = data[p*n+0];
+	          V[2] = data[p*n+0];
+	          
+	          vectors_.push_back(std::pair<std::string, Vector>("",V));
+	        }
+	      }
+	      else if (mat->ncols() == 3)
+	      {
+	        for (size_type p=0; p<m;p++)
+	        {
+	          V[0] = data[0+p*n];
+	          V[1] = data[1+p*n];
+	          V[2] = data[2+p*n];
+
+	          vectors_.push_back(std::pair<std::string, Vector>("",V));
+	        }
+	      }
+	      
+	    }
+	  }
+	  
+	  success.resize(numprocessors,true);
+
+	  // Start the multi threaded FEMVolRHS builder.
+	  //Thread::parallel( this, &BSVBuilder::parallel, numprocessors );
+	  for (size_t j=0; j<success.size(); j++)
+	  {
+	    if (success[j] == false) return (false);
+	  }
+
+	  output = rhsmatrixhandle;
+	  
+	  return (true);
 	}
-
-	return NP;
-}
 	*/
 	
 

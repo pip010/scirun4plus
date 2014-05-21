@@ -42,26 +42,63 @@ ModelGenericCoilAlgo::
 run(FieldHandle& meshFieldHandle, MatrixHandle& params)
 {
   //MatrixHandle mat = params.dense();
-  if (params.get_rep() == 0)
-  {
-    error("ModelGenericCoilAlgo: Could not convert matrix into dense matrix");
-    return (false);    
-  } 
+  // if (params.get_rep() == 0)
+  // {
+  //   error("ModelGenericCoilAlgo: Could not convert matrix into dense matrix");
+  //   return (false);    
+  // } 
 
+  double R = 15.0;
+  uint segments = 33;
 
+  Vector center(R+5.0, 0.0, 0.0);
+  std::vector<Vector> coilPoints;
+  std::vector<size_t> coilIndices;
 
-  size_type m = 5;//params.ncols();
-  size_type n = 4;//params.nrows();
+  //GenerateCircleContour(coilL_points, coilL_indices, center, R, segments);
+  this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, R, 5.0, segments);
+
+  //size_type m = 5;//params.ncols();
+  //size_type n = 4;//params.nrows();
   //double* dataptr = params.get_data_pointer();
   
   FieldInformation fi("CurveMesh",0,"double");
-  MeshHandle mesh = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
+  fi.make_curvemesh();
 
-      //  std::string type = info.get_mesh_type_id();
-      //  return (CreateMesh(type,x,y,min,max));
+// ALT ****************
+  //MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
+  //meshFieldHandle = CreateField(fi,meshHandle);
 
-  meshFieldHandle = CreateField(fi,mesh);    
+  meshFieldHandle = CreateField(fi);    
   //output->vfield()->set_values(dataptr,m*n);
+
+  VMesh* mesh = meshFieldHandle->vmesh();
+
+  // add nodes
+  for(size_t i = 0; i < coilPoints.size(); i++)
+  {
+    const Point p(coilPoints[i]);
+            
+    mesh->add_point(p);
+  }
+
+
+  VMesh::Node::array_type edge;
+
+  for(size_t i = 0; i < coilIndices.size(); i++)
+  {
+      VMesh::Node::index_type p = coilIndices[i];
+      edge.push_back(p);
+
+      if(edge.size() == 2)
+      {
+        mesh->add_elem(edge);
+        edge.clear();
+      }
+  }
+  
+
+
 
 
   /*
@@ -191,25 +228,84 @@ ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, boo
   return (true);
 }
 
-std::vector<Vector>
+void
 ModelGenericCoilAlgo::
-GenerateCircleContour(Vector pos,double r,uint nsegments)
+GenerateCircleContour(std::vector<Vector> &points, std::vector<size_t> &indices, Vector pos,double r,size_t nsegments)
 {
   //(x + r*cos(alpha), y + r*sin(alpha)
-  double pi = atan(1)*4;
-  double anglePerSegment = 2*M_PI/nsegments;
-  std::vector<Vector> circlexy(nsegments+1);
+  //double pi = atan(1)*4;
 
-  for(int i = 0; i < nsegments; i++)
+  double anglePerSegment = 2*M_PI/nsegments;
+  points.resize(nsegments+1);
+  indices.resize(2*nsegments);
+
+  for(size_t i = 0; i < nsegments; i++)
   {
     //circlexy[i] = new THREE.Vector3(x + r * Math.cos(anglePerSegment*i), y + r * Math.sin(anglePerSegment*i), z);
-    circlexy[i].Set(pos.x() + r * cos(anglePerSegment*i), pos.y() + r * sin(anglePerSegment*i), pos.z());
+    points[i].Set(pos.x() + r * cos(anglePerSegment*i), pos.y() + r * sin(anglePerSegment*i), pos.z());
   }
 
-  circlexy[nsegments] = circlexy[0];
+  points[nsegments] = points[0];
 
-  return circlexy;
+  for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
+  {
+
+    indices[j] = i;
+    indices[j+1] = i + 1;
+  }
+
+  indices[ 2*nsegments - 1 ] = indices[0];
 }
+
+void
+ModelGenericCoilAlgo::
+GenerateFigure8ShapedCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double d, size_t nsegments)
+{
+  //(x + r*cos(alpha), y + r*sin(alpha)
+  //double pi = atan(1)*4;
+
+  double anglePerSegment = 2*M_PI/nsegments;
+  points.resize(2*(nsegments+1));
+  indices.resize(4*nsegments);
+  Vector posL(  r + d/2.0, 0, 0);
+  Vector posR( -r - d/2.0, 0, 0);
+
+
+  // Left coil
+  for(size_t i = 0; i < nsegments; i++)
+  {
+    points[i].Set(posL.x() + r * cos(anglePerSegment*i), posL.y() + r * sin(anglePerSegment*i), posL.z());
+  }
+  points[nsegments] = points[0];
+
+  for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
+  {
+
+    indices[j] = i;
+    indices[j+1] = i + 1;
+  }
+  indices[ 2*nsegments - 1 ] = indices[0];
+
+
+
+  //Right Coil
+  for(size_t i = nsegments; i < 2*nsegments; i++)
+  {
+    points[i].Set(posR.x() + r * cos(anglePerSegment*i), posR.y() + r * sin(anglePerSegment*i), posR.z());
+  }
+  points[2*nsegments] = points[nsegments];
+
+  for(size_t i = nsegments, j = 2*nsegments; i < 2*nsegments; i++, j+=2)
+  {
+
+    indices[j] = i;
+    indices[j+1] = i + 1;
+  }
+  indices[ 4*nsegments - 1 ] = indices[ 2*nsegments ];
+
+}
+
+
 
 } // end namespace SCIRunAlgo
 

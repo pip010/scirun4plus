@@ -21,17 +21,14 @@ class SCISHARE BiotSavartSolverAlgo : public AlgoBase
 {
   public:
     BiotSavartSolverAlgo()
-    {}
+    {
+      // Number of processors to use
+      add_int("num_processors",-1);
+    }
     
-    //! Convert data into a matrix
+    //! Solve magnetic B-field via Biot-Savart piece-wise linear intergation
     bool run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata);
 
-  private:
-    //! Biot-Savart Contour Piece-wise integration
-    bool IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata);
-
-	//! TODO
-    int AdjustNumberOfIntegrationPoints(double step, double len);
 };
 
 } // end namespace BiotSavartSolverAlgo

@@ -32,7 +32,8 @@ class SCISHARE ModelGenericCoilAlgo : public AlgoBase
     bool run(FieldHandle& mesh, MatrixHandle& params); 
 
   private:
-  	std::vector<Vector>	GenerateCircleContour(Vector pos,double r,uint nsegments);
+  	void GenerateCircleContour(std::vector<Vector>& points, std::vector<size_t>& indicies, Vector pos, double r, size_t nsegments);
+  	void GenerateFigure8ShapedCoil(std::vector<Vector>& points, std::vector<size_t>& indicies, double r, double d, size_t nsegments);
 };
 
 } // end namespace BiotSavartSolverAlgo
