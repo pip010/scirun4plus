@@ -51,179 +51,76 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params)
   double R = 15.0;
   uint segments = 33;
 
-  Vector center(R+5.0, 0.0, 0.0);
-  std::vector<Vector> coilPoints;
-  std::vector<size_t> coilIndices;
-
-  //GenerateCircleContour(coilL_points, coilL_indices, center, R, segments);
-  this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, R, 5.0, segments);
-
-  //size_type m = 5;//params.ncols();
-  //size_type n = 4;//params.nrows();
-  //double* dataptr = params.get_data_pointer();
-  
-  FieldInformation fi("CurveMesh",0,"double");
-  fi.make_curvemesh();
-
-// ALT ****************
-  //MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
-  //meshFieldHandle = CreateField(fi,meshHandle);
-
-  meshFieldHandle = CreateField(fi);    
-  //output->vfield()->set_values(dataptr,m*n);
-
-  VMesh* mesh = meshFieldHandle->vmesh();
-
-  // add nodes
-  for(size_t i = 0; i < coilPoints.size(); i++)
+  try
   {
-    const Point p(coilPoints[i]);
-            
-    mesh->add_point(p);
-  }
+      //Vector center(R+5.0, 0.0, 0.0);
+      std::vector<Vector> coilPoints;
+      std::vector<size_t> coilIndices;
 
+      //this->GenerateCircleContour(coilPoints, coilIndices, center, R, segments);
+      this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, R, 2.5, segments);
 
-  VMesh::Node::array_type edge;
+      //size_type m = 5;//params.ncols();
+      //size_type n = 4;//params.nrows();
+      //double* dataptr = params.get_data_pointer();
+      
+      FieldInformation fi("CurveMesh",0,"double");//0 data on elements; 1 data on nodes
+      fi.make_curvemesh();
 
-  for(size_t i = 0; i < coilIndices.size(); i++)
-  {
-      VMesh::Node::index_type p = coilIndices[i];
-      edge.push_back(p);
+    // ALT ****************
+      //MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
+      //meshFieldHandle = CreateField(fi,meshHandle);
 
-      if(edge.size() == 2)
+      meshFieldHandle = CreateField(fi);    
+      //output->vfield()->set_values(dataptr,m*n);
+
+      VMesh* mesh = meshFieldHandle->vmesh();
+
+      // add nodes
+      for(size_t i = 0; i < coilPoints.size(); i++)
       {
-        mesh->add_elem(edge);
-        edge.clear();
+        const Point p(coilPoints[i]);
+                
+        mesh->add_point(p);
       }
-  }
-  
 
 
+      VMesh::Node::array_type edge;
 
-
-  /*
-  if (datalocation == "Node")
-  {
-    FieldInformation fi("ImageMesh",1,"double");
-    MeshHandle mesh = CreateMesh(fi,m,n,Point(0.0,0.0,0.0),Point(static_cast<double>(m),static_cast<double>(n),0.0));
-    output = CreateField(fi,mesh);    
-    output->vfield()->set_values(dataptr,m*n);
-  }
-  else if (datalocation == "Element")
-  {
-    FieldInformation fi("ImageMesh",0,"double");
-    MeshHandle mesh = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
-    output = CreateField(fi,mesh);    
-    output->vfield()->set_values(dataptr,m*n);
-  }
-  else
-  {
-    pr->error("MatrixToField: Data location information is not recognized");
-    return (false);      
-  }
-  */
-
-
-
-
-
-  /*
-  void
-ConvertMatricesToMesh::execute()
-{
-  MatrixHandle positionshandle;
-  MatrixHandle normalshandle;
-  
-  get_input_handle("Mesh Positions", positionshandle,true);
-  if (!get_input_handle("Mesh Normals", normalshandle, false))
-  {
-    remark("No input normals connected, not used.");
-  }
-
-  if (inputs_changed_ || gui_fieldbasetype_.changed() ||
-      gui_datatype_.changed() || !oport_cached("Output Field"))
-  {
-    update_state(Executing);
-    
-    if (positionshandle->ncols() < 3)
-    {
-      error("Mesh Positions must contain at least 3 columns for position data.");
-      return;
-    }
-    if (positionshandle->ncols() > 3)
-    {
-      remark("Mesh Positions contains unused columns, only first three are used.");
-    }
-
-    std::string basename = gui_fieldbasetype_.get();
-    std::string datatype = gui_datatype_.get();
-
-    FieldInformation fi("CurveMesh",1,datatype);
-    if (basename == "Curve") fi.make_curvemesh();
-    else if (basename == "HexVol") fi.make_hexvolmesh();
-    else if (basename == "PointCloud") fi.make_pointcloudmesh();
-    else if (basename == "PrismVol") fi.make_prismvolmesh();
-    else if (basename == "QuadSurf") fi.make_quadsurfmesh();
-    else if (basename == "TetVol") fi.make_tetvolmesh();
-    else if (basename == "TriSurf") fi.make_trisurfmesh();
-    
-    FieldHandle result_field = CreateField(fi);
-    VMesh* mesh = result_field->vmesh();
-
-    index_type i, j;
-    const size_type pnrows = positionshandle->nrows();
-    for (i = 0; i < pnrows; i++)
-    {
-      const Point p(positionshandle->get(i, 0),
-        positionshandle->get(i, 1),
-        positionshandle->get(i, 2));
-      mesh->add_point(p);
-    }
-    
-    process_elements(mesh, pnrows, basename != "PointCloud");
-    
-    result_field->vfield()->resize_values();
-    send_output_handle("Output Field", result_field);
-  }
-}
-
-void 
-ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, bool required)
-{
-  MatrixHandle elementshandle;
-  if (get_input_handle("Mesh Elements", elementshandle, required))
-  {
-    index_type ecount = 0;
-    const size_type enrows = elementshandle->nrows();
-    const size_type encols = elementshandle->ncols();
-    VMesh::Node::array_type nodes;
-
-    for (index_type i = 0; i < enrows; i++)
-    {
-      nodes.clear();
-      for (index_type j = 0; j < encols; j++)
+      for(size_t i = 0; i < coilIndices.size(); i++)
       {
-        VMesh::Node::index_type index = static_cast<index_type>(elementshandle->get(i, j));
-        if (index < 0 || index >= positionRows)
-        {
-          if (ecount < 10)
+          VMesh::Node::index_type p = coilIndices[i];
+          edge.push_back(p);
+
+          if(edge.size() == 2)
           {
-            error("Bad index found at " + to_string(i) + ", "+ to_string(j));
+            mesh->add_elem(edge);
+            edge.clear();
           }
-          index = 0;
-          ecount++;
-        }
-        nodes.push_back(index);
       }
-      mesh->add_elem(nodes);
-    }
-    if (ecount >= 10)
-    {
-      error("..." + to_string(ecount-9) + " additional bad indices found.");
-    }
+      
+      std::vector<double> valz(2*segments);
+
+      for(size_t i = 0; i < 2*segments; i++)
+      {
+        if(i < segments)
+        {
+          valz[i] = 1;
+        }
+        else
+        {
+          valz[i] = -1;
+        }
+      }
+
+      meshFieldHandle->vfield()->resize_values();
+      meshFieldHandle->vfield()->set_values(valz);
   }
-}
-*/
+  catch (...)
+  {
+    error("Error alocating output matrix");
+    algo_end(); return (false);
+  }
   
   return (true);
 }
@@ -236,16 +133,15 @@ GenerateCircleContour(std::vector<Vector> &points, std::vector<size_t> &indices,
   //double pi = atan(1)*4;
 
   double anglePerSegment = 2*M_PI/nsegments;
-  points.resize(nsegments+1);
+  points.resize(nsegments);
   indices.resize(2*nsegments);
 
   for(size_t i = 0; i < nsegments; i++)
   {
-    //circlexy[i] = new THREE.Vector3(x + r * Math.cos(anglePerSegment*i), y + r * Math.sin(anglePerSegment*i), z);
     points[i].Set(pos.x() + r * cos(anglePerSegment*i), pos.y() + r * sin(anglePerSegment*i), pos.z());
   }
 
-  points[nsegments] = points[0];
+  //points[nsegments] = points[0];
 
   for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
   {
@@ -257,52 +153,51 @@ GenerateCircleContour(std::vector<Vector> &points, std::vector<size_t> &indices,
   indices[ 2*nsegments - 1 ] = indices[0];
 }
 
+std::vector<Vector> 
+ModelGenericCoilAlgo::
+ConcatPointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
+{
+   std::vector<Vector> result(points1);
+   result.insert(result.end(), points2.begin(), points2.end());
+   return result;
+}
+
+std::vector<size_t> 
+ModelGenericCoilAlgo::
+ConcatIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2)
+{
+  std::vector<size_t> result(indices1);
+  result.insert(result.end(), indices2.begin(), indices2.end());
+
+  size_t offset = indices1.size() / 2;
+
+  for(size_t i = indices1.size(); i < result.size(); i++)
+  {
+    result[i] += offset;
+  }
+
+  return result;
+}
+
 void
 ModelGenericCoilAlgo::
 GenerateFigure8ShapedCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double d, size_t nsegments)
 {
-  //(x + r*cos(alpha), y + r*sin(alpha)
-  //double pi = atan(1)*4;
+  Vector pos_L( -r-(d/2), 0, 0);
+  std::vector<Vector> coilPoints_L;
+  std::vector<size_t> coilIndices_L;
 
-  double anglePerSegment = 2*M_PI/nsegments;
-  points.resize(2*(nsegments+1));
-  indices.resize(4*nsegments);
-  Vector posL(  r + d/2.0, 0, 0);
-  Vector posR( -r - d/2.0, 0, 0);
+  GenerateCircleContour(coilPoints_L, coilIndices_L, pos_L, r, nsegments);
 
+  Vector pos_R( r+(d/2), 0, 0);
+  std::vector<Vector> coilPoints_R;
+  std::vector<size_t> coilIndices_R;
 
-  // Left coil
-  for(size_t i = 0; i < nsegments; i++)
-  {
-    points[i].Set(posL.x() + r * cos(anglePerSegment*i), posL.y() + r * sin(anglePerSegment*i), posL.z());
-  }
-  points[nsegments] = points[0];
+  GenerateCircleContour(coilPoints_R, coilIndices_R, pos_R, r, nsegments);
+  
+  points = ConcatPointsForCurve(coilPoints_L, coilPoints_R);
 
-  for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
-  {
-
-    indices[j] = i;
-    indices[j+1] = i + 1;
-  }
-  indices[ 2*nsegments - 1 ] = indices[0];
-
-
-
-  //Right Coil
-  for(size_t i = nsegments; i < 2*nsegments; i++)
-  {
-    points[i].Set(posR.x() + r * cos(anglePerSegment*i), posR.y() + r * sin(anglePerSegment*i), posR.z());
-  }
-  points[2*nsegments] = points[nsegments];
-
-  for(size_t i = nsegments, j = 2*nsegments; i < 2*nsegments; i++, j+=2)
-  {
-
-    indices[j] = i;
-    indices[j+1] = i + 1;
-  }
-  indices[ 4*nsegments - 1 ] = indices[ 2*nsegments ];
-
+  indices = ConcatIndicesForCurve(coilIndices_L, coilIndices_R);
 }
 
 
