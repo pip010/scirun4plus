@@ -29,12 +29,12 @@
 -->
 
 
-<component name="SolveBiotSavartContour" category="Math">
+<component name="RunExtProcess" category="Utility">
   <overview>
     <authors>
       <author>Petar Petrov</author>
     </authors>
-    <summary>Magnetic B-field via Biot-Savart Contour Integration</summary>
+    <summary>Run External Process</summary>
   </overview>
   <io>
     <inputs lastportdynamic="no">

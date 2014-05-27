@@ -41,19 +41,21 @@ void ApproximateNeighborhoods::optimize( svector<DynamicSurfacePoint*> &points )
   if (1)// (_countdown == 0) ||
     //       (points[0]->domain()->neighborhood()->storageInt() == -1) )
   {
-    clock_t st;
-    st = clock();
+    //clock_t st;
+    //st = clock();
+    
+    
     // set the flag in the neighborhood structure to indicate the 
     //   lists should be updated
-
-    //printf("I am here :) \n");
     points[0]->domain()->neighborhood()->storageInt( 0 );
 
-    //cout << "Rebuilding Neighborhoods" << endl;
+    //cout << "Rebuilding Neighborhoods [start]" << endl;
 
     // now, go through each point and build the neighborhood!
     for ( int i = 0; i < points.size(); i++ )
       points[i]->domain()->neighborhood()->determineNeighborhood(points[i]);
+
+	//cout << "Rebuilding Neighborhoods [end]" << endl;
 
     // reset the countdown
     _countdown = _num_iterations-1;

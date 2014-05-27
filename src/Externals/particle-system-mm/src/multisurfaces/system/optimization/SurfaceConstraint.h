@@ -24,18 +24,16 @@ namespace particle_sys
     //--------------------------------------------------------------------
     // need to initialize the Points by first putting them onto the 
     //   surface
-    void init(custom_class::svector<DynamicSurfacePoint*> &points,
-              int num_iterations=1);
+    void init(custom_class::svector<DynamicSurfacePoint*> &points, int num_iterations = 1 );
 
     //--------------------------------------------------------------------
     // the function is called to perform one iteration of optimization
-    void optimize(custom_class::svector<DynamicSurfacePoint*> &points)
-    { init(points); _optimized=true; };
+    void optimize(custom_class::svector<DynamicSurfacePoint*> &points);
 
     //--------------------------------------------------------------------
     // projects a DynamicSurfacePoint onto the Surface, and updates the
     //   Point's position
-    void projectOntoSurface(DynamicSurfacePoint *point, float t = 0.000001);
+    void projectOntoSurface( DynamicSurfacePoint *point, float t = 0.000001 );
 
   private:
     float _F_threshold;

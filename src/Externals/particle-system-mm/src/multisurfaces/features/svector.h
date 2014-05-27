@@ -23,6 +23,7 @@ namespace custom_class
     void resize(unsigned int size) { _vector.resize(size); };
     void reserve(unsigned int size) { _vector.reserve(size); };
     bool empty() const { return _vector.empty(); };
+    bool isValid(unsigned int i) const { return i < _vector.size(); };
     void clear() { _vector.clear(); };
     T& front();
     T& back();

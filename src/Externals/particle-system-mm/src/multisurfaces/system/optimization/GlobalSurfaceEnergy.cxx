@@ -43,6 +43,8 @@ GlobalSurfaceEnergy::~GlobalSurfaceEnergy()
 //------------------------------------------------------------------------
 void GlobalSurfaceEnergy::optimize( svector<DynamicSurfacePoint*> &points )
 {
+  cout << "GlobalSurfaceEnergyNA optmize" << endl;
+	
   if ( _biased_splitting_dying )
     biasedOptimize( points );
   else

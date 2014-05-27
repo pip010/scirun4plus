@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cassert>
 #include <iostream>
 #include <algorithm>
 #include <time.h>
@@ -11,7 +12,7 @@
 #include <system/optimization/AdaptiveDtSurfaceDistribution.h>
 
 //C++11
-//#define NEW_MP
+#define NEW_MP
 #include <thread>
 #include <functional>
 #include <mutex>
@@ -37,6 +38,7 @@ AdaptiveDtSurfaceDistribution::AdaptiveDtSurfaceDistribution( float
   _prev_global_energy = 0.0;
   _num_iterations = 0;
   _F_threshold = F_threshold;
+  delP.reserve(256);
 }
 
 AdaptiveDtSurfaceDistribution::~AdaptiveDtSurfaceDistribution()
@@ -44,18 +46,26 @@ AdaptiveDtSurfaceDistribution::~AdaptiveDtSurfaceDistribution()
   delete _constraint;
 }
 
-void parallelKernel(std::vector<DynamicSurfacePoint*> &points,SurfaceConstraint* constraint )
+void parallelKernel(svector<DynamicSurfacePoint*> &points,SurfaceConstraint* constraint, unsigned int start, unsigned int end)
 {
-	for ( unsigned j = 0; j < points.size(); j++ )
+	for ( unsigned j = start; j < end; j++ )
 	{
-	  constraint->projectOntoSurface( points[j] );
-	  
-	  if ( points[j]->moved_outside() )
-	  {
-		 cout << "[[[SHABANG]]]" ;
-		(points[j]->system())->removePoint( j );
-		  j--;
-	  }
+		if(points.isValid(j))
+		{
+		  constraint->projectOntoSurface( points[j] );
+		  
+		  if ( points[j]->moved_outside() )
+		  {
+			 //cout << "[[[SHABANG]]]" ;
+			//(points[j]->system())->removePoint( j );
+			//  j--;
+			points[j]->removable(true);
+		  }
+		}
+		else
+		{
+			cout << " KEEP ME isValid() !!! " <<endl;
+		}
 	}
 } 
 
@@ -70,27 +80,27 @@ void AdaptiveDtSurfaceDistribution::init(
   //Thread t1;
   //Thread t2;
 
-  unsigned int  size = points.size();
-  std::vector<DynamicSurfacePoint*> t1v(points._vector.begin(), points._vector.begin() + points._vector.size()/2);
-  std::vector<DynamicSurfacePoint*> t2v(points._vector.begin() + points._vector.size()/2, points._vector.end());
-  
-  #ifdef NEW_MP
-  
-  while ( num_iterations-- )
-  {
+ 
 
   
-	if(size > 1000)
+  #ifdef NEW_MP
+
+  while ( num_iterations-- )
+  {
+ 
+	unsigned int  size = points.size();
+  
+	if(size > 10)
     {
-	  cout << "Recommend to go parallel for: " << t1v.size() <<"  "<< t2v.size() << "|||" << num_iterations << endl;
+	  //cout << "Recommend to go parallel for: " << t1v.size() <<"  "<< t2v.size() << "|||" << num_iterations << endl;
 	
 	
-	  thread t1(parallelKernel,std::ref(t1v),_constraint);
-	  thread t2(parallelKernel,std::ref(t2v),_constraint);
+	  thread t1(parallelKernel,std::ref(points),_constraint,0,size/2);
+	  thread t2(parallelKernel,std::ref(points),_constraint,size/2,size);
 	  t1.join();
 	  t2.join();
 	  
-	  cout << "\nNEXT ITER\n";
+
 	}
 	//else if( size > 100)
 	//{
@@ -99,18 +109,31 @@ void AdaptiveDtSurfaceDistribution::init(
 	//}
 	else
 	{
-		parallelKernel(points._vector,_constraint);
+		parallelKernel(points,_constraint,0,size);
 	}
 	
-	for ( unsigned j = 0; j < size; j++ )
+	//cout << "rem start ..." << endl << flush;
+	delP.clear();
+	
+	  for (unsigned i = 0; i < points.size(); ++i)
 	{
-	  // check if the Point needs to be removed from the System
-	  if ( points[j]->moved_outside() )
+	  if(points[i]->removable())
 	  {
-		(points[j]->system())->removePoint( j );
-		  j--;
+		  delP.push_back(i);
+		  //(points[i]->system())->removePoint(i);
+		  //cout << "R " << *(points[i]) ;
+		  points[i]->removable(false);
 	  }
 	}
+  
+   sort(delP.begin(), delP.end());
+  vector<int>::reverse_iterator iter = delP.rbegin();
+  while (iter != delP.rend()) {
+    int i = *iter++;
+    (points[i]->system())->removePoint(i);
+    //cout << "R ";
+  }
+  //cout << "rem end ..." << endl << flush;
 	
  }
     
@@ -181,7 +204,47 @@ void AdaptiveDtSurfaceDistribution::init(
 void 
 AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
 {
-  float energy, lambda, max_movement, energy_tmp;
+	size_t size_pnts = points.size();
+	
+	cout << "AdaptiveDtSurfaceDistribution::EnergyCalc [start]" << flush << endl;
+	
+	if( size_pnts > 10 )
+	{
+	  thread t1(&AdaptiveDtSurfaceDistribution::doEnergyCalc,this,ref(points), 0          , size_pnts/2 );
+	  thread t2(&AdaptiveDtSurfaceDistribution::doEnergyCalc,this,ref(points), size_pnts/2, size_pnts   );
+	  t1.join();
+	  t2.join();
+	}
+	else if( size_pnts > 100000 )
+	{
+	  size_t quart = size_pnts / 4;
+	  thread t1(&AdaptiveDtSurfaceDistribution::doEnergyCalc,this,ref(points), 0      ,    quart );
+	  thread t2(&AdaptiveDtSurfaceDistribution::doEnergyCalc,this,ref(points), quart  , 2*quart   );
+	  thread t3(&AdaptiveDtSurfaceDistribution::doEnergyCalc,this,ref(points), 2*quart, 3*quart );
+	  thread t4(&AdaptiveDtSurfaceDistribution::doEnergyCalc,this,ref(points), 3*quart, size_pnts   );
+	  t1.join();
+	  t2.join();
+	  t3.join();
+	  t4.join();
+	}
+	else
+	{
+		cout << "======================== NO PARALLEL =======================  " << size_pnts << endl << flush;
+		doEnergyCalc(points,0,size_pnts);
+	}
+ 
+	cout << "AdaptiveDtSurfaceDistribution::EnergyCalc [end]" << flush << endl;
+
+  // delete the points flagged for deletion.
+  doMoving(points);
+	
+  ++_num_iterations;
+}
+
+void AdaptiveDtSurfaceDistribution::doEnergyCalc(svector<DynamicSurfacePoint*> 
+                                                &points, unsigned int start, unsigned int end)
+{
+	  float energy, lambda, max_movement, energy_tmp;
   vector_type force, dx, old_position, old_normal;
   bool keep_iterating;
   //clock_t st, elapsed, tmp;
@@ -190,11 +253,15 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
 
   //double s1, s2, s3; //3 sections to profile inside iteration loop
   //s1 = s2 = s3 = 0.0l; //3 sections to profile inside iteration loop
-  size_t size_pnts = points.size();
+  //size_t size_pnts = points.size();
 
-  vector<int> delP;
-  for (unsigned i = 0; i < points.size(); ++i)
+  //vector<int> delP; P.Ptrov 2014
+  //delP.clear();
+  
+  for (unsigned i = start; i < end; ++i)
   {
+	if(points.isValid(i))
+	{
     // get the original Point values
     lambda = points[i]->lambda();
     old_normal = points[i]->normal();
@@ -203,11 +270,14 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
     // get the energy and force at this Point
     points[i]->computeEnergyForce( energy, force );
 
+assert(points.isValid(i));
+
     // compute Point movement in the local tangent plane
     dx = (-force) / lambda;
     //dx -= DotProduct(old_normal, dx) * old_normal;  
-    points[i]->domain()->surface()->projectMotion( points[i]->position(),
-                                                   old_normal, dx );
+    points[i]->domain()->surface()->projectMotion( points[i]->position(), old_normal, dx );
+    
+assert(points.isValid(i));
 
     // profiling the function...
     //tmp = clock();
@@ -223,12 +293,17 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
       // otherwise, move the Point
     } else {
       points[i]->move( old_position+dx );
+      //points[i]->movable( true, old_position+dx );
+assert(points.isValid(i));
 
       if ( points[i]->moved_outside() )
+      {
         energy_tmp = MAX_VALUE;
+	  }
       else
       {
         _constraint->projectOntoSurface(points[i], _F_threshold);
+assert(points.isValid(i));
 
         // check if it moved outside the domain
         if ( points[i]->moved_outside() )
@@ -259,19 +334,18 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
     //       size next time
     //    
 
-    // profiling the function...
-    //tmp = clock();
-    //s2 += (double)(tmp - elapsed)/(double)CLOCKS_PER_SEC;
-    //elapsed = tmp;
-
     // CASE 1
     if ( energy_tmp > energy ) 
     {    
       // first check to see if the lambda is already big, if so, just
       //   stay where it is and don't do anything!
       if ( lambda >= MAX_LAMBDA )
+      {
         // reset the position
         points[i]->move( old_position );
+        //points[i]->movable( true, old_position );
+assert(points.isValid(i));
+	  }
 
       // otherwise, lets keep making lambda bigger until we get to
       //   a good energy
@@ -291,6 +365,8 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
           points[i]->domain()->surface()->projectMotion(points[i]->position(),
                                                         old_normal, dx);
 
+assert(points.isValid(i));
+
           // check if the movement is too big
           if ( dx.length() > max_movement )
             energy_tmp = MAX_VALUE;
@@ -299,12 +375,15 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
           else
           {
             points[i]->move( old_position+dx );
+            //points[i]->movable( true, old_position+dx );
+assert(points.isValid(i));
 
             if ( points[i]->moved_outside() )
               energy_tmp = MAX_VALUE;
             else
             {
               _constraint->projectOntoSurface( points[i] );
+assert(points.isValid(i));
 
               // check if it moved outside the domain
               if ( points[i]->moved_outside() )
@@ -334,12 +413,16 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
           else if ( lambda >= MAX_LAMBDA )
           {
             points[i]->move( old_position );
+            //points[i]->movable( true, old_position );
+assert(points.isValid(i));
+            
             points[i]->lambda( lambda );
             keep_iterating = false;
 
             // this is for some sort of weirdness with the fe stuff!
             if (points[i]->moved_outside()) {
-              delP.push_back(i);
+              //delP.push_back(i);
+			  points[i]->removable(true);
             }
           }
       
@@ -361,15 +444,64 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
     }
 
     if (fabs(points[i]->F()) > _F_threshold) {
-      delP.push_back(i);
+      //delP.push_back(i);
+      points[i]->removable(true);
     }
     // profiling the function...
     //tmp = clock();
     //s3 += (double)(tmp - elapsed)/(double)CLOCKS_PER_SEC;
     //elapsed = tmp;
-
+	}
+	else
+	{
+		cout << " DAMN " << endl;
+	}
   } // for ( int i = 0; i < points.size(); i++ ) ...
 
+}
+
+void AdaptiveDtSurfaceDistribution::doMoving(svector<DynamicSurfacePoint*> 
+                                                &points)
+{
+  //size_t size_pnts = points.size();
+  vector_type v;
+  delP.clear();
+  cout << endl;
+  
+  for (unsigned i = 0; i < points.size(); ++i)
+  {
+	  if(points[i]->removable())
+	  {
+		  delP.push_back(i);
+		  //(points[i]->system())->removePoint(i);
+		  //cout << "R " << *(points[i]) ;
+		  points[i]->removable(false);
+	  }
+  }
+  
+   sort(delP.begin(), delP.end());
+  vector<int>::reverse_iterator iter = delP.rbegin();
+  while (iter != delP.rend()) {
+    int i = *iter++;
+    (points[i]->system())->removePoint(i);
+    cout << "R ";
+  }
+  
+  /*
+  for (unsigned i = 0; i < points.size(); ++i)
+  {
+	  if(points[i]->movable())
+	  {
+		  points[i]->move();
+		  points[i]->movable(false,v);
+		  cout << " M ";
+	  }
+  }*/
+  
+  cout << endl;
+	/*
+  delP.clear();
+	  
   // delete the points flagged for deletion.
   sort(delP.begin(), delP.end());
   vector<int>::reverse_iterator iter = delP.rbegin();
@@ -377,19 +509,8 @@ AdaptiveDtSurfaceDistribution::optimize(svector<DynamicSurfacePoint*> &points)
     int i = *iter++;
     (points[i]->system())->removePoint(i);
   }
-
+*/
   _optimized = doneMoving( points );
-  ++_num_iterations;
-
-  //double seconds =  (double)(clock() - st)/(double)CLOCKS_PER_SEC;
-
-  //cout << "section 1: "<< s1 / seconds * 100. << "%" << endl;
-  //cout << "section 2: "<< s2 / seconds * 100. << "%" << endl;
-  //cout << "section 3: "<< s3 / seconds * 100. << "%" << endl;
-
-
-  //cout << "AdaptiveDtSurfaceDistribution::optimize iteration: "
-  //     << seconds << " seconds." << endl;
 }
 
 //------------------------------------------------------------------------

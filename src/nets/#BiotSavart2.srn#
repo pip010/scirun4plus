@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="1" name="{Main}" bbox="{69 62 1097 960}" creationDate="{Thu May 22 2014}" creationTime="{21:47:21}" geometry="{1340x829+239+106}">
+<network version="v4.7" netversion="4" name="{Main}" bbox="{80 62 1097 1064}" creationDate="{Mon May 26 2014}" creationTime="{18:25:22}" geometry="{1340x829+239+106}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="Render" name="ViewScene" version="1.0">
-      <position x="377" y="909"/>
+      <position x="388" y="1013"/>
       <gui_callback>
         <callback>addViewer</callback>
       </gui_callback>
-      <var name="ViewWindow_0-geometry" val="700x703+527+143" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{51.810353249674414}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{170.31043727332178}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{75.58975160727945}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-x" val="{1.1279298374079119}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-y" val="{-3.169654869021521}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-z" val="{28.257328610990093}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{0.020713077485248123}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{-0.26879035086230657}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{0.962975968394024}" substitute="no"/>
+      <var name="ViewWindow_0-geometry" val="1556x800+185+57" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{-4.349291300892814}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{-183.5364173291892}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{262.0506319190673}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-x" val="{-2.230218575079426}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-y" val="{17.03512599146326}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-z" val="{28.464332393848345}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{-0.059530549925584916}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{0.7576083480688265}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{0.6499890034161978}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -57,8 +57,8 @@
       <var name="ViewWindow_0-fog-end" val="{0.714265}" substitute="no"/>
       <var name="ViewWindow_0-fog-visibleonly" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-inertia_loop_count" val="{360}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_x" val="{-0.6430866141687575}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_y" val="{-0.7473482690188139}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_x" val="{0.9663041998558045}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_y" val="{-0.07122892059285159}" substitute="no"/>
       <var name="ViewWindow_0-currentvisual" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-autoav" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-caxes" val="{0}" substitute="no"/>
@@ -163,20 +163,21 @@
       <var name="ViewWindow_0-2-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-2-light" val="{1}" substitute="no"/>
       <var name="&quot;ViewWindow_0-MODEL Nodes (1)&quot;" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-3-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-3-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-3-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-light" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-MODEL Transparent Faces (1)&quot;" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-4-useglobal" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-4-type" val="{Gouraud}" substitute="no"/>
+      <var name="ViewWindow_0-4-debug" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-4-clip" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-4-cull" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-4-dl" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-4-fog" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-4-light" val="{1}" substitute="no"/>
     </module>
     <module id="m2" package="SCIRun" category="Math" name="SolveBiotSavartContour" version="1.0">
       <position x="410" y="449"/>
     </module>
-    <module id="m3" package="SCIRun" category="Visualization" name="ShowField" version="1.0" gui_visible="yes">
-      <position x="203" y="769"/>
+    <module id="m3" package="SCIRun" category="Visualization" name="ShowField" version="1.0">
+      <position x="214" y="873"/>
       <var name="nodes_on" val="{1}" substitute="no"/>
       <var name="nodes_transparency" val="{0}" substitute="no"/>
       <var name="nodes_color_type" val="{1}" substitute="no"/>
@@ -222,10 +223,10 @@
       <var name="edges_resolution" val="{6}" substitute="no"/>
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{317x683+1553+396}" substitute="no"/>
+      <var name="ui_geometry" val="{317x683+1553+368}" substitute="no"/>
     </module>
     <module id="m4" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0" gui_visible="yes">
-      <position x="343" y="768"/>
+      <position x="353" y="872"/>
       <var name="scalars_has_data" val="{0}" substitute="no"/>
       <var name="scalars_on" val="{0}" substitute="no"/>
       <var name="scalars_display_type" val="{Spheres}" substitute="no"/>
@@ -241,7 +242,7 @@
       <var name="vectors_transparency" val="{0}" substitute="no"/>
       <var name="vectors_normalize" val="{1}" substitute="no"/>
       <var name="vectors_color_type" val="{1}" substitute="no"/>
-      <var name="vectors_scale" val="{2.08}" substitute="no"/>
+      <var name="vectors_scale" val="{6.6}" substitute="no"/>
       <var name="vectors_threshold" val="{1e-5}" substitute="no"/>
       <var name="vectors_resolution" val="{6}" substitute="no"/>
       <var name="vectors_bidirectional" val="{0}" substitute="no"/>
@@ -256,12 +257,13 @@
       <var name="tensors_resolution" val="{6}" substitute="no"/>
       <var name="tensors_emphasis" val="{0.825}" substitute="no"/>
       <var name="tensors_small_is_dot" val="{1}" substitute="no"/>
-      <var name="secondary_has_data" val="{0}" substitute="no"/>
+      <var name="secondary_has_data" val="{1}" substitute="no"/>
       <var name="secondary_on" val="{0}" substitute="no"/>
       <var name="secondary_display_type" val="{Major Radius}" substitute="no"/>
       <var name="secondary_color_type" val="{0}" substitute="no"/>
       <var name="secondary_alpha" val="{0}" substitute="no"/>
       <var name="secondary_value" val="{1}" substitute="no"/>
+      <var name="secondary_scale" val="{1.0}" substitute="no"/>
       <var name="tertiary_has_data" val="{0}" substitute="no"/>
       <var name="tertiary_on" val="{0}" substitute="no"/>
       <var name="tertiary_display_type" val="{Minor Radius}" substitute="no"/>
@@ -294,7 +296,7 @@
       <var name="field_name_override" val="{1}" substitute="no"/>
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{367x753+1552+108}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1552+192}" substitute="no"/>
     </module>
     <module id="m5" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">
       <position x="99" y="544"/>
@@ -421,70 +423,174 @@
       <var name="ui_geometry" val="{1126x282+169+645}" substitute="no"/>
     </module>
     <module id="m18" package="SCIRun" category="NewField" name="GetFieldBoundary" version="1.0">
-      <position x="312" y="592"/>
+      <position x="288" y="653"/>
     </module>
     <module id="m19" package="SCIRun" category="Visualization" name="RescaleColorMap" version="1.0">
-      <position x="596" y="657"/>
+      <position x="607" y="761"/>
       <var name="main_frame" val="{}" substitute="no"/>
       <var name="isFixed" val="{0}" substitute="no"/>
-      <var name="min" val="{5.753989594850508e-5}" substitute="no"/>
+      <var name="min" val="{5.7539895948505144e-5}" substitute="no"/>
       <var name="max" val="{0.045511211855855126}" substitute="no"/>
       <var name="makeSymmetric" val="{0}" substitute="no"/>
     </module>
     <module id="m20" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">
-      <position x="69" y="686"/>
+      <position x="80" y="790"/>
       <var name="ui_geometry" val="{1126x282+65+769}" substitute="no"/>
+    </module>
+    <module id="m21" package="SCIRun" category="ChangeFieldData" name="SetFieldData" version="1.0">
+      <position x="376" y="545"/>
+      <var name="keepscalartype" val="{0}" substitute="no"/>
+    </module>
+    <module id="m22" package="SCIRun" category="ChangeFieldData" name="SetFieldData" version="1.0">
+      <position x="495" y="637"/>
+      <var name="keepscalartype" val="{0}" substitute="no"/>
+    </module>
+    <module id="m23" package="SCIRun" category="NewField" name="GetFieldBoundary" version="1.0">
+      <position x="447" y="746"/>
+    </module>
+    <module id="m24" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0" gui_visible="yes">
+      <position x="481" y="865"/>
+      <var name="scalars_has_data" val="{0}" substitute="no"/>
+      <var name="scalars_on" val="{0}" substitute="no"/>
+      <var name="scalars_display_type" val="{Spheres}" substitute="no"/>
+      <var name="scalars_transparency" val="{0}" substitute="no"/>
+      <var name="scalars_normalize" val="{0}" substitute="no"/>
+      <var name="scalars_color_type" val="{1}" substitute="no"/>
+      <var name="scalars_threshold" val="{1e-5}" substitute="no"/>
+      <var name="scalars_resolution" val="{6}" substitute="no"/>
+      <var name="scalars_small_is_dot" val="{1}" substitute="no"/>
+      <var name="vectors_has_data" val="{1}" substitute="no"/>
+      <var name="vectors_on" val="{1}" substitute="no"/>
+      <var name="vectors_display_type" val="{Arrows}" substitute="no"/>
+      <var name="vectors_transparency" val="{0}" substitute="no"/>
+      <var name="vectors_normalize" val="{1}" substitute="no"/>
+      <var name="vectors_color_type" val="{1}" substitute="no"/>
+      <var name="vectors_scale" val="{6.6}" substitute="no"/>
+      <var name="vectors_threshold" val="{1e-5}" substitute="no"/>
+      <var name="vectors_resolution" val="{6}" substitute="no"/>
+      <var name="vectors_bidirectional" val="{0}" substitute="no"/>
+      <var name="vectors_small_is_dot" val="{1}" substitute="no"/>
+      <var name="tensors_has_data" val="{0}" substitute="no"/>
+      <var name="tensors_on" val="{0}" substitute="no"/>
+      <var name="tensors_display_type" val="{Colored Boxes}" substitute="no"/>
+      <var name="tensors_transparency" val="{0}" substitute="no"/>
+      <var name="tensors_normalize" val="{0}" substitute="no"/>
+      <var name="tensors_color_type" val="{1}" substitute="no"/>
+      <var name="tensors_threshold" val="{1e-5}" substitute="no"/>
+      <var name="tensors_resolution" val="{6}" substitute="no"/>
+      <var name="tensors_emphasis" val="{0.825}" substitute="no"/>
+      <var name="tensors_small_is_dot" val="{1}" substitute="no"/>
+      <var name="secondary_has_data" val="{1}" substitute="no"/>
+      <var name="secondary_on" val="{0}" substitute="no"/>
+      <var name="secondary_display_type" val="{Major Radius}" substitute="no"/>
+      <var name="secondary_color_type" val="{0}" substitute="no"/>
+      <var name="secondary_alpha" val="{0}" substitute="no"/>
+      <var name="secondary_value" val="{1}" substitute="no"/>
+      <var name="secondary_scale" val="{1.0}" substitute="no"/>
+      <var name="tertiary_has_data" val="{0}" substitute="no"/>
+      <var name="tertiary_on" val="{0}" substitute="no"/>
+      <var name="tertiary_display_type" val="{Minor Radius}" substitute="no"/>
+      <var name="tertiary_color_type" val="{0}" substitute="no"/>
+      <var name="tertiary_alpha" val="{0}" substitute="no"/>
+      <var name="tertiary_value" val="{1}" substitute="no"/>
+      <var name="text_on" val="{0}" substitute="no"/>
+      <var name="text_color_type" val="{0}" substitute="no"/>
+      <var name="text_color-r" val="{1.0}" substitute="no"/>
+      <var name="text_color-g" val="{1.0}" substitute="no"/>
+      <var name="text_color-b" val="{1.0}" substitute="no"/>
+      <var name="text_backface_cull" val="{0}" substitute="no"/>
+      <var name="text_always_visible" val="{0}" substitute="no"/>
+      <var name="text_fontsize" val="{0}" substitute="no"/>
+      <var name="text_precision" val="{3}" substitute="no"/>
+      <var name="text_render_locations" val="{0}" substitute="no"/>
+      <var name="text_show_data" val="{1}" substitute="no"/>
+      <var name="text_show_nodes" val="{0}" substitute="no"/>
+      <var name="text_show_edges" val="{0}" substitute="no"/>
+      <var name="text_show_faces" val="{0}" substitute="no"/>
+      <var name="text_show_cells" val="{0}" substitute="no"/>
+      <var name="def_color-r" val="{1.0}" substitute="no"/>
+      <var name="def_color-g" val="{0.0}" substitute="no"/>
+      <var name="def_color-b" val="{0.24}" substitute="no"/>
+      <var name="def_color-a" val="{0.5}" substitute="no"/>
+      <var name="active_tab" val="{Vectors}" substitute="no"/>
+      <var name="interactive_mode" val="{Interactive}" substitute="no"/>
+      <var name="show_progress" val="{0}" substitute="no"/>
+      <var name="field_name" val="{MODEL-AField}" substitute="no"/>
+      <var name="field_name_override" val="{1}" substitute="no"/>
+      <var name="approx_div" val="{1}" substitute="no"/>
+      <var name="use_default_size" val="{0}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1552+220}" substitute="no"/>
     </module>
   </modules>
   <connections>
-    <connection id="c1" from="m11" fromport="0" to="m8" toport="0">
+    <connection id="c1" from="m21" fromport="0" to="m22" toport="0"/>
+    <connection id="c2" from="m21" fromport="0" to="m18" toport="0"/>
+    <connection id="c3" from="m22" fromport="0" to="m23" toport="0"/>
+    <connection id="c4" from="m11" fromport="0" to="m8" toport="0">
       <route>{814 254 814 454.0 760 454.0 760 526}</route>
     </connection>
-    <connection id="c2" from="m15" fromport="0" to="m2" toport="0">
+    <connection id="c5" from="m15" fromport="0" to="m21" toport="0">
+      <route>{106 292 106 478.0 387 478.0 387 545}</route>
+    </connection>
+    <connection id="c6" from="m15" fromport="0" to="m2" toport="0">
       <route>{106 292 106 318.0 421 318.0 421 449}</route>
     </connection>
-    <connection id="c3" from="m15" fromport="0" to="m17" toport="0">
+    <connection id="c7" from="m15" fromport="0" to="m17" toport="0">
       <route>{106 292 106 351.0 167 351.0 167 370}</route>
     </connection>
-    <connection id="c4" from="m13" fromport="0" to="m15" toport="0"/>
-    <connection id="c5" from="m13" fromport="0" to="m14" toport="0">
+    <connection id="c8" from="m13" fromport="0" to="m15" toport="0"/>
+    <connection id="c9" from="m13" fromport="0" to="m14" toport="0">
       <route>{143 139 143 171.0 363 171.0 363 250}</route>
     </connection>
-    <connection id="c6" from="m6" fromport="0" to="m11" toport="0"/>
-    <connection id="c7" from="m6" fromport="0" to="m7" toport="0"/>
-    <connection id="c8" from="m2" fromport="0" to="m5" toport="0"/>
-    <connection id="c9" from="m2" fromport="0" to="m18" toport="0"/>
-    <connection id="c10" from="m18" fromport="0" to="m20" toport="0"/>
-    <connection id="c11" from="m18" fromport="0" to="m4" toport="0">
-      <route>{323 643 323 662.0 354 662.0 354 768}</route>
+    <connection id="c10" from="m6" fromport="0" to="m11" toport="0"/>
+    <connection id="c11" from="m6" fromport="0" to="m7" toport="0"/>
+    <connection id="c12" from="m2" fromport="0" to="m5" toport="0">
+      <route>{421 500 421 513.0 110 513.0 110 544}</route>
     </connection>
-    <connection id="c12" from="m18" fromport="0" to="m3" toport="0"/>
-    <connection id="c13" from="m10" fromport="0" to="m9" toport="0">
+    <connection id="c13" from="m18" fromport="0" to="m20" toport="0"/>
+    <connection id="c14" from="m18" fromport="0" to="m4" toport="0">
+      <route>{299 704 299 808.0 364 808.0 364 872}</route>
+    </connection>
+    <connection id="c15" from="m18" fromport="0" to="m3" toport="0"/>
+    <connection id="c16" from="m23" fromport="0" to="m24" toport="0"/>
+    <connection id="c17" from="m10" fromport="0" to="m9" toport="0">
       <route>{931 359 931 394.0 885 394.0 885 438}</route>
     </connection>
-    <connection id="c14" from="m10" fromport="0" to="m19" toport="0">
-      <route>{931 359 931 622.0 607 622.0 607 657}</route>
+    <connection id="c18" from="m10" fromport="0" to="m19" toport="0">
+      <route>{931 359 931 622.0 618 622.0 618 761}</route>
     </connection>
-    <connection id="c15" from="m3" fromport="0" to="m1" toport="0"/>
-    <connection id="c16" from="m11" fromport="0" to="m2" toport="1">
+    <connection id="c19" from="m3" fromport="0" to="m1" toport="0">
+      <route>{225 924 225 975.0 399 975.0 399 1013}</route>
+    </connection>
+    <connection id="c20" from="m11" fromport="0" to="m2" toport="1">
       <route>{814 254 814 323.0 435 323.0 435 449}</route>
     </connection>
-    <connection id="c17" from="m11" fromport="0" to="m9" toport="1"/>
-    <connection id="c18" from="m12" fromport="0" to="m11" toport="1">
+    <connection id="c21" from="m11" fromport="0" to="m9" toport="1"/>
+    <connection id="c22" from="m12" fromport="0" to="m11" toport="1">
       <route>{933 113 933 182.0 828 182.0 828 203}</route>
     </connection>
-    <connection id="c19" from="m16" fromport="0" to="m15" toport="1">
+    <connection id="c23" from="m16" fromport="0" to="m15" toport="1">
       <route>{308 141 308 215.0 120 215.0 120 241}</route>
     </connection>
-    <connection id="c20" from="m18" fromport="0" to="m19" toport="1"/>
-    <connection id="c21" from="m9" fromport="0" to="m8" toport="1"/>
-    <connection id="c22" from="m19" fromport="0" to="m4" toport="1"/>
-    <connection id="c23" from="m19" fromport="0" to="m3" toport="1"/>
-    <connection id="c24" from="m4" fromport="0" to="m1" toport="1">
-      <route>{354 819 354 833.0 402 833.0 402 909}</route>
+    <connection id="c24" from="m2" fromport="1" to="m21" toport="1"/>
+    <connection id="c25" from="m2" fromport="2" to="m22" toport="1">
+      <route>{449 500 449 531.0 520 531.0 520 637}</route>
     </connection>
-    <connection id="c25" from="m8" fromport="0" to="m1" toport="2">
-      <route>{760 577 760 850.0 416 850.0 416 909}</route>
+    <connection id="c26" from="m18" fromport="0" to="m19" toport="1"/>
+    <connection id="c27" from="m9" fromport="0" to="m8" toport="1"/>
+    <connection id="c28" from="m19" fromport="0" to="m4" toport="1"/>
+    <connection id="c29" from="m19" fromport="0" to="m24" toport="1">
+      <route>{618 812 618 821.0 506 821.0 506 865}</route>
     </connection>
+    <connection id="c30" from="m19" fromport="0" to="m3" toport="1">
+      <route>{618 812 618 836.0 239 836.0 239 873}</route>
+    </connection>
+    <connection id="c31" from="m4" fromport="0" to="m1" toport="1">
+      <route>{364 923 364 954.0 413 954.0 413 1013}</route>
+    </connection>
+    <connection id="c32" from="m8" fromport="0" to="m1" toport="2">
+      <route>{760 577 760 850.0 427 850.0 427 1013}</route>
+    </connection>
+    <connection id="c33" from="m24" fromport="0" to="m1" toport="3"/>
   </connections>
 </network>

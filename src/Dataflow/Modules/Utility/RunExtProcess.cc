@@ -27,7 +27,16 @@
 */
 
 //! Include the algorithm
-#include <Core/Algorithms/Math/BiotSavartSolver/BiotSavartSolver.h>
+
+#include <Core/Algorithms/ProcessStreaming/pstream.h>
+
+template class redi::basic_pstreambuf<char>;
+template class redi::pstream_common<char>;
+template class redi::basic_pstream<char>;
+template class redi::basic_ipstream<char>;
+template class redi::basic_opstream<char>;
+template class redi::basic_rpstream<char>;
+//#include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
@@ -40,29 +49,58 @@
 
 namespace SCIRun {
 
-class SolveBiotSavartContour : public Module {
+class RunExtProcess : public Module {
   public:
     //! constructor and execute function
-    SolveBiotSavartContour(GuiContext*);
-    virtual ~SolveBiotSavartContour() {}
+    RunExtProcess(GuiContext*);
+    virtual ~RunExtProcess() {}
     virtual void execute();
   
   private:
     //! Define algorithms needed
-    SCIRunAlgo::BiotSavartSolverAlgo algo_;
+    //SCIRunAlgo::GetFieldDataAlgo algo_;
+	//SCIRunAlgo::BiotSavartSolverAlgo algo_;
 };
 
 
-DECLARE_MAKER(SolveBiotSavartContour)
-SolveBiotSavartContour::SolveBiotSavartContour(GuiContext* ctx)
-  : Module("SolveBiotSavartContour", ctx, Source, "Math", "SCIRun")
+DECLARE_MAKER(RunExtProcess)
+RunExtProcess::RunExtProcess(GuiContext* ctx)
+  : Module("RunExtProcess", ctx, Source, "Utility", "SCIRun")
 {
   //! Forward error messages;
-  algo_.set_progress_reporter(this);
+  //algo_.set_progress_reporter(this);
 }
 
-void SolveBiotSavartContour::execute()
+void RunExtProcess::execute()
 {
+  /*
+      {
+        // test reading from bidirectional pstream
+
+        const string cmd = "grep '^127' /etc/hosts /no/such/file /dev/stdin";
+
+        pstream ps(cmd, all3streams);
+
+        print_result(ps, ps.is_open());
+        check_pass(ps.out());
+        check_pass(ps.err());
+
+        ps << "127721\n" << peof;
+
+        string buf;
+        while (getline(ps.out(), buf))
+            cout << "STDOUT: " << buf << endl;
+        check_fail(ps);
+        ps.clear();
+        while (getline(ps.err(), buf))
+            cout << "STDERR: " << buf << endl;
+        check_fail(ps);
+        ps.clear();
+    }
+  */
+
+
+  /*
   //! Define dataflow handles:
   FieldHandle meshField;
   FieldHandle meshOutField;
@@ -114,6 +152,7 @@ void SolveBiotSavartContour::execute()
     }
 
   }
+  */
 }
 
 } // End namespace SCIRun

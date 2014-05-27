@@ -2,7 +2,7 @@
 #include <Core/Algorithms/Math/BiotSavartSolver/BiotSavartSolver.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/DenseColMajMatrix.h>
+//#include <Core/Datatypes/DenseColMajMatrix.h>
 #include <Core/Math/MiscMath.h>
 //#include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Core/Datatypes/FieldInformation.h>
@@ -32,12 +32,13 @@ namespace SCIRunAlgo {
 	      algo(algo),
 	      barrier("BSVHelper Barrier"),
 	      mutex("BSVHelper Mutex"),
-	      results()
+	      matBOut(0),
+	      matAOut(0)
 	    {
 	    }
 
         //! Local entry function, Biot-Savart Contour Piece-wise integration
-		bool IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata);
+		bool IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& dataB, MatrixHandle& dataA);
 
 	    int ref_cnt;
 
@@ -56,19 +57,22 @@ namespace SCIRunAlgo {
 	    VField* vcoilField;
 	    size_type coilSize;
 
-//TBR
-//	    MatrixHandle rhsmatrixhandle;
-//	    DenseMatrix* rhsmatrix;
-//
-
 	  	// parallel essential primitives 
 	    Barrier barrier;
 	    Mutex mutex;
 	    unsigned int numprocessors;
 	    std::vector<bool> success;
 
-	    std::vector<Vector> results;
+	    // keep nodes on the coil cached
 	    std::vector<Vector> coilNodes;
+		
+		//output B-Field
+		DenseMatrix *matBOut;
+		MatrixHandle matBOutHandle;
+
+		//output A-Field
+		DenseMatrix *matAOut;
+		MatrixHandle matAOutHandle;
 
 
 		//! TODO
@@ -105,6 +109,8 @@ namespace SCIRunAlgo {
 	  			vmesh->get_node(modelNode,iM);  			
 	  			//std::cout << "model_node: " << modelNode << std::endl;//DEBUG
 
+				Vector A;
+				Vector B;
 
 	  			for( size_t iC0 = 0, iC1 =1, iCV = 0; 
 	  				iC0 < coilNodes.size(); 
@@ -115,6 +121,7 @@ namespace SCIRunAlgo {
 					
 					vcoilField->get_value(current,iCV);
 
+					current = current == 0.0 ? 1.0 : current;
 					
 
 					Vector coilNodeThis;
@@ -150,7 +157,8 @@ namespace SCIRunAlgo {
 						//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
 					}
 
-					
+
+
 					// integration step over line segment				
 					for(int iip = 0; iip < numIntegrPoints -1; iip++)
 					{
@@ -165,13 +173,17 @@ namespace SCIRunAlgo {
 						double Rn = Rxyz.length();
 
 						//Biot-Savart
-						Vector dB = Cross(Rxyz,dLxyz) * (gamma/4/M_PI/Rn/Rn/Rn);
+						Vector dB = Cross( Rxyz, dLxyz ) * ( abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
+						Vector dA = dLxyz * ( abs(current) / (4.0*M_PI*Rn) );
 
 						//std::cout << "\t\t dB: " << dB << std::endl;//DEBUG
 							
-						//Add increment to the main field
-						//results[i] = numeric.add(results[i], numeric.mul(dB, params.loops) );
-						results[iM] += dB;
+						//Add increment to the B-Field
+						B += dB;
+
+						//Add increment to the A-Field
+						A += dA;
+
 					
 					}
 
@@ -179,6 +191,14 @@ namespace SCIRunAlgo {
 
 
 				}
+
+				matBOut->put(iM,0, B[0]);
+				matBOut->put(iM,1, B[1]);
+				matBOut->put(iM,2, B[2]);
+
+				matAOut->put(iM,0, A[0]);
+				matAOut->put(iM,1, A[1]);
+				matAOut->put(iM,2, A[2]);
 
 				//! progress reporter
 				if (proc_num == 0) 
@@ -241,11 +261,11 @@ namespace SCIRunAlgo {
 	//! Run the global algorithm routine
 	bool 
 	BiotSavartSolverAlgo::
-	run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata)
+	run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& dataB, MatrixHandle& dataA)
 	{
 		algo_start("BiotSavartSolver");
 
-		//! Check whether we have fields.
+		//! Check whether we have domain mesh.
 		if (mesh.get_rep() == 0)
 		{
 			error("No input domain field");
@@ -267,7 +287,7 @@ namespace SCIRunAlgo {
 
 		Handle<BSVHelper> helper = new BSVHelper(this);
 
-		if( !helper->IntegrateBiotSavart(mesh,coil,outmesh,outdata) )
+		if( !helper->IntegrateBiotSavart(mesh,coil,outmesh,dataB,dataA) )
 		{
 			error("Aborted during integration");
 			algo_end(); return (false);
@@ -278,7 +298,7 @@ namespace SCIRunAlgo {
 	
 	bool 
 	BSVHelper::
-	IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata)
+	IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& dataB, MatrixHandle& dataA)
 	{
 		//Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
 
@@ -298,11 +318,6 @@ namespace SCIRunAlgo {
 
 	  	FieldInformation fimesh(mesh);
 	  	FieldInformation ficoil(coil);
-		
-		//VMesh::size_type size = vfield->num_values();
-		//VMesh::size_type esize = vfield->num_evalues();
-
-		//double gamma = 1.0;
 
 
 	  	this->numprocessors = Thread::numProcessors();
@@ -321,23 +336,34 @@ namespace SCIRunAlgo {
 
 		// get number of nodes for the model
   		modelSize = vmesh->num_nodes();
-  		//vmesh->size( modelSize );
 
 		// get numbder of nodes for the coil
   		coilSize = vcoil->num_nodes();
-  		//vcoil->size( coilSize );
   		
   		// basic assumption
   		assert(modelSize > 0 && coilSize > 1);
-
-  		//WRITE Matrix
-  		//DenseMatrixGeneric<double> mat((int)modelSize,3);
-  		//MatrixHandle matH = mat.dense();
-  		//MatrixHandle mat = new DenseColMajMatrix(modelSize,3);
-
-
-		//VMesh::Edge::iterator itEdge;
-		//VMesh::Edge::iterator itEdgeEnd;
+  
+		try
+		{
+			matBOut = new DenseMatrix((int)modelSize,3);
+			matBOutHandle = matBOut;
+		}
+		catch (...)
+		{
+			algo->error("Error alocating output matrix");
+			return (false);
+		}
+  
+		try
+		{
+			matAOut = new DenseMatrix((int)modelSize,3);
+			matAOutHandle = matAOut;
+		}
+		catch (...)
+		{
+			algo->error("Error alocating output matrix");
+			return (false);
+		}
 
 		vmesh->synchronize(Mesh::NODES_E | Mesh::EDGES_E);
 
@@ -346,7 +372,7 @@ namespace SCIRunAlgo {
 		Point enode2;
 
 		coilNodes.clear();
-		coilNodes.reserve(coilSize);
+		coilNodes.reserve(coilSize);//prenuffer capacity
 
 		for(VMesh::Edge::index_type i = 0; i < vcoil->num_edges(); i++)
 		{
@@ -358,10 +384,7 @@ namespace SCIRunAlgo {
 			coilNodes.push_back(Vector(enode2));
 		}
 
-
-  		
-
-  		results.resize(modelSize);
+  		//results.resize(modelSize);
 		success.resize(numprocessors,true);
 
 		// Start the multi threaded
@@ -373,7 +396,7 @@ namespace SCIRunAlgo {
 
 
 
-//WRITE
+//WRITE field
   		fimesh.make_vector();
 		fimesh.make_lineardata();
 
@@ -391,21 +414,31 @@ namespace SCIRunAlgo {
 
 		for (VMesh::Node::index_type i=0; i< modelSize; i++)
 		{
-			//Vector v(0.1,0.2,(double)(i*10));
-			ofield->set_value(results[i],i);
+			Vector v( matBOut->get(i,0), matBOut->get(i,1),matBOut->get(i,2) );
+			//ofield->set_value(results[i],i);
+			//matResults->put(i,0,results[i].x());
+			//matResults->put(i,1,results[i].y());
+			//matResults->put(i,2,results[i].z());
+			ofield->set_value(v,i);
 		}
 
+	    //TODO in case we keep out-mesh
+
+    	// copy property manager
+		//output->copy_properties(input.get_rep());
+//WRITE end
 
 	  success.resize(numprocessors,true);
 
-	  // Start the multi threaded FEMVolRHS builder.
-	  //Thread::parallel( this, &BSVBuilder::parallel, numprocessors );
 	  for (size_t j=0; j<success.size(); j++)
 	  {
 	    if (success[j] == false) return (false);
 	  }
 
-	  //outdata = rhsmatrixhandle;
+	  dataB = matBOutHandle;
+	  dataA = matAOutHandle;
+    
+
 
 		
 
@@ -417,79 +450,6 @@ namespace SCIRunAlgo {
 
 
 	
-/*
-	bool
-	BSVHelper::build(FieldHandle input, 
-	                          MatrixHandle vtable,
-	                          MatrixHandle& output)
-	{
-	  // Get virtual interface to data
-	  field = input->vfield();
-	  mesh  = input->vmesh();
-
-	  // Determine the number of processors to use:
-
-	  numprocessors = Thread::numProcessors();
-	  int numproc = this->algo->get_int("num_processors");
-	  if (numproc > 0) { numprocessors = numproc; }
-	  
-	  
-	  // We added a second system of adding a vector table, using a matrix
-	  // Convert that matrix into the vector table
-	  if (vtable.get_rep())
-	  {
-	    vectors_.clear();
-	    DenseMatrix* mat = vtable->dense();
-	    MatrixHandle temphandle = mat;
-	    // Only if we can convert it into a dense matrix, otherwise skip it
-	    if (mat)
-	    {
-	      double* data = mat->get_data_pointer();
-	      size_type m = mat->nrows();
-	      size_type n = mat->ncols();
-	      Vector V;
-
-	      // Case the table has isotropic values
-	      if (mat->ncols() == 1)
-	      {
-	        for (size_type p=0; p<m;p++)
-	        {
-	          V[0] = data[p*n+0];
-	          V[1] = data[p*n+0];
-	          V[2] = data[p*n+0];
-	          
-	          vectors_.push_back(std::pair<std::string, Vector>("",V));
-	        }
-	      }
-	      else if (mat->ncols() == 3)
-	      {
-	        for (size_type p=0; p<m;p++)
-	        {
-	          V[0] = data[0+p*n];
-	          V[1] = data[1+p*n];
-	          V[2] = data[2+p*n];
-
-	          vectors_.push_back(std::pair<std::string, Vector>("",V));
-	        }
-	      }
-	      
-	    }
-	  }
-	  
-	  success.resize(numprocessors,true);
-
-	  // Start the multi threaded FEMVolRHS builder.
-	  //Thread::parallel( this, &BSVBuilder::parallel, numprocessors );
-	  for (size_t j=0; j<success.size(); j++)
-	  {
-	    if (success[j] == false) return (false);
-	  }
-
-	  output = rhsmatrixhandle;
-	  
-	  return (true);
-	}
-	*/
 	
 
 } // namespace SCIRunAlgo

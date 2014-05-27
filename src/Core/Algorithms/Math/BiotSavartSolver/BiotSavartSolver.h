@@ -27,7 +27,8 @@ class SCISHARE BiotSavartSolverAlgo : public AlgoBase
     }
     
     //! Solve magnetic B-field via Biot-Savart piece-wise linear intergation
-    bool run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& outdata);
+    bool run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& dataB, MatrixHandle& dataA);
+    //TODO split this in varaints with A, A+B and maybe ignore outmesh
 
 };
 

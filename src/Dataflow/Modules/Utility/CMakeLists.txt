@@ -26,16 +26,40 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+# CMakeLists.txt for Dataflow/Modules/Math
 
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Converters)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(DataArrayMath)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FieldArray)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Utility)
+SET(Dataflow_Modules_Utility_SRCS
+  RunExtProcess.cc
+)
+
+SCIRUN_ADD_LIBRARY(Dataflow_Modules_Utility ${Dataflow_Modules_Utility_SRCS})
+
+TARGET_LINK_LIBRARIES(Dataflow_Modules_Utility
+  Core_Algorithms_Util
+  Core_Algorithms_Math
+  Core_Algorithms_FiniteElements
+  Core_Algorithms_Converter
+  Core_Datatypes
+  Core_Exceptions
+  Core_Geom
+  Core_GeomInterface
+  Core_Geometry
+  Dataflow_GuiInterface
+  Dataflow_Widgets
+  Core_Math
+  Core_Parser
+  Core_Persistent
+  Core_Thread
+  Dataflow_TkExtensions
+  Core_Util
+  Dataflow_Network
+  ${TK_LIBRARY}
+  ${GL_LIBRARY}
+  ${M_LIBRARY}
+  ${PETSC_UNI_LIBRARY}
+  ${SCI_TEEM_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Dataflow_Modules_Utility)
+ENDIF(BUILD_SHARED_LIBS)

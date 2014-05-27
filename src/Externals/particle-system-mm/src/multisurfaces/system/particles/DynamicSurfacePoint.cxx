@@ -373,6 +373,11 @@ void DynamicSurfacePoint::move( const vector_type &new_pos )
   computeRadius();
 }
 
+void DynamicSurfacePoint::move()
+{
+	move(_new_pos);
+}
+
 //------------------------------------------------------------------------
 // Function    : computeRadius
 // Description : 

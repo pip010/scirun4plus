@@ -15,7 +15,14 @@
 using namespace particle_sys;
 using namespace std;
 
-
+void SurfaceConstraint::optimize(custom_class::svector<DynamicSurfacePoint*> &points)
+{ 
+	cout << "SurfaceConstraint::optimize [start]" << endl;
+	init(points); 
+	_optimized=true; 
+	cout << "SurfaceConstraint::optimize [end]" << endl;
+};
+    
 void SurfaceConstraint::init( svector<DynamicSurfacePoint*> &points,
                               int num_iterations )
 { 

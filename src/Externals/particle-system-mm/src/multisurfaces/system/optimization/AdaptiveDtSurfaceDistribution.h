@@ -14,6 +14,7 @@
 #include <system/optimization/SurfaceConstraint.h>
 #include <system/optimization/Optimization.h>
 
+
 namespace particle_sys 
 {
   class DynamicSurfacePoint;
@@ -43,10 +44,14 @@ namespace particle_sys
     int _num_iterations;
 
     float _F_threshold;
+    std::vector<int> delP;
 
     //--------------------------------------------------------------------
     // check if the system is done moving
     bool doneMoving(custom_class::svector<DynamicSurfacePoint*> &points);
+    
+    void doMoving(custom_class::svector<DynamicSurfacePoint*> &points);
+    void doEnergyCalc(custom_class::svector<DynamicSurfacePoint*> &points, unsigned int start, unsigned int end);
     
   };
 
