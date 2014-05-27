@@ -30,30 +30,30 @@ namespace SCIRun {
 	class ModelGenericCoil : public Module
 	{
 	  public:
+
 		ModelGenericCoil(GuiContext*);
+		
 		virtual ~ModelGenericCoil() {}
 
 		virtual void execute();
 
 	  private:
-		GuiInt    nrows_;
-		GuiInt    ncols_;
-		//GuiString data_;
-		//GuiString clabel_;
-		//GuiString rlabel_;
-		 SCIRunAlgo::ModelGenericCoilAlgo algo;
+  	    
+  	    GuiDouble wireCurrentTCL;
+		GuiDouble coilRadiusTCL;
+    	GuiString typeTCL;
+		 
+		SCIRunAlgo::ModelGenericCoilAlgo algo;
 	};
 
 
 	DECLARE_MAKER(ModelGenericCoil)
 
 	ModelGenericCoil::ModelGenericCoil(GuiContext* ctx) :
-	  Module("ModelGenericCoil", ctx, Source, "Math", "SCIRun"),
-	  nrows_(get_ctx()->subVar("rows"), 1),
-	  ncols_(get_ctx()->subVar("cols"), 1)
-	  //data_(get_ctx()->subVar("data"), "{0.0}"),
-	  //clabel_(get_ctx()->subVar("clabel"), "{0}"),
-	  //rlabel_(get_ctx()->subVar("rlabel"), "{0}")
+		Module("ModelGenericCoil", ctx, Source, "Math", "SCIRun"),
+		wireCurrentTCL(ctx->subVar("wireCurrentTCL")),
+		coilRadiusTCL(ctx->subVar("coilRadiusTCL")),
+		typeTCL(ctx->subVar("typeTCL")) 
 	{
 		algo.set_progress_reporter(this);
 	}
@@ -61,64 +61,40 @@ namespace SCIRun {
 	void
 	ModelGenericCoil::execute()
 	{
-	
-	  MatrixHandle omatrix;
-	  FieldHandle ofield;
+		SCIRunAlgo::ModelGenericCoilAlgo::Args algoArgs;
+		MatrixHandle omatrix;
+		FieldHandle ofield;
 
-	  //TCLInterface::execute(get_id() + " update_matrixdata");
-	  
-	  size_type nrows = static_cast<size_type>(nrows_.get());
-	  size_type ncols = static_cast<size_type>(ncols_.get());
-	  
-	  MatrixHandle mat = new DenseColMajMatrix(nrows,ncols);
-	  omatrix = mat->dense();
-	  
-	  /*
-	  std::string data = data_.get();
-	  
-	  MatrixHandle mat = new DenseColMajMatrix(nrows,ncols);
-	  
-	  if (mat.get_rep() == 0)
-	  {
-		error("Could allocate output matrix");
-		return;
-	  }
-	  
-	  for (size_t p=0;p<data.size();p++)
-	  { 
-		if ((data[p] == '}')||(data[p] == '{')) data[p] = ' ';
-	  }
+		//TCLInterface::execute(get_id() + " update_matrixdata");
 
-	  std::vector<double> nums;
-	  multiple_from_string(data,nums);
-	  
-	  double *ptr = mat->get_data_pointer();
-	 
-	  //TODO: quick bug fix, this module is due for rewrite.
-	  for (index_type p = 0; p < nums.size(); p++)
-	  { 
-		ptr[p] = nums[p];
-	  }
-	  */
+		//size_type nrows = static_cast<size_type>(nrows_.get());
+		//size_type ncols = static_cast<size_type>(ncols_.get());
 
+		algoArgs.wireCurrent = static_cast<double>(wireCurrentTCL.get());
+		algoArgs.coilRadius = static_cast<double>(coilRadiusTCL.get());
+		std::string coilType = static_cast<std::string>(typeTCL.get());
 
-	    // Only reexecute if the input changed. SCIRun uses simple scheduling
-	  	// that executes every module downstream even if no data has changed:    
-	  	//if (inputs_changed_ || guidatalocation_.changed() || !oport_cached("Mesh"))
-	    if (!oport_cached("Mesh"))
-	  	{
+		if (coilType == "0-shaped") algoArgs.type = 1;
+		else if (coilType == "8-shaped") algoArgs.type = 2;
+		else algoArgs.type = 1;
+
+		//MatrixHandle mat = new DenseColMajMatrix(nrows,ncols);
+		//omatrix = mat->dense();
+
+		//if (!oport_cached("Mesh"))
+		//	{
 		    update_state(Executing);
 		    //std::string datalocation = guidatalocation_.get();
 		   
 		    
-		    if (!(algo.run(ofield,omatrix))) return;
+		    if (!(algo.run(ofield,omatrix,algoArgs))) return;
 		  
 		    // send new output if there is any:  
 		    send_output_handle("Mesh",ofield);
-	    	
-	    	//
+			
+			//
 			send_output_handle("Matrix", omatrix);
-		}
+		//}
 
 
 	}

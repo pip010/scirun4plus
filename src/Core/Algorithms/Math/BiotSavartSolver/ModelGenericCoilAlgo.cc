@@ -37,32 +37,42 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
+    struct Args
+    {
+      double wireCurrent;
+      double coilRadius;
+      int type;
+    };
+
 bool 
 ModelGenericCoilAlgo::
-run(FieldHandle& meshFieldHandle, MatrixHandle& params)
+run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 {
-  //MatrixHandle mat = params.dense();
-  // if (params.get_rep() == 0)
-  // {
-  //   error("ModelGenericCoilAlgo: Could not convert matrix into dense matrix");
-  //   return (false);    
-  // } 
 
-  double R = 15.0;
+  //double R = 15.0;
   uint segments = 33;
 
   try
   {
-      //Vector center(R+5.0, 0.0, 0.0);
       std::vector<Vector> coilPoints;
       std::vector<size_t> coilIndices;
 
-      //this->GenerateCircleContour(coilPoints, coilIndices, center, R, segments);
-      this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, R, 2.5, segments);
+      if(args.type == 1)
+      {
+        Vector center;
+        this->GenerateCircleContour(coilPoints, coilIndices, center, args.coilRadius, segments);
+      }
+      else if(args.type == 2)
+      {
+        this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, args.coilRadius, 2.5, segments);
+      }
+      else
+      {
+        error("Unknown coil type!");
+        algo_end(); return (false);
+      }
+      
 
-      //size_type m = 5;//params.ncols();
-      //size_type n = 4;//params.nrows();
-      //double* dataptr = params.get_data_pointer();
       
       FieldInformation fi("CurveMesh",0,"double");//0 data on elements; 1 data on nodes
       fi.make_curvemesh();
@@ -98,23 +108,47 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params)
             edge.clear();
           }
       }
-      
-      std::vector<double> valz(2*segments);
 
-      for(size_t i = 0; i < 2*segments; i++)
+
+      if(args.type == 1)
       {
-        if(i < segments)
+        std::vector<double> valz(segments);
+
+        for(size_t i = 0; i < segments; i++)
         {
-          valz[i] = 1;
+            valz[i] = args.wireCurrent;
+
         }
-        else
+
+        meshFieldHandle->vfield()->resize_values();
+        meshFieldHandle->vfield()->set_values(valz);
+      }
+      else if(args.type == 2)
+      {
+        std::vector<double> valz(2*segments);
+
+        for(size_t i = 0; i < 2*segments; i++)
         {
-          valz[i] = -1;
+          if(i < segments)
+          {
+            valz[i] = args.wireCurrent;
+          }
+          else
+          {
+            valz[i] = -args.wireCurrent;
+          }
         }
+
+        meshFieldHandle->vfield()->resize_values();
+        meshFieldHandle->vfield()->set_values(valz);
+      }
+      else
+      {
+        error("Unknown coil type!");
+        algo_end(); return (false);
       }
 
-      meshFieldHandle->vfield()->resize_values();
-      meshFieldHandle->vfield()->set_values(valz);
+
   }
   catch (...)
   {

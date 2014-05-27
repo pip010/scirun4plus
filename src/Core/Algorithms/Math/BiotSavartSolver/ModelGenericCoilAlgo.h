@@ -27,9 +27,16 @@ class SCISHARE ModelGenericCoilAlgo : public AlgoBase
   public:
     ModelGenericCoilAlgo()
     {}
+
+    struct Args
+    {
+    	double wireCurrent;
+    	double coilRadius;
+    	int type;
+    };
     
     //! Convert data into a matrix
-    bool run(FieldHandle& mesh, MatrixHandle& params); 
+    bool run(FieldHandle& mesh, MatrixHandle& params, Args& args); 
 
   private:
   	std::vector<Vector> ConcatPointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2);

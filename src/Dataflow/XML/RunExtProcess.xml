@@ -37,29 +37,23 @@
     <summary>Run External Process</summary>
   </overview>
   <io>
-    <inputs lastportdynamic="no">
+    <inputs lastportdynamic="yes">
 	  <port>
-        <name>Mesh</name>
-        <datatype>SCIRun::Field</datatype>
-    </port>
-	  <port>
-        <name>Coil</name>
+        <name>FieldToExport</name>
         <datatype>SCIRun::Field</datatype>
     </port>
     </inputs>
-    <outputs>
+    <outputs lastportdynamic="yes">
       <port>
-        <name>MeshBField</name>
+        <name>MatrixToImport</name>
+        <datatype>SCIRun::Matrix</datatype>
+      </port>
+      <port>
+        <name>FieldToImport</name>
         <datatype>SCIRun::Field</datatype>
       </port>
-      <port>
-        <name>VectorBField</name>
-        <datatype>SCIRun::Matrix</datatype>
-      </port>
-      <port>
-        <name>VectorAField</name>
-        <datatype>SCIRun::Matrix</datatype>
-      </port>
+
+
     </outputs>
   </io>
 </component>

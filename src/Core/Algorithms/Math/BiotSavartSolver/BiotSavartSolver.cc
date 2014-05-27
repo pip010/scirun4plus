@@ -90,10 +90,8 @@ namespace SCIRunAlgo {
 		assert(proc_num >= 0);
 
 		int cnt = 0;
+		double current = 1.0; 
 		Point modelNode;
-  		//Point coilNode;
-
-  		double gamma = 1.0;
 
 		const index_type begins = (modelSize * proc_num) / numprocessors;
 		const index_type ends  = (modelSize * (proc_num+1)) / numprocessors;
@@ -117,7 +115,7 @@ namespace SCIRunAlgo {
 	  				iC0+=2, iC1+=2, iCV++)
 				{
 					
-					double current = 1.0; 
+					
 					
 					vcoilField->get_value(current,iCV);
 
@@ -172,9 +170,10 @@ namespace SCIRunAlgo {
 						//double dLn = dLxyz.length();
 						double Rn = Rxyz.length();
 
+
 						//Biot-Savart
-						Vector dB = Cross( Rxyz, dLxyz ) * ( abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
-						Vector dA = dLxyz * ( abs(current) / (4.0*M_PI*Rn) );
+						Vector dB = Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
+						Vector dA = dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
 
 						//std::cout << "\t\t dB: " << dB << std::endl;//DEBUG
 							
@@ -191,6 +190,8 @@ namespace SCIRunAlgo {
 
 
 				}
+
+				//std::cout << "DEBUG CUR:" << current << std::endl << std::flush;
 
 				matBOut->put(iM,0, B[0]);
 				matBOut->put(iM,1, B[1]);
