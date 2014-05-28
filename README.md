@@ -6,7 +6,7 @@ scirun4 plus additional modules
 modules
 =======
 
-SolveBiotSavartContour : Given a domain mesh and coil mesh in the for of curve-mesh the module calculates the B-field and A-field per mesh node using BiotSvart method for close contours. Piece-wise integration is conducted per domain mesh node and the constant value per coil model edge is considered as the current through the coil at any certain moment. Positive current is assumed to designate integration in direction as the order of edge nodes, while a negatie one integration in the direction oposite the order of edge nodes.
+SolveBiotSavartContour : Given a domain mesh and coil mesh in the for of curve-mesh the module calculates the B-field and A-field per mesh node using BiotSvart method for close contours. Piece-wise integration is conducted per domain mesh node and the constant value per coil model edge is considered as the current through the coil at any certain moment. Positive current is assumed to designate integration in direction as the order of edge nodes, while a negative one in the direction oposite the order of edge nodes.
 
 ModelCoil : The module serves as a helper for generating coil mesh in accordance of predefined coil(s) configuration.
 
