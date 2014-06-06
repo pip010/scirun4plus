@@ -38,9 +38,13 @@ itcl::class SCIRun_Math_ModelGenericCoil {
     method set_defaults {} {
       global $this-wireCurrentTCL
       global $this-coilRadiusTCL
+      global $this-coilDistanceTCL
+      global $this-coilSegmentsTCL
       global $this-typeTCL
       set $this-wireCurrentTCL 1
       set $this-coilRadiusTCL 10
+	  set $this-coilDistanceTCL 2
+	  set $this-coilSegmentsTCL 33
       set $this-typeTCL "O-shaped"
     }
  
@@ -55,6 +59,8 @@ itcl::class SCIRun_Math_ModelGenericCoil {
     method ui {} {
       global $this-wireCurrentTCL
       global $this-coilRadiusTCL
+	  global $this-coilDistanceTCL
+      global $this-coilSegmentsTCL
       global $this-typeTCL
 
       set w .ui[modname]
@@ -67,9 +73,15 @@ itcl::class SCIRun_Math_ModelGenericCoil {
           {"O-shaped" {"8-shaped"}}
       make_entry $w.current "Current through wire:" $this-wireCurrentTCL "$this-c needexecute"
       make_entry $w.radius "Radius of coil(s):" $this-coilRadiusTCL "$this-c needexecute"
+      make_entry $w.distance "Distance between centers:" $this-coilDistanceTCL "$this-c needexecute"
+      make_entry $w.segments "Coil segments:" $this-coilSegmentsTCL "$this-c needexecute"
+      
       bind $w.current <Return> "$this-c needexecute"
       bind $w.radius <Return> "$this-c needexecute"
-      pack $w.type $w.current $w.radius -side top -fill x
+      bind $w.distance <Return> "$this-c needexecute"
+      bind $w.segments <Return> "$this-c needexecute"
+      
+      pack $w.type $w.current $w.radius $w.distance $w.segments -side top -fill x
 
       makeSciButtonPanel $w $w $this
       moveToCursor $w

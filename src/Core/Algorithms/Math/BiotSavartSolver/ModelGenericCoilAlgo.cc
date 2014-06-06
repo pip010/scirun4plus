@@ -48,190 +48,178 @@ bool
 ModelGenericCoilAlgo::
 run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 {
+	
+	try
+	{
+	  std::vector<Vector> coilPoints;
+	  std::vector<size_t> coilIndices;
 
-  //double R = 15.0;
-  uint segments = 33;
+	  if(args.type == 1)
+	  {
+		Vector center;//center at origin
+		this->GenerateCircleContour(coilPoints, coilIndices, center, args.coilRadius, args.coilSegments);
+	  }
+	  else if(args.type == 2)
+	  {
+		this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, args.coilRadius, args.coilDistance, args.coilSegments);
+	  }
+	  else
+	  {
+		error("Unknown coil type!");
+		algo_end(); return (false);
+	  }
 
-  try
-  {
-      std::vector<Vector> coilPoints;
-      std::vector<size_t> coilIndices;
+	  
+	  FieldInformation fi("CurveMesh",0,"double");//0 data on elements; 1 data on nodes
+	  fi.make_curvemesh();
 
-      if(args.type == 1)
-      {
-        Vector center;
-        this->GenerateCircleContour(coilPoints, coilIndices, center, args.coilRadius, segments);
-      }
-      else if(args.type == 2)
-      {
-        this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, args.coilRadius, 2.5, segments);
-      }
-      else
-      {
-        error("Unknown coil type!");
-        algo_end(); return (false);
-      }
-      
+	   // ALT ****************
+	  //MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
+	  //meshFieldHandle = CreateField(fi,meshHandle);
 
-      
-      FieldInformation fi("CurveMesh",0,"double");//0 data on elements; 1 data on nodes
-      fi.make_curvemesh();
+	  meshFieldHandle = CreateField(fi);    
+	  //output->vfield()->set_values(dataptr,m*n);
 
-    // ALT ****************
-      //MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
-      //meshFieldHandle = CreateField(fi,meshHandle);
+	  VMesh* mesh = meshFieldHandle->vmesh();
 
-      meshFieldHandle = CreateField(fi);    
-      //output->vfield()->set_values(dataptr,m*n);
+	  // add nodes
+	  for(size_t i = 0; i < coilPoints.size(); i++)
+	  {
+		const Point p(coilPoints[i]);
+				
+		mesh->add_point(p);
+	  }
 
-      VMesh* mesh = meshFieldHandle->vmesh();
+	  VMesh::Node::array_type edge;
 
-      // add nodes
-      for(size_t i = 0; i < coilPoints.size(); i++)
-      {
-        const Point p(coilPoints[i]);
-                
-        mesh->add_point(p);
-      }
+	  for(size_t i = 0; i < coilIndices.size(); i++)
+	  {
+		  VMesh::Node::index_type p = coilIndices[i];
+		  edge.push_back(p);
 
+		  if(edge.size() == 2)
+		  {
+			mesh->add_elem(edge);
+			edge.clear();
+		  }
+	  }
 
-      VMesh::Node::array_type edge;
+	  if(args.type == 1)
+	  {
+		std::vector<double> valz(args.coilSegments);
 
-      for(size_t i = 0; i < coilIndices.size(); i++)
-      {
-          VMesh::Node::index_type p = coilIndices[i];
-          edge.push_back(p);
+		for(size_t i = 0; i < args.coilSegments; i++)
+		{
+			valz[i] = args.wireCurrent;
 
-          if(edge.size() == 2)
-          {
-            mesh->add_elem(edge);
-            edge.clear();
-          }
-      }
+		}
 
+		meshFieldHandle->vfield()->resize_values();
+		meshFieldHandle->vfield()->set_values(valz);
+	  }
+	  else if(args.type == 2)
+	  {
+		std::vector<double> valz(2*args.coilSegments);
 
-      if(args.type == 1)
-      {
-        std::vector<double> valz(segments);
+		for(size_t i = 0; i < 2*args.coilSegments; i++)
+		{
+		  if(i < args.coilSegments)
+		  {
+			valz[i] = args.wireCurrent;
+		  }
+		  else
+		  {
+			valz[i] = -args.wireCurrent;
+		  }
+		}
 
-        for(size_t i = 0; i < segments; i++)
-        {
-            valz[i] = args.wireCurrent;
-
-        }
-
-        meshFieldHandle->vfield()->resize_values();
-        meshFieldHandle->vfield()->set_values(valz);
-      }
-      else if(args.type == 2)
-      {
-        std::vector<double> valz(2*segments);
-
-        for(size_t i = 0; i < 2*segments; i++)
-        {
-          if(i < segments)
-          {
-            valz[i] = args.wireCurrent;
-          }
-          else
-          {
-            valz[i] = -args.wireCurrent;
-          }
-        }
-
-        meshFieldHandle->vfield()->resize_values();
-        meshFieldHandle->vfield()->set_values(valz);
-      }
-      else
-      {
-        error("Unknown coil type!");
-        algo_end(); return (false);
-      }
+		meshFieldHandle->vfield()->resize_values();
+		meshFieldHandle->vfield()->set_values(valz);
+	  }
+	  else
+	  {
+		error("Unknown coil type!");
+		algo_end(); return (false);
+	  }
 
 
-  }
-  catch (...)
-  {
-    error("Error alocating output matrix");
-    algo_end(); return (false);
-  }
-  
-  return (true);
+	}
+	catch (...)
+	{
+	error("Error alocating output matrix");
+	algo_end(); return (false);
+	}
+
+	return (true);
 }
 
 void
 ModelGenericCoilAlgo::
 GenerateCircleContour(std::vector<Vector> &points, std::vector<size_t> &indices, Vector pos,double r,size_t nsegments)
 {
-  //(x + r*cos(alpha), y + r*sin(alpha)
-  //double pi = atan(1)*4;
+	double anglePerSegment = 2*M_PI/nsegments;
+	points.resize(nsegments);
+	indices.resize(2*nsegments);
 
-  double anglePerSegment = 2*M_PI/nsegments;
-  points.resize(nsegments);
-  indices.resize(2*nsegments);
+	for(size_t i = 0; i < nsegments; i++)
+	{
+	points[i].Set(pos.x() + r * cos(anglePerSegment*i), pos.y() + r * sin(anglePerSegment*i), pos.z());
+	}
 
-  for(size_t i = 0; i < nsegments; i++)
-  {
-    points[i].Set(pos.x() + r * cos(anglePerSegment*i), pos.y() + r * sin(anglePerSegment*i), pos.z());
-  }
+	for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
+	{
+	indices[j] = i;
+	indices[j+1] = i + 1;
+	}
 
-  //points[nsegments] = points[0];
-
-  for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
-  {
-
-    indices[j] = i;
-    indices[j+1] = i + 1;
-  }
-
-  indices[ 2*nsegments - 1 ] = indices[0];
+	indices[ 2*nsegments - 1 ] = indices[0];
 }
 
 std::vector<Vector> 
 ModelGenericCoilAlgo::
-ConcatPointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
+ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
 {
-   std::vector<Vector> result(points1);
-   result.insert(result.end(), points2.begin(), points2.end());
-   return result;
+	std::vector<Vector> result(points1);
+	result.insert(result.end(), points2.begin(), points2.end());
+	return result;
 }
 
 std::vector<size_t> 
 ModelGenericCoilAlgo::
-ConcatIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2)
+ComposeIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2)
 {
-  std::vector<size_t> result(indices1);
-  result.insert(result.end(), indices2.begin(), indices2.end());
+	std::vector<size_t> result(indices1);
+	result.insert(result.end(), indices2.begin(), indices2.end());
 
-  size_t offset = indices1.size() / 2;
+	size_t offset = indices1.size() / 2;
 
-  for(size_t i = indices1.size(); i < result.size(); i++)
-  {
-    result[i] += offset;
-  }
+	for(size_t i = indices1.size(); i < result.size(); i++)
+	{
+	result[i] += offset;
+	}
 
-  return result;
+	return result;
 }
 
 void
 ModelGenericCoilAlgo::
 GenerateFigure8ShapedCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double d, size_t nsegments)
 {
-  Vector pos_L( -r-(d/2), 0, 0);
-  std::vector<Vector> coilPoints_L;
-  std::vector<size_t> coilIndices_L;
+	Vector pos_L( -r-(d/2), 0, 0);
+	std::vector<Vector> coilPoints_L;
+	std::vector<size_t> coilIndices_L;
 
-  GenerateCircleContour(coilPoints_L, coilIndices_L, pos_L, r, nsegments);
+	GenerateCircleContour(coilPoints_L, coilIndices_L, pos_L, r, nsegments);
 
-  Vector pos_R( r+(d/2), 0, 0);
-  std::vector<Vector> coilPoints_R;
-  std::vector<size_t> coilIndices_R;
+	Vector pos_R( r+(d/2), 0, 0);
+	std::vector<Vector> coilPoints_R;
+	std::vector<size_t> coilIndices_R;
 
-  GenerateCircleContour(coilPoints_R, coilIndices_R, pos_R, r, nsegments);
-  
-  points = ConcatPointsForCurve(coilPoints_L, coilPoints_R);
+	GenerateCircleContour(coilPoints_R, coilIndices_R, pos_R, r, nsegments);
 
-  indices = ConcatIndicesForCurve(coilIndices_L, coilIndices_R);
+	points = ComposePointsForCurve(coilPoints_L, coilPoints_R);
+
+	indices = ComposeIndicesForCurve(coilIndices_L, coilIndices_R);
 }
 
 

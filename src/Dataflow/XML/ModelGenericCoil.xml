@@ -34,7 +34,7 @@
     <authors>
       <author>Petar Petrov</author>
     </authors>
-    <summary>My FIRST MODULE :)</summary>
+    <summary>Generates Co-planner mesh-curve loops for coils.</summary>
   </overview>
   <io>
     <inputs lastportdynamic="no">

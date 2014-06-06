@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="1" name="{Main}" bbox="{112 46 774 655}" creationDate="{Mon May 26 2014}" creationTime="{17:24:55}" geometry="{800x800+363+146}">
+<network version="v4.7" netversion="1" name="{Main}" bbox="{112 46 774 655}" creationDate="{Fri Jun 06 2014}" creationTime="{16:48:04}" geometry="{800x800+363+146}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="Math" name="CreateMatrix" version="1.0">
@@ -83,16 +83,16 @@
       <gui_callback>
         <callback>addViewer</callback>
       </gui_callback>
-      <var name="ViewWindow_0-geometry" val="700x703+663+399" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{-165.9830101130813}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{136.87680193175166}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{55.246515487730505}" substitute="no"/>
+      <var name="ViewWindow_0-geometry" val="700x703+664+427" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{-192.18677924723195}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{-20.702035773026335}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{111.29357157390639}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-x" val="{0.03396034240722656}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-y" val="{0.0}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-z" val="{3.6984567642211914}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{0.19574387411644595}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{-0.1287054945550049}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{0.9721724288505803}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{0.48655584609304936}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{0.02153120408987777}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{0.8733841170316283}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -132,8 +132,8 @@
       <var name="ViewWindow_0-fog-end" val="{0.714265}" substitute="no"/>
       <var name="ViewWindow_0-fog-visibleonly" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-inertia_loop_count" val="{360}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_x" val="{0.4079828136703885}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_y" val="{0.8942604379429077}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_x" val="{0.42500527158140083}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_y" val="{0.828470451299951}" substitute="no"/>
       <var name="ViewWindow_0-currentvisual" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-autoav" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-caxes" val="{0}" substitute="no"/>
@@ -321,7 +321,7 @@
       <var name="tensors_resolution" val="{6}" substitute="no"/>
       <var name="tensors_emphasis" val="{0.825}" substitute="no"/>
       <var name="tensors_small_is_dot" val="{1}" substitute="no"/>
-      <var name="secondary_has_data" val="{1}" substitute="no"/>
+      <var name="secondary_has_data" val="{0}" substitute="no"/>
       <var name="secondary_on" val="{0}" substitute="no"/>
       <var name="secondary_display_type" val="{Major Radius}" substitute="no"/>
       <var name="secondary_color_type" val="{0}" substitute="no"/>
@@ -348,9 +348,9 @@
       <var name="text_show_edges" val="{0}" substitute="no"/>
       <var name="text_show_faces" val="{0}" substitute="no"/>
       <var name="text_show_cells" val="{0}" substitute="no"/>
-      <var name="def_color-r" val="{1.0}" substitute="no"/>
+      <var name="def_color-r" val="{0.0}" substitute="no"/>
       <var name="def_color-g" val="{0.0}" substitute="no"/>
-      <var name="def_color-b" val="{0.24}" substitute="no"/>
+      <var name="def_color-b" val="{1.0}" substitute="no"/>
       <var name="def_color-a" val="{0.5}" substitute="no"/>
       <var name="active_tab" val="{Vectors}" substitute="no"/>
       <var name="interactive_mode" val="{Interactive}" substitute="no"/>
@@ -362,7 +362,7 @@
       <var name="ui_geometry" val="{367x753+1551+52}" substitute="no"/>
     </module>
     <module id="m12" package="SCIRun" category="ChangeFieldData" name="SetFieldData" version="1.0">
-      <position x="331" y="394"/>
+      <position x="331" y="407"/>
       <var name="keepscalartype" val="{0}" substitute="no"/>
     </module>
     <module id="m13" package="SCIRun" category="ChangeFieldData" name="SetFieldData" version="1.0">
@@ -401,7 +401,7 @@
       <var name="tensors_resolution" val="{6}" substitute="no"/>
       <var name="tensors_emphasis" val="{0.825}" substitute="no"/>
       <var name="tensors_small_is_dot" val="{1}" substitute="no"/>
-      <var name="secondary_has_data" val="{1}" substitute="no"/>
+      <var name="secondary_has_data" val="{0}" substitute="no"/>
       <var name="secondary_on" val="{0}" substitute="no"/>
       <var name="secondary_display_type" val="{Major Radius}" substitute="no"/>
       <var name="secondary_color_type" val="{0}" substitute="no"/>
@@ -435,7 +435,7 @@
       <var name="active_tab" val="{Vectors}" substitute="no"/>
       <var name="interactive_mode" val="{Interactive}" substitute="no"/>
       <var name="show_progress" val="{0}" substitute="no"/>
-      <var name="field_name" val="{BField}" substitute="no"/>
+      <var name="field_name" val="{AField}" substitute="no"/>
       <var name="field_name_override" val="{1}" substitute="no"/>
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
@@ -450,10 +450,10 @@
     </connection>
     <connection id="c4" from="m10" fromport="0" to="m8" toport="0"/>
     <connection id="c5" from="m3" fromport="0" to="m12" toport="0">
-      <route>{218 225 218 360.0 342 360.0 342 394}</route>
+      <route>{218 225 218 394.0 342 394.0 342 407}</route>
     </connection>
     <connection id="c6" from="m3" fromport="0" to="m13" toport="0">
-      <route>{218 225 218 375.0 497 375.0 497 385}</route>
+      <route>{218 225 218 372.0 497 372.0 497 385}</route>
     </connection>
     <connection id="c7" from="m3" fromport="0" to="m6" toport="0">
       <route>{218 225 218 257.0 320 257.0 320 281}</route>
@@ -471,10 +471,12 @@
     <connection id="c12" from="m9" fromport="0" to="m8" toport="1">
       <route>{448 114 448 159.0 538 159.0 538 176}</route>
     </connection>
-    <connection id="c13" from="m6" fromport="1" to="m12" toport="1">
-      <route>{334 332 334 345.0 356 345.0 356 394}</route>
+    <connection id="c13" from="m6" fromport="0" to="m12" toport="1">
+      <route>{320 332 320 355.0 356 355.0 356 407}</route>
     </connection>
-    <connection id="c14" from="m6" fromport="2" to="m13" toport="1"/>
+    <connection id="c14" from="m6" fromport="1" to="m13" toport="1">
+      <route>{334 332 334 343.0 511 343.0 511 385}</route>
+    </connection>
     <connection id="c15" from="m8" fromport="0" to="m6" toport="1"/>
     <connection id="c16" from="m7" fromport="0" to="m5" toport="1">
       <route>{657 491 657 582.0 378 582.0 378 604}</route>

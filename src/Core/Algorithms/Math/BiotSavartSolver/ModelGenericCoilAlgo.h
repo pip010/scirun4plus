@@ -32,15 +32,27 @@ class SCISHARE ModelGenericCoilAlgo : public AlgoBase
     {
     	double wireCurrent;
     	double coilRadius;
+    	double coilDistance;
+    	double coilSegments;
     	int type;
+    	
+    	inline bool operator==(const Args& rhs)
+    	{ 
+			return wireCurrent == rhs.wireCurrent && 
+			coilRadius == rhs.coilRadius && 
+			coilDistance == rhs.coilDistance && 
+			coilSegments == rhs.coilSegments && 
+			type == rhs.type;
+    	}
+		inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}
     };
     
     //! Convert data into a matrix
     bool run(FieldHandle& mesh, MatrixHandle& params, Args& args); 
 
   private:
-  	std::vector<Vector> ConcatPointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2);
-  	std::vector<size_t> ConcatIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2);
+  	std::vector<Vector> ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2);
+  	std::vector<size_t> ComposeIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2);
   	void GenerateCircleContour(std::vector<Vector>& points, std::vector<size_t>& indices, Vector pos, double r, size_t nsegments);
   	void GenerateFigure8ShapedCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double d, size_t nsegments);
 };

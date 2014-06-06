@@ -27,55 +27,56 @@ namespace SCIRunAlgo {
 	  public:
 
 	    // Constructor needed as Barrier needs to have name
-	    BSVHelper(AlgoBase* algo) :
+	    BSVHelper(AlgoBase* algo, int t) :
 	      ref_cnt(0),
 	      algo(algo),
 	      barrier("BSVHelper Barrier"),
 	      mutex("BSVHelper Mutex"),
-	      matBOut(0),
-	      matAOut(0)
+	      matOut(0),
+	      typeOut(t)
 	    {
 	    }
 
         //! Local entry function, Biot-Savart Contour Piece-wise integration
-		bool IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& dataB, MatrixHandle& dataA);
-
+		bool IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata);
+		
 	    int ref_cnt;
 
 	  private:
 
-		// ref to the executing algorithm context
+		//! ref to the executing algorithm context
 	    AlgoBase* algo;
 
-	    // model miscs.
+	    //! model miscs.
 	    VMesh* vmesh;
 	    VField* vfield;
 	    size_type modelSize;
 
-		// coil miscs.
+		//! coil miscs.
 	    VMesh* vcoil;
 	    VField* vcoilField;
 	    size_type coilSize;
 
-	  	// parallel essential primitives 
+	  	//! parallel essential primitives 
 	    Barrier barrier;
 	    Mutex mutex;
 	    unsigned int numprocessors;
 	    std::vector<bool> success;
 
-	    // keep nodes on the coil cached
+	    //! keep nodes on the coil cached
 	    std::vector<Vector> coilNodes;
 		
-		//output B-Field
-		DenseMatrix *matBOut;
-		MatrixHandle matBOutHandle;
+		//! output Field
+		int typeOut;
+		DenseMatrix *matOut;
+		MatrixHandle matOutHandle;
 
 		//output A-Field
-		DenseMatrix *matAOut;
-		MatrixHandle matAOutHandle;
+		//DenseMatrix *matAOut;
+		//MatrixHandle matAOutHandle;
 
 
-		//! TODO
+		//! Auto adjust accuracy of integration
 	    int AdjustNumberOfIntegrationPoints(double step, double len);
 
 	    //! Entry point for the parallel version
@@ -104,23 +105,18 @@ namespace SCIRunAlgo {
 	  			iM < ends; 
 	  			iM++)
 	  		{
-	  			vmesh->get_node(modelNode,iM);  			
-	  			//std::cout << "model_node: " << modelNode << std::endl;//DEBUG
+	  			vmesh->get_node(modelNode,iM); 
 
-				Vector A;
-				Vector B;
+				// result
+				Vector F;
 
 	  			for( size_t iC0 = 0, iC1 =1, iCV = 0; 
 	  				iC0 < coilNodes.size(); 
 	  				iC0+=2, iC1+=2, iCV++)
 				{
-					
-					
-					
 					vcoilField->get_value(current,iCV);
 
 					current = current == 0.0 ? 1.0 : current;
-					
 
 					Vector coilNodeThis;
 					Vector coilNodeNext;
@@ -138,7 +134,7 @@ namespace SCIRunAlgo {
 
 					//std::cout << "\t coil_node: THIS[" << coilNodeThis << "] NEXT[" <<  coilNodeNext << "]   E:" << current << std::endl;//DEBUG
 
-					//Length of the curve element
+					//! Length of the curve element
 					Vector diffNodes = coilNodeNext - coilNodeThis;
 					double lenSegment = diffNodes.length();
 
@@ -147,59 +143,52 @@ namespace SCIRunAlgo {
 
 					std::vector<Vector> integrPoints(numIntegrPoints);
 					
-					// curve discretization
+					//! curve discretization
 					for(int iip = 0; iip < numIntegrPoints; iip++)
 					{
 						integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, static_cast<double>(iip) / static_cast<double>(numIntegrPoints) );
-
 						//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
 					}
 
 
-
-					// integration step over line segment				
+					//! integration step over line segment				
 					for(int iip = 0; iip < numIntegrPoints -1; iip++)
 					{
-						//Vector connecting the infinitesimal curve-element			
+						//! Vector connecting the infinitesimal curve-element			
 						Vector Rxyz = integrPoints[iip] - Vector(modelNode);
 
-						//Infinitesimal curve-element components
+						//! Infinitesimal curve-element components
 						Vector dLxyz = integrPoints[iip+1] - integrPoints[iip];
 
-						//Modules
 						//double dLn = dLxyz.length();
 						double Rn = Rxyz.length();
 
-
-						//Biot-Savart
-						Vector dB = Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
-						Vector dA = dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
-
-						//std::cout << "\t\t dB: " << dB << std::endl;//DEBUG
-							
-						//Add increment to the B-Field
-						B += dB;
-
-						//Add increment to the A-Field
-						A += dA;
-
+						if(typeOut == 1)
+						{
+							//! Biot-Savart Magnetic Field
+							F += Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
+						}	
 					
+						if(typeOut == 2)
+						{
+							//! Biot-Savart Magnetic Vector Potential Field
+							F += dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
+						}
+						
 					}
 
 					//std::cout << "\t\t B: " << _results[iM] << std::endl;//DEBUG
-
-
 				}
 
 				//std::cout << "DEBUG CUR:" << current << std::endl << std::flush;
 
-				matBOut->put(iM,0, B[0]);
-				matBOut->put(iM,1, B[1]);
-				matBOut->put(iM,2, B[2]);
+				matOut->put(iM,0, F[0]);
+				matOut->put(iM,1, F[1]);
+				matOut->put(iM,2, F[2]);
 
-				matAOut->put(iM,0, A[0]);
-				matAOut->put(iM,1, A[1]);
-				matAOut->put(iM,2, A[2]);
+				//matAOut->put(iM,0, A[0]);
+				//matAOut->put(iM,1, A[1]);
+				//matAOut->put(iM,2, A[2]);
 
 				//! progress reporter
 				if (proc_num == 0) 
@@ -262,7 +251,7 @@ namespace SCIRunAlgo {
 	//! Run the global algorithm routine
 	bool 
 	BiotSavartSolverAlgo::
-	run(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& dataB, MatrixHandle& dataA)
+	run(FieldHandle& mesh, FieldHandle& coil, int outtype, MatrixHandle& outdata)
 	{
 		algo_start("BiotSavartSolver");
 
@@ -282,13 +271,13 @@ namespace SCIRunAlgo {
 		if( !coil->vmesh()->is_curvemesh() )
 		{
 			error("Only curve mesh type is accepted for coil geometry.");
-			return (false);
+			algo_end(); return (false);
 		}
 
 
-		Handle<BSVHelper> helper = new BSVHelper(this);
+		Handle<BSVHelper> helper = new BSVHelper(this, outtype);
 
-		if( !helper->IntegrateBiotSavart(mesh,coil,outmesh,dataB,dataA) )
+		if( !helper->IntegrateBiotSavart(mesh,coil,outdata) )
 		{
 			error("Aborted during integration");
 			algo_end(); return (false);
@@ -297,13 +286,12 @@ namespace SCIRunAlgo {
 		algo_end(); return (true);
 	}
 	
+	
 	bool 
 	BSVHelper::
-	IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil,FieldHandle& outmesh, MatrixHandle& dataB, MatrixHandle& dataA)
+	IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata)
 	{
-		//Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
-
-		bool status = false;
+		//!Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
 
 		this->vmesh = mesh->vmesh();
 		assert(vmesh);
@@ -317,48 +305,38 @@ namespace SCIRunAlgo {
 		this->vcoilField = coil->vfield();
 		assert(vcoilField);
 
-	  	FieldInformation fimesh(mesh);
-	  	FieldInformation ficoil(coil);
+		//FieldInformation fimesh(mesh);
+		//FieldInformation ficoil(coil);
 
 
-	  	this->numprocessors = Thread::numProcessors();
+		this->numprocessors = Thread::numProcessors();
 
-	  	int numproc = this->algo->get_int("num_processors");
+		int numproc = this->algo->get_int("num_processors");
 
-	  	if (numproc > 0) 
-  		{ 
-  			numprocessors = numproc; 
-  		}
+		if (numproc > 0) 
+		{ 
+			numprocessors = numproc; 
+		}
 
-	  	algo->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors));
+		algo->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors));
 
-	  	//numprocessors = 1;// DEBUG when want to test with one CPU only
+		//numprocessors = 1;// DEBUG when want to test with one CPU only
+		
+		success.resize(numprocessors,true);
 
+		//! get number of nodes for the model
+		modelSize = vmesh->num_nodes();
 
-		// get number of nodes for the model
-  		modelSize = vmesh->num_nodes();
+		//! get numbder of nodes for the coil
+		coilSize = vcoil->num_nodes();
 
-		// get numbder of nodes for the coil
-  		coilSize = vcoil->num_nodes();
-  		
-  		// basic assumption
-  		assert(modelSize > 0 && coilSize > 1);
-  
+		//! basic assumption
+		assert(modelSize > 0 && coilSize > 1);
+
 		try
 		{
-			matBOut = new DenseMatrix((int)modelSize,3);
-			matBOutHandle = matBOut;
-		}
-		catch (...)
-		{
-			algo->error("Error alocating output matrix");
-			return (false);
-		}
-  
-		try
-		{
-			matAOut = new DenseMatrix((int)modelSize,3);
-			matAOutHandle = matAOut;
+			matOut = new DenseMatrix((int)modelSize,3);
+			matOutHandle = matOut;
 		}
 		catch (...)
 		{
@@ -373,7 +351,7 @@ namespace SCIRunAlgo {
 		Point enode2;
 
 		coilNodes.clear();
-		coilNodes.reserve(coilSize);//prenuffer capacity
+		coilNodes.reserve(coilSize);
 
 		for(VMesh::Edge::index_type i = 0; i < vcoil->num_edges(); i++)
 		{
@@ -385,8 +363,7 @@ namespace SCIRunAlgo {
 			coilNodes.push_back(Vector(enode2));
 		}
 
-  		//results.resize(modelSize);
-		success.resize(numprocessors,true);
+		
 
 		// Start the multi threaded
 		Thread::parallel(this, &BSVHelper::kernel,numprocessors);
@@ -396,7 +373,7 @@ namespace SCIRunAlgo {
 		}
 
 
-
+/*
 //WRITE field
   		fimesh.make_vector();
 		fimesh.make_lineardata();
@@ -428,24 +405,11 @@ namespace SCIRunAlgo {
     	// copy property manager
 		//output->copy_properties(input.get_rep());
 //WRITE end
+*/
 
-	  success.resize(numprocessors,true);
-
-	  for (size_t j=0; j<success.size(); j++)
-	  {
-	    if (success[j] == false) return (false);
-	  }
-
-	  dataB = matBOutHandle;
-	  dataA = matAOutHandle;
-    
-
-
+		outdata = matOutHandle;
 		
-
-		status = true;
-		
-		return status;
+		return true;
 	}
 
 

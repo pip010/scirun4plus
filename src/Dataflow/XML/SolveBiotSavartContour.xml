@@ -49,10 +49,6 @@
     </inputs>
     <outputs>
       <port>
-        <name>MeshBField</name>
-        <datatype>SCIRun::Field</datatype>
-      </port>
-      <port>
         <name>VectorBField</name>
         <datatype>SCIRun::Matrix</datatype>
       </port>

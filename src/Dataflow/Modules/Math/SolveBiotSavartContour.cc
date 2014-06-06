@@ -65,7 +65,6 @@ void SolveBiotSavartContour::execute()
 {
   //! Define dataflow handles:
   FieldHandle meshField;
-  FieldHandle meshOutField;
   FieldHandle coilField;
   MatrixHandle dataOutB(0);//B-field
   MatrixHandle dataOutA(0);//A-field
@@ -79,25 +78,23 @@ void SolveBiotSavartContour::execute()
   bool need_matrix_dataB = oport_connected("VectorBField");
   bool need_matrix_dataA = oport_connected("VectorAField");
   bool need_matrix_data = need_matrix_dataA || need_matrix_dataB;
-  bool need_field_data = oport_connected("MeshBField");
-  
 
   //! Only do work if needed:
-  if (inputs_changed_ ||
-      (!oport_cached("BField") && (need_field_data || need_matrix_data) ))
-  {    
-    
+  if (inputs_changed_ || need_matrix_data )
+  {
     update_state(Executing);
     
-    if(!(algo_.run(meshField,coilField,meshOutField,dataOutB,dataOutA))) return;
-
-
-    if(need_field_data)
+    if( need_matrix_dataB )
     {
-        //! If port is not connected at time of execute, send down a null handle
-        //! send data downstream:
-        send_output_handle("MeshBField", meshOutField);      
-    }
+		if(!(algo_.run(meshField,coilField,1,dataOutB)))
+		return;
+	}
+
+    if( need_matrix_dataA )
+    {
+		if(!(algo_.run(meshField,coilField,2,dataOutA)))
+		return;
+	}
 
     if(need_matrix_dataB)
     {

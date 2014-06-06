@@ -41,9 +41,12 @@ namespace SCIRun {
   	    
   	    GuiDouble wireCurrentTCL;
 		GuiDouble coilRadiusTCL;
+		GuiDouble coilDistanceTCL;
+		GuiDouble coilSegmentsTCL;
     	GuiString typeTCL;
 		 
 		SCIRunAlgo::ModelGenericCoilAlgo algo;
+		SCIRunAlgo::ModelGenericCoilAlgo::Args oldArgs;
 	};
 
 
@@ -53,6 +56,8 @@ namespace SCIRun {
 		Module("ModelGenericCoil", ctx, Source, "Math", "SCIRun"),
 		wireCurrentTCL(ctx->subVar("wireCurrentTCL")),
 		coilRadiusTCL(ctx->subVar("coilRadiusTCL")),
+		coilDistanceTCL(ctx->subVar("coilDistanceTCL")),
+		coilSegmentsTCL(ctx->subVar("coilSegmentsTCL")),
 		typeTCL(ctx->subVar("typeTCL")) 
 	{
 		algo.set_progress_reporter(this);
@@ -65,37 +70,33 @@ namespace SCIRun {
 		MatrixHandle omatrix;
 		FieldHandle ofield;
 
-		//TCLInterface::execute(get_id() + " update_matrixdata");
-
-		//size_type nrows = static_cast<size_type>(nrows_.get());
-		//size_type ncols = static_cast<size_type>(ncols_.get());
-
+		std::string coilType = static_cast<std::string>(typeTCL.get());
 		algoArgs.wireCurrent = static_cast<double>(wireCurrentTCL.get());
 		algoArgs.coilRadius = static_cast<double>(coilRadiusTCL.get());
-		std::string coilType = static_cast<std::string>(typeTCL.get());
+		algoArgs.coilDistance = static_cast<double>(coilDistanceTCL.get());
+		algoArgs.coilSegments = static_cast<double>(coilSegmentsTCL.get());
+		
+		//bool need_matrix_dataB = oport_connected("Matrix");
+		//bool need_matrix_dataA = oport_connected("Mesh");
 
 		if (coilType == "0-shaped") algoArgs.type = 1;
 		else if (coilType == "8-shaped") algoArgs.type = 2;
 		else algoArgs.type = 1;
 
-		//MatrixHandle mat = new DenseColMajMatrix(nrows,ncols);
-		//omatrix = mat->dense();
-
-		//if (!oport_cached("Mesh"))
-		//	{
+		if (!oport_cached("Mesh") || oldArgs != algoArgs)
+		{
 		    update_state(Executing);
-		    //std::string datalocation = guidatalocation_.get();
-		   
 		    
 		    if (!(algo.run(ofield,omatrix,algoArgs))) return;
 		  
-		    // send new output if there is any:  
+		    //! send new output if there is any:  
 		    send_output_handle("Mesh",ofield);
 			
 			//
 			send_output_handle("Matrix", omatrix);
-		//}
-
+			
+			oldArgs = algoArgs;
+		}
 
 	}
 
