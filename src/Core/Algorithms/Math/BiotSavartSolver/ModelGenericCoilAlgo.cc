@@ -72,6 +72,8 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 	  
 	  FieldInformation fi("CurveMesh",0,"double");//0 data on elements; 1 data on nodes
 	  fi.make_curvemesh();
+	  fi.make_constantdata();
+	  fi.make_scalar();
 
 	   // ALT ****************
 	  //MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));

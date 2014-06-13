@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="2" name="{Main}" bbox="{80 62 1097 1064}" creationDate="{Sat Jun 07 2014}" creationTime="{00:21:48}" geometry="{1340x829+239+106}">
+<network version="v4.7" netversion="4" name="{Main}" bbox="{80 62 1097 1064}" creationDate="{Wed Jun 11 2014}" creationTime="{16:49:36}" geometry="{1340x829+239+106}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="Render" name="ViewScene" version="1.0">
@@ -162,26 +162,6 @@
       <var name="ViewWindow_0-2-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-2-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-2-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-MODEL-BField Vectors (2)&quot;" val="{0}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-MODEL-AField Vectors (4)&quot;" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-4-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-4-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-4-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-4-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-4-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-4-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-4-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-4-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-MODEL Nodes (1)&quot;" val="{0}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-MODEL Transparent Faces (1)&quot;" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-6-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-6-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-6-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-6-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-6-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-6-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-6-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-6-light" val="{1}" substitute="no"/>
     </module>
     <module id="m2" package="SCIRun" category="Math" name="SolveBiotSavartContour" version="1.0">
       <position x="410" y="449"/>
@@ -233,6 +213,7 @@
       <var name="edges_resolution" val="{6}" substitute="no"/>
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
+      <var name="ui_geometry" val="{317x683+1553+368}" substitute="no"/>
       <var name="ui_geometry" val="{317x683+1553+368}" substitute="no"/>
     </module>
     <module id="m4" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0">
@@ -307,6 +288,7 @@
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{367x753+1551+192}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+192}" substitute="no"/>
     </module>
     <module id="m5" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">
       <position x="815" y="774"/>
@@ -319,8 +301,7 @@
       <var name="coilDistanceTCL" val="{2}" substitute="no"/>
       <var name="coilSegmentsTCL" val="{33}" substitute="no"/>
       <var name="typeTCL" val="{8-shaped}" substitute="no"/>
-      <var name="ui_geometry" val="{288x131+1578+667}" substitute="no"/>
-      <var name="ui_geometry" val="{288x131+1578+667}" substitute="no"/>
+      <var name="ui_geometry" val="{288x93+1584+691}" substitute="no"/>
     </module>
     <module id="m7" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0" gui_visible="yes">
       <position x="627" y="159"/>
@@ -374,6 +355,7 @@
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{317x683+1389+368}" substitute="no"/>
+      <var name="ui_geometry" val="{317x683+1389+368}" substitute="no"/>
     </module>
     <module id="m9" package="SCIRun" category="Visualization" name="RescaleColorMap" version="1.0">
       <position x="874" y="438"/>
@@ -406,6 +388,7 @@
       <var name="clabel" val="{0 1 2 3}" substitute="no"/>
       <var name="rlabel" val="{0 1 2 3}" substitute="no"/>
       <var name="ui_geometry" val="{407x654+1494+24}" substitute="no"/>
+      <var name="ui_geometry" val="{407x654+1494+24}" substitute="no"/>
     </module>
     <module id="m13" package="SCIRun" category="DataIO" name="ReadField" version="1.0">
       <position x="132" y="88"/>
@@ -422,7 +405,7 @@
       <var name="ui_geometry" val="{1126x282+172+330}" substitute="no"/>
     </module>
     <module id="m15" package="SCIRun" category="ChangeMesh" name="TransformMeshWithTransform" version="1.0">
-      <position x="95" y="241"/>
+      <position x="94" y="241"/>
     </module>
     <module id="m16" package="SCIRun" category="Math" name="CreateMatrix" version="1.0">
       <position x="297" y="90"/>
@@ -432,9 +415,10 @@
       <var name="clabel" val="{0 1 2 3}" substitute="no"/>
       <var name="rlabel" val="{0 1 2 3}" substitute="no"/>
       <var name="ui_geometry" val="{407x654+1494+24}" substitute="no"/>
+      <var name="ui_geometry" val="{407x654+1494+24}" substitute="no"/>
     </module>
     <module id="m17" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">
-      <position x="156" y="370"/>
+      <position x="178" y="421"/>
       <var name="ui_geometry" val="{1126x282+169+645}" substitute="no"/>
     </module>
     <module id="m18" package="SCIRun" category="NewField" name="GetFieldBoundary" version="1.0">
@@ -536,6 +520,7 @@
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{367x753+1551+192}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+192}" substitute="no"/>
     </module>
     <module id="m25" package="SCIRun" category="Visualization" name="ShowColorMap" version="1.0" gui_visible="yes">
       <position x="703" y="911"/>
@@ -552,81 +537,85 @@
       <var name="extra-padding" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{288x316+1584+337}" substitute="no"/>
     </module>
+    <module id="m26" package="SCIRun" category="ChangeFieldData" name="CalculateFieldData" version="1.0" gui_visible="yes">
+      <position x="134" y="327"/>
+      <var name="function" val="{RESULT = vector(0,0,1);&#10;}" substitute="no"/>
+      <var name="format" val="{Vector}" substitute="no"/>
+      <var name="cache" val="{0}" substitute="no"/>
+      <var name="ui_geometry" val="{835x430+1084+649}" substitute="no"/>
+    </module>
   </modules>
   <connections>
-    <connection id="c1" from="m21" fromport="0" to="m22" toport="0"/>
-    <connection id="c2" from="m21" fromport="0" to="m18" toport="0"/>
-    <connection id="c3" from="m22" fromport="0" to="m5" toport="0">
+    <connection id="c1" from="m26" fromport="0" to="m21" toport="0"/>
+    <connection id="c2" from="m26" fromport="0" to="m17" toport="0"/>
+    <connection id="c3" from="m21" fromport="0" to="m22" toport="0"/>
+    <connection id="c4" from="m21" fromport="0" to="m18" toport="0"/>
+    <connection id="c5" from="m22" fromport="0" to="m5" toport="0">
       <route>{506 688 506 719.0 826 719.0 826 774}</route>
     </connection>
-    <connection id="c4" from="m22" fromport="0" to="m23" toport="0"/>
-    <connection id="c5" from="m11" fromport="0" to="m8" toport="0">
+    <connection id="c6" from="m22" fromport="0" to="m23" toport="0"/>
+    <connection id="c7" from="m11" fromport="0" to="m2" toport="0">
+      <route>{814 254 814 407.0 421 407.0 421 449}</route>
+    </connection>
+    <connection id="c8" from="m11" fromport="0" to="m8" toport="0">
       <route>{814 254 814 454.0 760 454.0 760 526}</route>
     </connection>
-    <connection id="c6" from="m15" fromport="0" to="m21" toport="0">
-      <route>{106 292 106 478.0 387 478.0 387 545}</route>
-    </connection>
-    <connection id="c7" from="m15" fromport="0" to="m2" toport="0">
-      <route>{106 292 106 318.0 421 318.0 421 449}</route>
-    </connection>
-    <connection id="c8" from="m15" fromport="0" to="m17" toport="0">
-      <route>{106 292 106 351.0 167 351.0 167 370}</route>
-    </connection>
-    <connection id="c9" from="m13" fromport="0" to="m15" toport="0"/>
-    <connection id="c10" from="m13" fromport="0" to="m14" toport="0">
+    <connection id="c9" from="m15" fromport="0" to="m26" toport="0"/>
+    <connection id="c10" from="m13" fromport="0" to="m15" toport="0"/>
+    <connection id="c11" from="m13" fromport="0" to="m14" toport="0">
       <route>{143 139 143 171.0 363 171.0 363 250}</route>
     </connection>
-    <connection id="c11" from="m6" fromport="0" to="m11" toport="0"/>
-    <connection id="c12" from="m6" fromport="0" to="m7" toport="0"/>
-    <connection id="c13" from="m18" fromport="0" to="m20" toport="0"/>
-    <connection id="c14" from="m18" fromport="0" to="m4" toport="0">
+    <connection id="c12" from="m6" fromport="0" to="m11" toport="0"/>
+    <connection id="c13" from="m6" fromport="0" to="m7" toport="0"/>
+    <connection id="c14" from="m18" fromport="0" to="m20" toport="0"/>
+    <connection id="c15" from="m18" fromport="0" to="m4" toport="0">
       <route>{299 704 299 808.0 364 808.0 364 872}</route>
     </connection>
-    <connection id="c15" from="m18" fromport="0" to="m3" toport="0"/>
-    <connection id="c16" from="m23" fromport="0" to="m24" toport="0">
+    <connection id="c16" from="m18" fromport="0" to="m3" toport="0"/>
+    <connection id="c17" from="m23" fromport="0" to="m24" toport="0">
       <route>{441 799 441 817.0 507 817.0 507 873}</route>
     </connection>
-    <connection id="c17" from="m10" fromport="0" to="m9" toport="0">
+    <connection id="c18" from="m10" fromport="0" to="m9" toport="0">
       <route>{931 359 931 394.0 885 394.0 885 438}</route>
     </connection>
-    <connection id="c18" from="m10" fromport="0" to="m19" toport="0">
+    <connection id="c19" from="m10" fromport="0" to="m19" toport="0">
       <route>{931 359 931 622.0 618 622.0 618 761}</route>
     </connection>
-    <connection id="c19" from="m19" fromport="0" to="m25" toport="0"/>
-    <connection id="c20" from="m3" fromport="0" to="m1" toport="0">
+    <connection id="c20" from="m19" fromport="0" to="m25" toport="0"/>
+    <connection id="c21" from="m3" fromport="0" to="m1" toport="0">
       <route>{225 874 225 975.0 399 975.0 399 1013}</route>
     </connection>
-    <connection id="c21" from="m11" fromport="0" to="m2" toport="1">
-      <route>{814 254 814 323.0 435 323.0 435 449}</route>
-    </connection>
-    <connection id="c22" from="m11" fromport="0" to="m9" toport="1"/>
-    <connection id="c23" from="m12" fromport="0" to="m11" toport="1">
+    <connection id="c22" from="m26" fromport="0" to="m2" toport="1"/>
+    <connection id="c23" from="m11" fromport="0" to="m9" toport="1"/>
+    <connection id="c24" from="m12" fromport="0" to="m11" toport="1">
       <route>{933 113 933 182.0 828 182.0 828 203}</route>
     </connection>
-    <connection id="c24" from="m16" fromport="0" to="m15" toport="1">
-      <route>{308 141 308 215.0 120 215.0 120 241}</route>
+    <connection id="c25" from="m16" fromport="0" to="m15" toport="1">
+      <route>{308 141 308 215.0 119 215.0 119 241}</route>
     </connection>
-    <connection id="c25" from="m2" fromport="0" to="m21" toport="1"/>
-    <connection id="c26" from="m2" fromport="1" to="m22" toport="1">
+    <connection id="c26" from="m2" fromport="0" to="m21" toport="1">
+      <route>{421 500 421 525.0 401 525.0 401 545}</route>
+    </connection>
+    <connection id="c27" from="m2" fromport="1" to="m22" toport="1">
       <route>{435 500 435 529.0 520 529.0 520 637}</route>
     </connection>
-    <connection id="c27" from="m18" fromport="0" to="m19" toport="1"/>
-    <connection id="c28" from="m9" fromport="0" to="m8" toport="1"/>
-    <connection id="c29" from="m19" fromport="0" to="m4" toport="1"/>
-    <connection id="c30" from="m19" fromport="0" to="m24" toport="1">
-      <route>{618 812 618 821.0 521 821.0 521 873}</route>
+    <connection id="c28" from="m18" fromport="0" to="m19" toport="1"/>
+    <connection id="c29" from="m9" fromport="0" to="m8" toport="1"/>
+    <connection id="c30" from="m19" fromport="0" to="m4" toport="1"/>
+    <connection id="c31" from="m19" fromport="0" to="m24" toport="1">
+      <route>{618 762 618 821.0 521 821.0 521 873}</route>
     </connection>
-    <connection id="c31" from="m19" fromport="0" to="m3" toport="1">
-      <route>{618 812 618 836.0 239 836.0 239 873}</route>
+    <connection id="c32" from="m19" fromport="0" to="m3" toport="1">
+      <route>{618 762 618 836.0 239 836.0 239 873}</route>
     </connection>
-    <connection id="c32" from="m4" fromport="0" to="m1" toport="1">
+    <connection id="c33" from="m4" fromport="0" to="m1" toport="1">
       <route>{364 873 364 954.0 413 954.0 413 1013}</route>
     </connection>
-    <connection id="c33" from="m8" fromport="0" to="m1" toport="2">
+    <connection id="c34" from="m8" fromport="0" to="m1" toport="2">
       <route>{760 577 760 850.0 427 850.0 427 1013}</route>
     </connection>
-    <connection id="c34" from="m24" fromport="0" to="m1" toport="3"/>
-    <connection id="c35" from="m25" fromport="0" to="m1" toport="4">
+    <connection id="c35" from="m24" fromport="0" to="m1" toport="3"/>
+    <connection id="c36" from="m25" fromport="0" to="m1" toport="4">
       <route>{714 912 714 981.0 455 981.0 455 1013}</route>
     </connection>
   </connections>

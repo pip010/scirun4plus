@@ -76,8 +76,8 @@ namespace SCIRun {
 		algoArgs.coilDistance = static_cast<double>(coilDistanceTCL.get());
 		algoArgs.coilSegments = static_cast<double>(coilSegmentsTCL.get());
 		
-		//bool need_matrix_dataB = oport_connected("Matrix");
-		//bool need_matrix_dataA = oport_connected("Mesh");
+		bool need_matrix_data = oport_connected("Matrix");
+		bool need_mesh_data = oport_connected("Mesh");
 
 		if (coilType == "0-shaped") algoArgs.type = 1;
 		else if (coilType == "8-shaped") algoArgs.type = 2;
@@ -89,10 +89,12 @@ namespace SCIRun {
 		    
 		    if (!(algo.run(ofield,omatrix,algoArgs))) return;
 		  
-		    //! send new output if there is any:  
+		    //! send new Mesh output if there is any: 
+		    if(need_mesh_data)
 		    send_output_handle("Mesh",ofield);
 			
-			//
+			//! send new Matri utput if there is any: 
+			if(need_matrix_data)
 			send_output_handle("Matrix", omatrix);
 			
 			oldArgs = algoArgs;

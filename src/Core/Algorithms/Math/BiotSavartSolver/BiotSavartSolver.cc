@@ -1,10 +1,8 @@
-//#include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
-#include <Core/Algorithms/Math/BiotSavartSolver/BiotSavartSolver.h>
 
+#include <Core/Algorithms/Math/BiotSavartSolver/BiotSavartSolver.h>
 #include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Datatypes/DenseColMajMatrix.h>
+
 #include <Core/Math/MiscMath.h>
-//#include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Core/Datatypes/FieldInformation.h>
 
 #include <Core/Thread/Barrier.h>
@@ -19,233 +17,524 @@
 namespace SCIRunAlgo {
 
 	using namespace SCIRun;
-
-
-	// Helper class
-	class BSVHelper
+	
+	//! Namespace used for Biot Solver kernel implementations
+	namespace details
 	{
-	  public:
+		class KernelBase
+		{
 
-	    // Constructor needed as Barrier needs to have name
-	    BSVHelper(AlgoBase* algo, int t) :
-	      ref_cnt(0),
-	      algo(algo),
-	      barrier("BSVHelper Barrier"),
-	      mutex("BSVHelper Mutex"),
-	      matOut(0),
-	      typeOut(t)
-	    {
-	    }
+		public:
+			KernelBase(AlgoBase* algo, int t) :
+			  ref_cnt(0),
+			  algo(algo),
+			  barrier("BSV KernelBase Barrier"),
+			  mutex("BSV KernelBase Mutex"),
+			  typeOut(t),
+			  matOut(0)
+			{
+			}
+			
+			virtual ~KernelBase()
+			{
+			}
+			
+			//! Local entry function, must be implemented by each specific kernel
+			virtual bool Integrate(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata) = 0;
+	
+			//! Global reference counting
+			int ref_cnt;
+			
+		protected:
 
-        //! Local entry function, Biot-Savart Contour Piece-wise integration
-		bool IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata);
-		
-	    int ref_cnt;
+			//! ref to the executing algorithm context
+			AlgoBase* algo;
 
-	  private:
+			//! model miscs.
+			VMesh* vmesh;
+			VField* vfield;
+			size_type modelSize;
 
-		//! ref to the executing algorithm context
-	    AlgoBase* algo;
+			//! coil miscs.
+			VMesh* vcoil;
+			VField* vcoilField;
+			size_type coilSize;
 
-	    //! model miscs.
-	    VMesh* vmesh;
-	    VField* vfield;
-	    size_type modelSize;
+			//! parallel essential primitives 
+			Barrier barrier;
+			Mutex mutex;
+			unsigned int numprocessors;
+			std::vector<bool> success;
+			
+			//! output Field
+			int typeOut;
+			DenseMatrix *matOut;
+			MatrixHandle matOutHandle;
+			
+			bool PreIntegration( FieldHandle& mesh, FieldHandle& coil )
+			{
+					this->vmesh = mesh->vmesh();
+					assert(vmesh);
 
-		//! coil miscs.
-	    VMesh* vcoil;
-	    VField* vcoilField;
-	    size_type coilSize;
+					this->vcoil = coil->vmesh();
+					assert(vcoil);
 
-	  	//! parallel essential primitives 
-	    Barrier barrier;
-	    Mutex mutex;
-	    unsigned int numprocessors;
-	    std::vector<bool> success;
+					this->vfield = mesh->vfield();
+					assert(vfield);
 
-	    //! keep nodes on the coil cached
-	    std::vector<Vector> coilNodes;
-		
-		//! output Field
-		int typeOut;
-		DenseMatrix *matOut;
-		MatrixHandle matOutHandle;
-
-		//output A-Field
-		//DenseMatrix *matAOut;
-		//MatrixHandle matAOutHandle;
+					this->vcoilField = coil->vfield();
+					assert(vcoilField);
 
 
-		//! Auto adjust accuracy of integration
-	    int AdjustNumberOfIntegrationPoints(double step, double len);
+					this->numprocessors = Thread::numProcessors();
 
-	    //! Entry point for the parallel version
-		void kernel(int proc_num);
-	  
-	};
+					int numproc = this->algo->get_int("num_processors");
 
-	void
-	BSVHelper::
-	kernel( int proc_num )
-	{
-		assert(proc_num >= 0);
+					if (numproc > 0) 
+					{ 
+						numprocessors = numproc; 
+					}
 
-		int cnt = 0;
-		double current = 1.0; 
-		Point modelNode;
+					algo->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors));
 
-		const index_type begins = (modelSize * proc_num) / numprocessors;
-		const index_type ends  = (modelSize * (proc_num+1)) / numprocessors;
-
-		assert( begins <= ends );
-
-		try{
-
-	  		for(index_type iM = begins; 
-	  			iM < ends; 
-	  			iM++)
-	  		{
-	  			vmesh->get_node(modelNode,iM); 
-
-				// result
-				Vector F;
-
-	  			for( size_t iC0 = 0, iC1 =1, iCV = 0; 
-	  				iC0 < coilNodes.size(); 
-	  				iC0+=2, iC1+=2, iCV++)
+					//! DEBUG when we want to test with one CPU only
+					//numprocessors = 1;
+					
+					success.resize(numprocessors,true);
+					
+					//! get number of nodes for the model
+					modelSize = vmesh->num_nodes();
+					assert(modelSize > 0);
+					
+					try
+					{			
+						matOut = new DenseMatrix(static_cast<int>(modelSize),3);
+						matOutHandle = matOut;
+					}
+					catch (...)
+					{
+						algo->error("Error alocating output matrix");
+						return (false);
+					}
+					
+					return (true);
+			}
+			
+			bool PostIntegration( MatrixHandle& outdata )
+			{
+				//! check for error
+				for (size_t j=0; j<success.size(); j++)
 				{
-					vcoilField->get_value(current,iCV);
-
-					current = current == 0.0 ? 1.0 : current;
-
-					Vector coilNodeThis;
-					Vector coilNodeNext;
-
-					if(current >= 0.0)
-					{
-						coilNodeThis = coilNodes[iC0];
-						coilNodeNext = coilNodes[iC1];
-					}
-					else
-					{
-						coilNodeThis = coilNodes[iC1];
-						coilNodeNext = coilNodes[iC0];
-					}
-
-					//std::cout << "\t coil_node: THIS[" << coilNodeThis << "] NEXT[" <<  coilNodeNext << "]   E:" << current << std::endl;//DEBUG
-
-					//! Length of the curve element
-					Vector diffNodes = coilNodeNext - coilNodeThis;
-					double lenSegment = diffNodes.length();
-
-					// TODO optimize via promoting to member scope in case a constant is not vaiable for varying line segments lenght
-					int numIntegrPoints = AdjustNumberOfIntegrationPoints(0.15,lenSegment);
-
-					std::vector<Vector> integrPoints(numIntegrPoints);
-					
-					//! curve discretization
-					for(int iip = 0; iip < numIntegrPoints; iip++)
-					{
-						integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, static_cast<double>(iip) / static_cast<double>(numIntegrPoints) );
-						//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
-					}
-
-
-					//! integration step over line segment				
-					for(int iip = 0; iip < numIntegrPoints -1; iip++)
-					{
-						//! Vector connecting the infinitesimal curve-element			
-						Vector Rxyz = integrPoints[iip] - Vector(modelNode);
-
-						//! Infinitesimal curve-element components
-						Vector dLxyz = integrPoints[iip+1] - integrPoints[iip];
-
-						//double dLn = dLxyz.length();
-						double Rn = Rxyz.length();
-
-						if(typeOut == 1)
-						{
-							//! Biot-Savart Magnetic Field
-							F += Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
-						}	
-					
-						if(typeOut == 2)
-						{
-							//! Biot-Savart Magnetic Vector Potential Field
-							F += dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
-						}
-						
-					}
-
-					//std::cout << "\t\t B: " << _results[iM] << std::endl;//DEBUG
+					if (success[j] == false) return (false);
 				}
 
-				//std::cout << "DEBUG CUR:" << current << std::endl << std::flush;
-
-				matOut->put(iM,0, F[0]);
-				matOut->put(iM,1, F[1]);
-				matOut->put(iM,2, F[2]);
-
-				//matAOut->put(iM,0, A[0]);
-				//matAOut->put(iM,1, A[1]);
-				//matAOut->put(iM,2, A[2]);
-
-				//! progress reporter
-				if (proc_num == 0) 
+				outdata = matOutHandle;
+				
+				return (true);
+			}
+		};
+		
+		class PieceWiseKernel : public KernelBase
+		{
+			public:
+			
+				PieceWiseKernel( AlgoBase* algo, int t ) : KernelBase(algo,t)
 				{
-					cnt++;
-					if (cnt == 200) 
-					{ 
-						cnt = 0; 
-						algo->update_progress(iM,2*(begins-ends)); 
+				}
+				
+				~PieceWiseKernel()
+				{
+				}
+				
+				//! TODO
+				//! Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
+				virtual bool Integrate(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata)
+				{
+
+					if(!PreIntegration(mesh,coil))
+					{
+						return (false);
 					}
-				} 
-	  		}
 
-			success[proc_num] = true;
-		}
-		catch (...)
+					vmesh->synchronize(Mesh::NODES_E | Mesh::EDGES_E);
+					
+					VMesh::Node::array_type enodes;
+					Point enode1;
+					Point enode2;
+					
+					//! get number of nodes for the model
+					//modelSize = vmesh->num_nodes();
+
+					//! get numbder of nodes for the coil
+					coilSize = vcoil->num_nodes();
+
+					//! basic assumption
+					assert(modelSize > 0 && coilSize > 1);
+					
+					coilNodes.clear();
+					coilNodes.reserve(coilSize);
+					
+
+					for(VMesh::Edge::index_type i = 0; i < vcoil->num_edges(); i++)
+					{
+						vcoil->get_nodes(enodes,i);
+						//std::cout << enodes[0] << "; "<< enodes[1] << "; "<< enodes[2] << "; "<< enodes[3] << "; "<< enodes[4] << "; "<< enodes[5] << "; "<< enodes[6] << "; "<< enodes[7] << "; "<< enodes[8] << "; "<< enodes[9] <<"; "<< enodes[10] << std::endl;
+						vcoil->get_point(enode1,enodes[0]);
+						vcoil->get_point(enode2,enodes[1]);
+						coilNodes.push_back(Vector(enode1));
+						coilNodes.push_back(Vector(enode2));
+					}
+
+					//! Start the multi threaded
+					Thread::parallel(this, &PieceWiseKernel::ParallelKernel, numprocessors);
+					
+					
+					return PostIntegration(outdata);
+				}
+				
+				
+			private:
+			
+				//! keep nodes on the coil cached
+				std::vector<Vector> coilNodes;
+				
+				//! execute in parallel
+				void ParallelKernel(int proc_num)
+				{
+
+					assert(proc_num >= 0);
+
+					int cnt = 0;
+					double current = 1.0; 
+					Point modelNode;
+
+					const index_type begins = (modelSize * proc_num) / numprocessors;
+					const index_type ends  = (modelSize * (proc_num+1)) / numprocessors;
+
+					assert( begins <= ends );
+
+					try{
+
+						for(index_type iM = begins; 
+							iM < ends; 
+							iM++)
+						{
+							vmesh->get_node(modelNode,iM); 
+
+							// result
+							Vector F;
+
+							for( size_t iC0 = 0, iC1 =1, iCV = 0; 
+								iC0 < coilNodes.size(); 
+								iC0+=2, iC1+=2, iCV++)
+							{
+								vcoilField->get_value(current,iCV);
+
+								current = current == 0.0 ? 1.0 : current;
+
+								Vector coilNodeThis;
+								Vector coilNodeNext;
+
+								if(current >= 0.0)
+								{
+									coilNodeThis = coilNodes[iC0];
+									coilNodeNext = coilNodes[iC1];
+								}
+								else
+								{
+									coilNodeThis = coilNodes[iC1];
+									coilNodeNext = coilNodes[iC0];
+								}
+
+								//std::cout << "\t coil_node: THIS[" << coilNodeThis << "] NEXT[" <<  coilNodeNext << "]   E:" << current << std::endl;//DEBUG
+
+								//! Length of the curve element
+								Vector diffNodes = coilNodeNext - coilNodeThis;
+								double lenSegment = diffNodes.length();
+
+								// TODO optimize via promoting to member scope in case a constant is not vaiable for varying line segments lenght
+								int numIntegrPoints = AdjustNumberOfIntegrationPoints(0.15,lenSegment);
+
+								std::vector<Vector> integrPoints(numIntegrPoints);
+								
+								//! curve discretization
+								for(int iip = 0; iip < numIntegrPoints; iip++)
+								{
+									integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, static_cast<double>(iip) / static_cast<double>(numIntegrPoints) );
+									//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
+								}
+
+
+								//! integration step over line segment				
+								for(int iip = 0; iip < numIntegrPoints -1; iip++)
+								{
+									//! Vector connecting the infinitesimal curve-element			
+									Vector Rxyz = integrPoints[iip] - Vector(modelNode);
+
+									//! Infinitesimal curve-element components
+									Vector dLxyz = integrPoints[iip+1] - integrPoints[iip];
+
+									//double dLn = dLxyz.length();
+									double Rn = Rxyz.length();
+
+									if(typeOut == 1)
+									{
+										//! Biot-Savart Magnetic Field
+										F += Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
+									}	
+								
+									if(typeOut == 2)
+									{
+										//! Biot-Savart Magnetic Vector Potential Field
+										F += dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
+									}
+									
+								}
+
+								//std::cout << "\t\t B: " << _results[iM] << std::endl;//DEBUG
+							}
+
+							//std::cout << "DEBUG CUR:" << current << std::endl << std::flush;
+
+							matOut->put(iM,0, F[0]);
+							matOut->put(iM,1, F[1]);
+							matOut->put(iM,2, F[2]);
+
+							//! progress reporter
+							if (proc_num == 0) 
+							{
+								cnt++;
+								if (cnt == 200) 
+								{ 
+									cnt = 0; 
+									algo->update_progress(iM,2*(begins-ends)); 
+								}
+							} 
+						}
+
+						success[proc_num] = true;
+					}
+					catch (...)
+					{
+						algo->error(std::string("PieceWiseKernel crashed while integrating"));
+						success[proc_num] = false;
+					}
+			  
+					//! check point
+					barrier.wait(numprocessors);
+
+					// Bail out if one of the processes failed
+					for (size_t q=0; q<numprocessors;q++) 
+						if (success[q] == false) return;
+						
+				}
+				
+				//! Auto adjust accuracy of integration
+				int AdjustNumberOfIntegrationPoints(double step, double len) const
+				{
+					assert(step < len);
+					int minNP = 3;//more than 1 for sure
+					int maxNP = 100;//no more than 1000 i guess
+					int NP = 0;
+					bool over = false;
+					bool under = false;
+
+					do
+					{
+						under = NP < minNP ? true : false;
+						over = NP > maxNP ? true : false; 
+
+						if(under) step*=0.5;
+						if(over) step*=1.5;
+
+						NP=Ceil(len/step);
+						//std::cout << "\t integration step : " << step << std::endl;//DEBUG TODO TBR
+
+					}while( under || over );
+
+					return NP;
+				}
+			
+		};
+		
+		//! TODO
+		class VolumetricKernel : public KernelBase
 		{
-			algo->error(std::string("BuildFEVolRHS crashed while mapping"));
-		  	success[proc_num] = false;
-		}
-  
-		//! check point
-		barrier.wait(numprocessors);
+			public:
+			
+				VolumetricKernel(AlgoBase* algo, int t) : KernelBase(algo,t)
+				{
+				}
+				
+				~VolumetricKernel()
+				{
+				}
+				
+				virtual bool Integrate(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata)
+				{
+					if(!PreIntegration(mesh,coil))
+					{
+						return (false);
+					}
+					
 
-		// Bail out if one of the processes failed
-		for (size_t q=0; q<numprocessors;q++) 
-			if (success[q] == false) return;
+					//! get numbder of nodes for the coil
+					coilSize = vcoil->num_elems();
 
-  	}
+					//! basic assumption
+					assert(modelSize > 0 && coilSize > 1);
+					
+					
+					
+/*					
+//RAAANNNNDDDD
+					//vcoil->get_element_center(coords_type& coords);
+					int basis_order = vcoilField->basis_order();
+					
+					VMesh::Elem::index_type ei = 1;
+					
+					double evol = vcoil->get_volume(ei);
+					
+					Vector eval;
+					 //template<class T>  inline void get_value(T& val, VMesh::Elem::index_type idx) const
+					 vcoilField->get_value(eval,ei);
+					
+					Point ecenter;
+					Point ecenter2;
+					vcoil->get_center(ecenter,ei);		
+					vcoilField->get_center(ecenter2, ei);
+					
+					assert( ecenter == ecenter2 );
+					
+					double elmsize = vcoil->get_element_size();
+					
+					int nnodes = vcoil->num_nodes_per_elem();
+					
+					//tets
+					//XXXXXXX  0  -0.00814513  0.166667  [-1.95129 -0.486505 -11.1097]  4
+					
+					//lattice
+					//XXXXXXX  0  0.866878  1  [-1.06667 -6.4 -23.619]  8
+					//XXXXXXX  0  0.866878  1  [-1.06667 -6.4 -23.619]  8 [0 0 1]
 
-	int
-	BSVHelper::
-	AdjustNumberOfIntegrationPoints(double step, double len)
-	{
-		assert(step < len);
-		int minNP = 3;//more than 1 for sure
-		int maxNP = 100;//no more than 1000 i guess
-		int NP = 0;
-		bool over = false;
-		bool under = false;
 
-		do
-		{
-			under = NP < minNP ? true : false;
-			over = NP > maxNP ? true : false; 
 
-			if(under) step*=0.5;
-			if(over) step*=1.5;
+					std::cout << "XXXXXXX  " << basis_order << "  "<< evol << "  " << elmsize << "  " << ecenter << "  " << nnodes << " " << eval << std::endl;
+*/				
+					
+					
+					
+					vmesh->synchronize(Mesh::NODES_E | Mesh::EDGES_E);
+					
+					
 
-			NP=Ceil(len/step);
+					//! Start the multi threaded
+					Thread::parallel(this, &VolumetricKernel::ParallelKernel, numprocessors);
+					
+					
+					return PostIntegration(outdata);
+				}
+				
+			private:
+				
+				//! execute in parallel
+				void ParallelKernel(int proc_num)
+				{
+					assert(proc_num >= 0);
 
-			//std::cout << "\t integration step : " << step << std::endl;//DEBUG TODO TBR
+					int cnt = 0;
+					Point modelNode;
+					Point coilCenter;
+					Vector current;
+					
+					const VMesh::Node::index_type begins = (modelSize * proc_num) / numprocessors;
+					const VMesh::Node::index_type ends  = (modelSize * (proc_num+1)) / numprocessors;
 
-		}while( under || over );
+					assert( begins <= ends );
 
-		return NP;
-	}
+					try{
+
+						for(VMesh::Node::index_type iM = begins; iM < ends;	iM++)
+						{
+							vmesh->get_node(modelNode,iM); 
+
+							//! accumulatedresult
+							Vector F;
+							
+							Vector R;
+							
+							double evol = 0.0;
+							
+							double Rl;
+
+							for(VMesh::Elem::index_type  iC = 0; iC < coilSize; iC++)
+							{
+								vcoilField->get_value(current,iC);
+								
+								vcoilField->get_center(coilCenter, iC);//auto resolve based on basis_order
+
+								evol = vcoil->get_volume(iC);
+								
+								R = coilCenter - modelNode;
+								
+								Rl = R.length();
+
+								if(typeOut == 1)
+								{
+									//! Biot-Savart Magnetic Field
+									//F += Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );	
+									F += Cross ( current , R ) * ( evol / (4.0 * M_PI * Rl) );
+								}	
+							
+								if(typeOut == 2)
+								{
+									//! Biot-Savart Magnetic Vector Potential Field
+									//F += dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
+									F += current * ( evol / (4.0 * M_PI * Rl) );
+								}
+									
+							}
+
+							matOut->put(iM,0, F[0]);
+							matOut->put(iM,1, F[1]);
+							matOut->put(iM,2, F[2]);
+
+							//! progress reporter
+							if (proc_num == 0) 
+							{
+								cnt++;
+								if (cnt == 200) 
+								{ 
+									cnt = 0; 
+									algo->update_progress(iM,2*(begins-ends)); 
+								}
+							} 
+						}
+
+						success[proc_num] = true;
+					}
+					catch (...)
+					{
+						algo->error(std::string("VolumetricKernel crashed while integrating"));
+						success[proc_num] = false;
+					}
+			  
+					//! check point
+					barrier.wait(numprocessors);
+
+					// Bail out if one of the processes failed
+					for (size_t q=0; q<numprocessors;q++) 
+						if (success[q] == false) return;
+						
+				}
+		};
+		
+
+		
+	}//! end namespace detail
+
+
+
 
 
 	//! Run the global algorithm routine
@@ -267,17 +556,50 @@ namespace SCIRunAlgo {
 			error("No input coil source field");
 			algo_end(); return (false);
 		}
-
-		if( !coil->vmesh()->is_curvemesh() )
+		
+		if (coil->vfield()->basis_order()  == -1)
 		{
-			error("Only curve mesh type is accepted for coil geometry.");
+			error("Need data on coil mesh.");
 			algo_end(); return (false);
 		}
+	  
+		using namespace details;
+	  
+		Handle<KernelBase> helper;
+		
 
-
-		Handle<BSVHelper> helper = new BSVHelper(this, outtype);
-
-		if( !helper->IntegrateBiotSavart(mesh,coil,outdata) )
+		if( coil->vmesh()->is_curvemesh() )
+		{
+			if(coil->vfield()->is_constantdata() && coil->vfield()->is_scalar())
+			{
+				helper = new PieceWiseKernel(this, outtype);
+			}
+			else
+			{
+				error("Curve mesh expected with constant scalar data.");
+				algo_end(); return (false);
+			}
+		}
+		else if( coil->vmesh()->is_volume() )
+		{
+			//if( (coil->vfield()->is_lineardata() || coil->vfield()->is_constantdata() ) && coil->vfield()->is_vector() )
+			if(  coil->vfield()->is_constantdata() && coil->vfield()->is_vector() )
+			{
+				helper = new VolumetricKernel(this, outtype);
+			}
+			else
+			{
+				error("Volumetric mesh expected with constant vector data.");
+				algo_end(); return (false);
+			}
+		}
+		else
+		{
+			error("Unsupported mesh type! Only curve or volumetric.");
+			algo_end(); return (false);
+		}
+		
+		if( !helper->Integrate(mesh,coil,outdata) )
 		{
 			error("Aborted during integration");
 			algo_end(); return (false);
@@ -287,134 +609,5 @@ namespace SCIRunAlgo {
 	}
 	
 	
-	bool 
-	BSVHelper::
-	IntegrateBiotSavart(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata)
-	{
-		//!Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
 
-		this->vmesh = mesh->vmesh();
-		assert(vmesh);
-
-		this->vcoil = coil->vmesh();
-		assert(vcoil);
-
-		this->vfield = mesh->vfield();
-		assert(vfield);
-
-		this->vcoilField = coil->vfield();
-		assert(vcoilField);
-
-		//FieldInformation fimesh(mesh);
-		//FieldInformation ficoil(coil);
-
-
-		this->numprocessors = Thread::numProcessors();
-
-		int numproc = this->algo->get_int("num_processors");
-
-		if (numproc > 0) 
-		{ 
-			numprocessors = numproc; 
-		}
-
-		algo->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors));
-
-		//numprocessors = 1;// DEBUG when want to test with one CPU only
-		
-		success.resize(numprocessors,true);
-
-		//! get number of nodes for the model
-		modelSize = vmesh->num_nodes();
-
-		//! get numbder of nodes for the coil
-		coilSize = vcoil->num_nodes();
-
-		//! basic assumption
-		assert(modelSize > 0 && coilSize > 1);
-
-		try
-		{
-			matOut = new DenseMatrix((int)modelSize,3);
-			matOutHandle = matOut;
-		}
-		catch (...)
-		{
-			algo->error("Error alocating output matrix");
-			return (false);
-		}
-
-		vmesh->synchronize(Mesh::NODES_E | Mesh::EDGES_E);
-
-		VMesh::Node::array_type enodes;
-		Point enode1;
-		Point enode2;
-
-		coilNodes.clear();
-		coilNodes.reserve(coilSize);
-
-		for(VMesh::Edge::index_type i = 0; i < vcoil->num_edges(); i++)
-		{
-			vcoil->get_nodes(enodes,i);
-			//std::cout << enodes[0] << "; "<< enodes[1] << "; "<< enodes[2] << "; "<< enodes[3] << "; "<< enodes[4] << "; "<< enodes[5] << "; "<< enodes[6] << "; "<< enodes[7] << "; "<< enodes[8] << "; "<< enodes[9] <<"; "<< enodes[10] << std::endl;
-			vcoil->get_point(enode1,enodes[0]);
-			vcoil->get_point(enode2,enodes[1]);
-			coilNodes.push_back(Vector(enode1));
-			coilNodes.push_back(Vector(enode2));
-		}
-
-		
-
-		// Start the multi threaded
-		Thread::parallel(this, &BSVHelper::kernel,numprocessors);
-		for (size_t j=0; j<success.size(); j++)
-		{
-		if (success[j] == false) return (false);
-		}
-
-
-/*
-//WRITE field
-  		fimesh.make_vector();
-		fimesh.make_lineardata();
-
-
-	  	outmesh = CreateField(fimesh,mesh->mesh());		
-
-
-		if (outmesh.get_rep() == 0) 
-		{
-		algo->error("Could not create output field and output interface");
-		return status;
-		}  
-
-		VField* ofield = outmesh->vfield();
-
-		for (VMesh::Node::index_type i=0; i< modelSize; i++)
-		{
-			Vector v( matBOut->get(i,0), matBOut->get(i,1),matBOut->get(i,2) );
-			//ofield->set_value(results[i],i);
-			//matResults->put(i,0,results[i].x());
-			//matResults->put(i,1,results[i].y());
-			//matResults->put(i,2,results[i].z());
-			ofield->set_value(v,i);
-		}
-
-	    //TODO in case we keep out-mesh
-
-    	// copy property manager
-		//output->copy_properties(input.get_rep());
-//WRITE end
-*/
-
-		outdata = matOutHandle;
-		
-		return true;
-	}
-
-
-
-	
-	
-
-} // namespace SCIRunAlgo
+} // end namespace SCIRunAlgo
