@@ -266,8 +266,10 @@ namespace SCIRunAlgo {
 
 
 								//! integration step over line segment				
-								for(int iip = 0; iip < numIntegrPoints -1; iip++)
+								for(int iip = 0; iip < numIntegrPoints -1; iip++)								
 								{
+									double M_MU = 1.0e-6;
+									
 									//! Vector connecting the infinitesimal curve-element			
 									Vector Rxyz = integrPoints[iip] - Vector(modelNode);
 
@@ -280,13 +282,13 @@ namespace SCIRunAlgo {
 									if(typeOut == 1)
 									{
 										//! Biot-Savart Magnetic Field
-										F += Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
+										F +=  M_MU * Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
 									}	
 								
 									if(typeOut == 2)
 									{
 										//! Biot-Savart Magnetic Vector Potential Field
-										F += dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
+										F += M_MU * dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
 									}
 									
 								}
