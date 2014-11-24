@@ -268,7 +268,7 @@ namespace SCIRunAlgo {
 								//! integration step over line segment				
 								for(int iip = 0; iip < numIntegrPoints -1; iip++)								
 								{
-									double M_MU = 1.0e-6;
+									double M_MU = 4.0*M_PI*1.0e-7;
 									
 									//! Vector connecting the infinitesimal curve-element			
 									Vector Rxyz = integrPoints[iip] - Vector(modelNode);
