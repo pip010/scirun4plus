@@ -179,32 +179,27 @@ GenerateCircleContour(std::vector<Vector> &points, std::vector<size_t> &indices,
 
 void
 ModelGenericCoilAlgo::
-GenerateHalfCircleContour(std::vector<Vector> &points, std::vector<size_t> &indices, Vector pos,double r,size_t nsegments)
+GenerateCircularContour(std::vector<Vector>& points, Vector center, double r, double fromPI, double toPI)
 {
+	assert(fromPI < toPI);
+	double dPI = toPI - fromPI; 
 
-//Notes:
-	// from x^2+y^2=r^2
-	// y = +/- sqrt(r^2-x^2)
+	Vector p;
 	
+	//what will be the circumvence of a full 0-2*pi
+	double C = 2*dPI*r;
+	double minSegmentLenght = 0.8; 
+	
+	int nsegments = Floor( C / minSegmentLenght); // Adaptive LOD for the number of piece-wise segments per full circle
+	double anglePerSegment = 2*M_PI/nsegments;
 
-
-	// double anglePerSegment = 2*M_PI/nsegments;
-	// points.resize(nsegments);
-	// indices.resize(2*nsegments);
-
-	// for(size_t i = 0; i < nsegments; i++)
-	// {
-	// points[i].Set(pos.x() + r * cos(anglePerSegment*i), pos.y() + r * sin(anglePerSegment*i), pos.z());
-	// }
-
-	// for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
-	// {
-	// indices[j] = i;
-	// indices[j+1] = i + 1;
-	// }
-
-	// indices[ 2*nsegments - 1 ] = indices[0];
+	for(size_t i = 0; i < nsegments; i++)
+	{
+		p.Set(center.x() + r * cos(fromPI + anglePerSegment*i), center.y() + r * sin(fromPI + anglePerSegment*i), center.z());
+		points.push_back(p);
+	}
 }
+
 
 std::vector<Vector> 
 ModelGenericCoilAlgo::
