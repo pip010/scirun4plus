@@ -191,7 +191,7 @@ GenerateCircularContour(std::vector<Vector>& points, Vector center, double r, do
 	double minSegmentLenght = 0.8; 
 	
 	int nsegments = Floor( C / minSegmentLenght); // Adaptive LOD for the number of piece-wise segments per full circle
-	double anglePerSegment = 2*M_PI/nsegments;
+	double anglePerSegment = (2*M_PI)/nsegments;
 
 	for(size_t i = 0; i < nsegments; i++)
 	{
@@ -250,11 +250,14 @@ GenerateFigure8ShapedCoil(std::vector<Vector>& points, std::vector<size_t>& indi
 
 void
 ModelGenericCoilAlgo::
-GenerateFigure8ShapedSpiralCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double d, size_t nsegments)
+GenerateFigure8ShapedSpiralCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double loops)
 {
 	// Vector pos_L( -r-(d/2), 0, 0);
-	// std::vector<Vector> coilPoints_L;
-	// std::vector<size_t> coilIndices_L;
+	std::vector<Vector> coilPoints;
+	coilPoints.reserve(100);
+	Vector origin;
+
+	GenerateCircularContour(coilPoints, origin, r, 0, 2*M_PI);
 
 	// GenerateCircleContour(coilPoints_L, coilIndices_L, pos_L, r, nsegments);
 
@@ -267,6 +270,15 @@ GenerateFigure8ShapedSpiralCoil(std::vector<Vector>& points, std::vector<size_t>
 	// points = ComposePointsForCurve(coilPoints_L, coilPoints_R);
 
 	// indices = ComposeIndicesForCurve(coilIndices_L, coilIndices_R);
+	
+	std::vector<size_t> coilIndices;
+	coilIndices.resize(2*coilPoints.size());
+	
+	for(size_t i = 0, j = 0; i < coilIndices.size(); i++, j+=2)
+	{
+	coilIndices[j] = i;
+	coilIndices[j+1] = i + 1;
+	}
 }
 
 } // end namespace SCIRunAlgo
