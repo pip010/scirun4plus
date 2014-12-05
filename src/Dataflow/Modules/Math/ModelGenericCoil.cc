@@ -79,8 +79,9 @@ namespace SCIRun {
 		bool need_matrix_data = oport_connected("Matrix");
 		bool need_mesh_data = oport_connected("Mesh");
 
-		if (coilType == "0-shaped") algoArgs.type = 1;
-		else if (coilType == "8-shaped") algoArgs.type = 2;
+		if (coilType == "0-single") algoArgs.type = 1;
+		else if (coilType == "8-single") algoArgs.type = 2;
+		else if (coilType == "0-spiral") algoArgs.type = 3;
 		else algoArgs.type = 1;
 
 		if (!oport_cached("Mesh") || oldArgs != algoArgs)

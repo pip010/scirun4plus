@@ -146,7 +146,6 @@ namespace SCIRunAlgo {
 				{
 				}
 				
-				//! TODO
 				//! Complexity O(M*N) ,where M is the number of nodes of the model and N is the numbder of nodes of the coil
 				virtual bool Integrate(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata)
 				{
@@ -531,7 +530,140 @@ namespace SCIRunAlgo {
 				}
 		};
 		
+		//! TODO
+		class DipolesKernel : public KernelBase
+		{
+			public:
+			
+				DipolesKernel(AlgoBase* algo, int t) : KernelBase(algo,t)
+				{
+				}
+				
+				~DipolesKernel()
+				{
+				}
+				
+				virtual bool Integrate(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata)
+				{
+					if(!PreIntegration(mesh,coil))
+					{
+						return (false);
+					}
+					
 
+					//! get numbder of nodes for the coil
+					coilSize = vcoil->num_elems();
+
+					//! basic assumption
+					assert(modelSize > 0 && coilSize > 1);
+						
+					
+					//needed?
+					vmesh->synchronize(Mesh::NODES_E | Mesh::EDGES_E);
+					
+					
+
+					//! Start the multi threaded
+					Thread::parallel(this, &DipolesKernel::ParallelKernel, numprocessors);
+					
+					
+					return PostIntegration(outdata);
+				}
+				
+			private:
+				
+				//! execute in parallel
+				void ParallelKernel(int proc_num)
+				{
+					assert(proc_num >= 0);
+
+					int cnt = 0;
+					Point modelNode;
+					Point coilCenter;
+					Vector current;
+					
+					const VMesh::Node::index_type begins = (modelSize * proc_num) / numprocessors;
+					const VMesh::Node::index_type ends  = (modelSize * (proc_num+1)) / numprocessors;
+
+					assert( begins <= ends );
+
+					try{
+
+/*
+						for(VMesh::Node::index_type iM = begins; iM < ends;	iM++)
+						{
+							vmesh->get_node(modelNode,iM); 
+
+							//! accumulatedresult
+							Vector F;
+							
+							Vector R;
+							
+							double evol = 0.0;
+							
+							double Rl;
+
+							for(VMesh::Elem::index_type  iC = 0; iC < coilSize; iC++)
+							{
+								vcoilField->get_value(current,iC);
+								
+								vcoilField->get_center(coilCenter, iC);//auto resolve based on basis_order
+
+								evol = vcoil->get_volume(iC);
+								
+								R = coilCenter - modelNode;
+								
+								Rl = R.length();
+
+								if(typeOut == 1)
+								{
+									//! Biot-Savart Magnetic Field
+									//F += Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );	
+									F += Cross ( current , R ) * ( evol / (4.0 * M_PI * Rl) );
+								}	
+							
+								if(typeOut == 2)
+								{
+									//! Biot-Savart Magnetic Vector Potential Field
+									//F += dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
+									F += current * ( evol / (4.0 * M_PI * Rl) );
+								}
+									
+							}
+
+							matOut->put(iM,0, F[0]);
+							matOut->put(iM,1, F[1]);
+							matOut->put(iM,2, F[2]);
+
+							//! progress reporter
+							if (proc_num == 0) 
+							{
+								cnt++;
+								if (cnt == 200) 
+								{ 
+									cnt = 0; 
+									algo->update_progress(iM,2*(begins-ends)); 
+								}
+							} 
+						}
+*/
+						success[proc_num] = true;
+					}
+					catch (...)
+					{
+						algo->error(std::string("DipoleKernel crashed while integrating"));
+						success[proc_num] = false;
+					}
+			  
+					//! check point
+					barrier.wait(numprocessors);
+
+					// Bail out if one of the processes failed
+					for (size_t q=0; q<numprocessors;q++) 
+						if (success[q] == false) return;
+						
+				}
+		};
 		
 	}//! end namespace detail
 
@@ -579,6 +711,18 @@ namespace SCIRunAlgo {
 			else
 			{
 				error("Curve mesh expected with constant scalar data.");
+				algo_end(); return (false);
+			}
+		}
+		else if(coil->vmesh()->is_pointcloudmesh())
+		{
+			if((coil->vfield()->is_lineardata() || coil->vfield()->is_constantdata() ) && coil->vfield()->is_vector())
+			{
+				helper = new DipolesKernel(this, outtype);
+			}
+			else
+			{
+				error("pointcloud expected with linear vector data.");
 				algo_end(); return (false);
 			}
 		}

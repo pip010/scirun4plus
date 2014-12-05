@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="30" name="{Main}" bbox="{23 68 1194 1501}" creationDate="{Thu Jun 05 2014}" creationTime="{12:54:08}" geometry="{1176x854+133+79}">
+<network version="v4.7" netversion="8" name="{Main}" bbox="{23 68 1194 1638}" creationDate="{Mon Jun 16 2014}" creationTime="{14:38:12}" geometry="{1176x854+126+79}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="DataIO" name="ReadField" version="1.0">
@@ -20,8 +20,6 @@
       <var name="force-symmetry" val="{0}" substitute="no"/>
       <var name="num-processors" val="{auto}" substitute="no"/>
       <var name="ui_geometry" val="{288x105+777+946}" substitute="no"/>
-      <var name="ui_geometry" val="{288x105+777+946}" substitute="no"/>
-      <var name="ui_geometry" val="{288x105+777+946}" substitute="no"/>
     </module>
     <module id="m3" package="SCIRun" category="FiniteElements" name="BuildFESurfRHS" version="1.0">
       <position x="746" y="598"/>
@@ -29,8 +27,6 @@
     <module id="m4" package="SCIRun" category="FiniteElements" name="BuildFEVolRHS" version="1.0">
       <position x="594" y="600"/>
       <var name="use-basis" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{288x59+777+962}" substitute="no"/>
-      <var name="ui_geometry" val="{288x59+777+962}" substitute="no"/>
       <var name="ui_geometry" val="{288x59+777+962}" substitute="no"/>
     </module>
     <module id="m5" package="SCIRun" category="Math" name="SolveBiotSavartContour" version="1.0">
@@ -40,12 +36,14 @@
       <position x="765" y="96"/>
       <var name="wireCurrentTCL" val="{1}" substitute="no"/>
       <var name="coilRadiusTCL" val="{20}" substitute="no"/>
+      <var name="coilDistanceTCL" val="{2}" substitute="no"/>
+      <var name="coilSegmentsTCL" val="{33}" substitute="no"/>
       <var name="typeTCL" val="{8-shaped}" substitute="no"/>
       <var name="ui_geometry" val="{288x93+69+136}" substitute="no"/>
       <var name="ui_geometry" val="{288x93+69+136}" substitute="no"/>
     </module>
     <module id="m7" package="SCIRun" category="Visualization" name="ShowField" version="1.0">
-      <position x="385" y="1340"/>
+      <position x="251" y="1201"/>
       <var name="nodes_on" val="{0}" substitute="no"/>
       <var name="nodes_transparency" val="{0}" substitute="no"/>
       <var name="nodes_color_type" val="{1}" substitute="no"/>
@@ -94,9 +92,10 @@
       <var name="ui_geometry" val="{317x683+1601+24}" substitute="no"/>
       <var name="ui_geometry" val="{317x683+1601+24}" substitute="no"/>
       <var name="ui_geometry" val="{317x683+1601+24}" substitute="no"/>
+      <var name="ui_geometry" val="{317x683+1601+24}" substitute="no"/>
     </module>
-    <module id="m8" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0" gui_visible="yes">
-      <position x="668" y="1338"/>
+    <module id="m8" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0">
+      <position x="738" y="1501"/>
       <var name="scalars_has_data" val="{0}" substitute="no"/>
       <var name="scalars_on" val="{0}" substitute="no"/>
       <var name="scalars_display_type" val="{Spheres}" substitute="no"/>
@@ -166,12 +165,15 @@
       <var name="field_name_override" val="{1}" substitute="no"/>
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{367x753+1552+52}" substitute="no"/>
-      <var name="ui_geometry" val="{367x753+1552+52}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+24}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+24}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+24}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+24}" substitute="no"/>
     </module>
     <module id="m9" package="SCIRun" category="ChangeFieldData" name="SetFieldData" version="1.0">
       <position x="484" y="451"/>
       <var name="keepscalartype" val="{0}" substitute="no"/>
+      <var name="ui_geometry" val="{288x55+775+24}" substitute="no"/>
       <var name="ui_geometry" val="{288x55+775+24}" substitute="no"/>
       <var name="ui_geometry" val="{288x55+775+24}" substitute="no"/>
       <var name="ui_geometry" val="{288x55+775+24}" substitute="no"/>
@@ -246,6 +248,7 @@
       <var name="ui_geometry" val="{317x683+1601+368}" substitute="no"/>
       <var name="ui_geometry" val="{317x683+1601+368}" substitute="no"/>
       <var name="ui_geometry" val="{317x683+1601+368}" substitute="no"/>
+      <var name="ui_geometry" val="{317x683+1601+368}" substitute="no"/>
     </module>
     <module id="m13" package="SCIRun" category="Visualization" name="RescaleColorMap" version="1.0">
       <position x="213" y="949"/>
@@ -267,23 +270,22 @@
       <var name="width" val="{378}" substitute="no"/>
       <var name="height" val="{40}" substitute="no"/>
       <var name="ui_geometry" val="{390x522+1528+24}" substitute="no"/>
-      <var name="ui_geometry" val="{390x522+1528+24}" substitute="no"/>
     </module>
     <module id="m15" package="SCIRun" category="Render" name="ViewScene" version="1.0">
-      <position x="606" y="1450"/>
+      <position x="604" y="1587"/>
       <gui_callback>
         <callback>addViewer</callback>
       </gui_callback>
-      <var name="ViewWindow_0-geometry" val="1855x829+65+24" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{-19.892809515538083}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{450.1044989316587}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{460.8247386755648}" substitute="no"/>
+      <var name="ViewWindow_0-geometry" val="700x703+1061+190" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{43.79065354603619}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{128.41224682083154}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{274.45705298295854}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-x" val="{-2.165572967364868}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-y" val="{3.389451751840392}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-z" val="{10.064223802570273}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{0.028774458611977055}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{-0.7094267975325925}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{0.7041914863687561}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{-0.05145302622117934}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{-0.8993399687230959}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{0.4342121678970132}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -322,9 +324,9 @@
       <var name="ViewWindow_0-fog-start" val="{0.0}" substitute="no"/>
       <var name="ViewWindow_0-fog-end" val="{0.714265}" substitute="no"/>
       <var name="ViewWindow_0-fog-visibleonly" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_loop_count" val="{360}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_x" val="{-0.5536456529678284}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_y" val="{-0.8068407724860274}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_loop_count" val="{221}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_x" val="{0.031010529313787883}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_y" val="{0.9985473817663314}" substitute="no"/>
       <var name="ViewWindow_0-currentvisual" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-autoav" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-caxes" val="{0}" substitute="no"/>
@@ -340,14 +342,14 @@
       <var name="ViewWindow_0-scalebar-fontsize" val="{2}" substitute="no"/>
       <var name="ViewWindow_0-scalebar-linesize" val="{1.0}" substitute="no"/>
       <var name="ViewWindow_0-clip-num" val="{6}" substitute="no"/>
-      <var name="ViewWindow_0-clip-visible" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-clip-visible" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-clip-selected" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-clip-visible-1" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-clip-visible-1" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-clip-frame-1" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-clip-normal-reverse-1" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-clip-normal-x-1" val="{0.0}" substitute="no"/>
       <var name="ViewWindow_0-clip-normal-y-1" val="{0.0}" substitute="no"/>
-      <var name="ViewWindow_0-clip-normal-z-1" val="{0.0}" substitute="no"/>
+      <var name="ViewWindow_0-clip-normal-z-1" val="{-0.01}" substitute="no"/>
       <var name="ViewWindow_0-clip-normal-d-1" val="{0.0}" substitute="no"/>
       <var name="ViewWindow_0-clip-visible-2" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-clip-frame-2" val="{0}" substitute="no"/>
@@ -401,8 +403,6 @@
       <var name="ViewWindow_0-global-movieName" val="{./movie.%04d}" substitute="no"/>
       <var name="ViewWindow_0-global-movie" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-global-sync_with_execute" val="{0}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-COIL Nodes (3)&quot;" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-COIL Edges (3)&quot;" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-0-useglobal" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-0-type" val="{Gouraud}" substitute="no"/>
       <var name="ViewWindow_0-0-debug" val="{0}" substitute="no"/>
@@ -419,16 +419,6 @@
       <var name="ViewWindow_0-1-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-1-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-1-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-DOMAIN Faces (1)&quot;" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-2-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-2-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-2-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-CoilField Vectors (4)&quot;" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-3-useglobal" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-3-type" val="{Gouraud}" substitute="no"/>
       <var name="ViewWindow_0-3-debug" val="{0}" substitute="no"/>
@@ -437,8 +427,16 @@
       <var name="ViewWindow_0-3-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-3-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-3-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-COIL Vectors (4)&quot;" val="{0}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-RESULT Vectors (2)&quot;" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-COIL Nodes (3)&quot;" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-COIL Edges (3)&quot;" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-useglobal" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-type" val="{Gouraud}" substitute="no"/>
+      <var name="ViewWindow_0-2-debug" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-clip" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-cull" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-dl" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-fog" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-light" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-4-useglobal" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-4-type" val="{Gouraud}" substitute="no"/>
       <var name="ViewWindow_0-4-debug" val="{0}" substitute="no"/>
@@ -447,6 +445,10 @@
       <var name="ViewWindow_0-4-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-4-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-4-light" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-COIL Nodes (1)&quot;" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-COIL Edges (1)&quot;" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-BField Vectors (2)&quot;" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-AField Vectors (3)&quot;" val="{1}" substitute="no"/>
     </module>
     <module id="m16" package="SCIRun" category="Math" name="CreateMatrix" version="1.0">
       <position x="417" y="134"/>
@@ -455,6 +457,8 @@
       <var name="data" val="{{1.0 0.0 0.0 0.0} {0.0 1.0 0.0 0.0} {0.0 0.0 1.0 0.0} {37.0 2.0 199.0 1.0}}" substitute="no"/>
       <var name="clabel" val="{0 1 2 3}" substitute="no"/>
       <var name="rlabel" val="{0 1 2 3}" substitute="no"/>
+      <var name="ui_geometry" val="{446x281+1091+377}" substitute="no"/>
+      <var name="ui_geometry" val="{446x281+1091+377}" substitute="no"/>
       <var name="ui_geometry" val="{446x281+1091+377}" substitute="no"/>
       <var name="ui_geometry" val="{446x281+1091+377}" substitute="no"/>
     </module>
@@ -484,13 +488,13 @@
       <var name="widget_scale" val="{1}" substitute="no"/>
       <var name="ignoring_widget_changes" val="{1}" substitute="no"/>
       <var name="ui_geometry" val="{406x364+301+394}" substitute="no"/>
-      <var name="ui_geometry" val="{406x364+301+394}" substitute="no"/>
     </module>
     <module id="m18" package="SCIRun" category="ChangeMesh" name="TransformMeshWithTransform" version="1.0">
       <position x="289" y="250"/>
     </module>
     <module id="m19" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">
       <position x="72" y="260"/>
+      <var name="ui_geometry" val="{1126x282+750+504}" substitute="no"/>
       <var name="ui_geometry" val="{1126x282+750+504}" substitute="no"/>
       <var name="ui_geometry" val="{1126x282+750+504}" substitute="no"/>
     </module>
@@ -504,15 +508,15 @@
       <var name="data" val="{{1.0 0.0 0.0 0.0} {0.0 1.0 0.0 0.0} {0.0 0.0 1.0 0.0} {0.0 0.0 50.0 1.0}}" substitute="no"/>
       <var name="clabel" val="{0 1 2 3}" substitute="no"/>
       <var name="rlabel" val="{0 1 2 3}" substitute="no"/>
-      <var name="ui_geometry" val="{446x281+1452+719}" substitute="no"/>
-      <var name="ui_geometry" val="{446x281+1452+719}" substitute="no"/>
+      <var name="ui_geometry" val="{446x281+1453+747}" substitute="no"/>
+      <var name="ui_geometry" val="{446x281+1453+747}" substitute="no"/>
+      <var name="ui_geometry" val="{446x281+1453+747}" substitute="no"/>
+      <var name="ui_geometry" val="{446x281+1453+747}" substitute="no"/>
     </module>
     <module id="m22" package="SCIRun" category="Math" name="EvaluateLinAlgBinary" version="1.0">
       <position x="624" y="696"/>
       <var name="op" val="{Add}" substitute="no"/>
       <var name="function" val="{x+y}" substitute="no"/>
-      <var name="ui_geometry" val="{288x192+1447+859}" substitute="no"/>
-      <var name="ui_geometry" val="{288x192+1447+859}" substitute="no"/>
       <var name="ui_geometry" val="{288x192+1447+859}" substitute="no"/>
     </module>
     <module id="m23" package="SCIRun" category="Math" name="CreateMatrix" version="1.0">
@@ -529,7 +533,6 @@
       <position x="234" y="459"/>
       <var name="outputtype" val="{double}" substitute="no"/>
       <var name="ui_geometry" val="{288x65+774+962}" substitute="no"/>
-      <var name="ui_geometry" val="{288x65+774+962}" substitute="no"/>
     </module>
     <module id="m25" package="SCIRun" category="Math" name="SolveLinearSystem" version="1.0" gui_visible="yes">
       <position x="464" y="778"/>
@@ -543,9 +546,7 @@
       <var name="use_previous_soln" val="{1}" substitute="no"/>
       <var name="emit_partial" val="{1}" substitute="no"/>
       <var name="emit_iter" val="{50}" substitute="no"/>
-      <var name="ui_geometry" val="{484x745+1070+334}" substitute="no"/>
-      <var name="ui_geometry" val="{484x745+1070+334}" substitute="no"/>
-      <var name="ui_geometry" val="{484x745+1070+334}" substitute="no"/>
+      <var name="ui_geometry" val="{484x745+1071+334}" substitute="no"/>
     </module>
     <module id="m26" package="SCIRun" category="ChangeFieldData" name="SetFieldData" version="1.0">
       <position x="410" y="882"/>
@@ -556,15 +557,13 @@
       <var name="fix-orientation" val="{1}" substitute="no"/>
       <var name="remove-degenerate" val="{1}" substitute="no"/>
       <var name="ui_geometry" val="{288x74+1311+945}" substitute="no"/>
-      <var name="ui_geometry" val="{288x74+1311+945}" substitute="no"/>
     </module>
     <module id="m28" package="SCIRun" category="ChangeFieldData" name="MapFieldDataFromNodeToElem" version="1.0">
       <position x="526" y="518"/>
       <var name="method" val="{Interpolate}" substitute="no"/>
       <var name="ui_geometry" val="{495x102+1423+24}" substitute="no"/>
-      <var name="ui_geometry" val="{495x102+1423+24}" substitute="no"/>
     </module>
-    <module id="m29" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0" gui_visible="yes">
+    <module id="m29" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0">
       <position x="864" y="878"/>
       <var name="scalars_has_data" val="{0}" substitute="no"/>
       <var name="scalars_on" val="{0}" substitute="no"/>
@@ -634,8 +633,9 @@
       <var name="field_name_override" val="{1}" substitute="no"/>
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{367x753+1552+326}" substitute="no"/>
-      <var name="ui_geometry" val="{367x753+1552+326}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+298}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+298}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1551+298}" substitute="no"/>
     </module>
     <module id="m30" package="SCIRun" category="Visualization" name="RescaleColorMap" version="1.0">
       <position x="994" y="788"/>
@@ -649,12 +649,13 @@
       <position x="702" y="1050"/>
       <var name="ui_geometry" val="{1126x282+750+504}" substitute="no"/>
       <var name="ui_geometry" val="{1126x282+750+504}" substitute="no"/>
+      <var name="ui_geometry" val="{1126x282+750+504}" substitute="no"/>
     </module>
     <module id="m32" package="SCIRun" category="ChangeFieldData" name="CalculateGradients" version="1.0">
       <position x="451" y="959"/>
     </module>
     <module id="m33" package="SCIRun" category="Visualization" name="RescaleColorMap" version="1.0">
-      <position x="715" y="1267"/>
+      <position x="758" y="1403"/>
       <var name="main_frame" val="{}" substitute="no"/>
       <var name="isFixed" val="{0}" substitute="no"/>
       <var name="min" val="{0.023516847535087513}" substitute="no"/>
@@ -668,7 +669,7 @@
       <position x="318" y="1096"/>
     </module>
     <module id="m36" package="SCIRun" category="NewField" name="GetFieldBoundary" version="1.0">
-      <position x="521" y="1259"/>
+      <position x="519" y="1396"/>
     </module>
     <module id="m37" package="SCIRun" category="Math" name="EvaluateLinAlgBinary" version="1.0">
       <position x="568" y="1118"/>
@@ -686,28 +687,37 @@
     <module id="m40" package="SCIRun" category="ChangeFieldData" name="GetFieldData" version="1.0">
       <position x="614" y="871"/>
     </module>
+    <module id="m41" package="SCIRun" category="MiscField" name="ChooseField" version="1.0" gui_visible="yes">
+      <position x="537" y="1273"/>
+      <var name="use-first-valid" val="{0}" substitute="no"/>
+      <var name="port-valid-index" val="{0}" substitute="no"/>
+      <var name="port-selected-index" val="{1}" substitute="no"/>
+      <var name="ui_geometry" val="{338x235+67+844}" substitute="no"/>
+    </module>
   </modules>
   <connections>
     <connection id="c1" from="m32" fromport="0" to="m39" toport="0"/>
-    <connection id="c2" from="m24" fromport="0" to="m26" toport="0">
+    <connection id="c2" from="m32" fromport="0" to="m41" toport="0">
+      <route>{462 960 462 1263.0 548 1263.0 548 1273}</route>
+    </connection>
+    <connection id="c3" from="m24" fromport="0" to="m26" toport="0">
       <route>{245 510 245 858.0 421 858.0 421 882}</route>
     </connection>
-    <connection id="c3" from="m24" fromport="0" to="m2" toport="0"/>
-    <connection id="c4" from="m39" fromport="0" to="m37" toport="0"/>
-    <connection id="c5" from="m28" fromport="0" to="m40" toport="0"/>
-    <connection id="c6" from="m28" fromport="0" to="m3" toport="0"/>
-    <connection id="c7" from="m28" fromport="0" to="m4" toport="0"/>
-    <connection id="c8" from="m28" fromport="0" to="m34" toport="0">
+    <connection id="c4" from="m24" fromport="0" to="m2" toport="0"/>
+    <connection id="c5" from="m39" fromport="0" to="m37" toport="0"/>
+    <connection id="c6" from="m28" fromport="0" to="m40" toport="0"/>
+    <connection id="c7" from="m28" fromport="0" to="m3" toport="0"/>
+    <connection id="c8" from="m28" fromport="0" to="m4" toport="0"/>
+    <connection id="c9" from="m28" fromport="0" to="m34" toport="0">
       <route>{537 569 537 731.0 681 731.0 681 789}</route>
     </connection>
-    <connection id="c9" from="m9" fromport="0" to="m28" toport="0"/>
-    <connection id="c10" from="m26" fromport="0" to="m32" toport="0"/>
-    <connection id="c11" from="m26" fromport="0" to="m38" toport="0">
-      <route>{421 933 421 1173.0 544 1173.0 544 1187}</route>
+    <connection id="c10" from="m9" fromport="0" to="m28" toport="0"/>
+    <connection id="c11" from="m26" fromport="0" to="m32" toport="0"/>
+    <connection id="c12" from="m26" fromport="0" to="m38" toport="0">
+      <route>{421 883 421 1173.0 544 1173.0 544 1187}</route>
     </connection>
-    <connection id="c12" from="m26" fromport="0" to="m31" toport="0"/>
-    <connection id="c13" from="m26" fromport="0" to="m35" toport="0"/>
-    <connection id="c14" from="m38" fromport="0" to="m36" toport="0"/>
+    <connection id="c13" from="m26" fromport="0" to="m31" toport="0"/>
+    <connection id="c14" from="m26" fromport="0" to="m35" toport="0"/>
     <connection id="c15" from="m27" fromport="0" to="m18" toport="0"/>
     <connection id="c16" from="m27" fromport="0" to="m19" toport="0"/>
     <connection id="c17" from="m18" fromport="0" to="m24" toport="0"/>
@@ -720,42 +730,58 @@
     <connection id="c22" from="m2" fromport="0" to="m25" toport="0"/>
     <connection id="c23" from="m4" fromport="0" to="m22" toport="0"/>
     <connection id="c24" from="m6" fromport="0" to="m20" toport="0"/>
-    <connection id="c25" from="m34" fromport="0" to="m29" toport="0"/>
-    <connection id="c26" from="m35" fromport="0" to="m7" toport="0"/>
-    <connection id="c27" from="m36" fromport="0" to="m8" toport="0"/>
-    <connection id="c28" from="m10" fromport="0" to="m13" toport="0"/>
-    <connection id="c29" from="m10" fromport="0" to="m33" toport="0">
-      <route>{34 728 34 1063.0 726 1063.0 726 1267}</route>
+    <connection id="c25" from="m41" fromport="0" to="m36" toport="0"/>
+    <connection id="c26" from="m34" fromport="0" to="m29" toport="0"/>
+    <connection id="c27" from="m35" fromport="0" to="m7" toport="0"/>
+    <connection id="c28" from="m36" fromport="0" to="m8" toport="0"/>
+    <connection id="c29" from="m10" fromport="0" to="m13" toport="0">
+      <route>{34 728 34 622.0 224 622.0 224 949}</route>
     </connection>
-    <connection id="c30" from="m14" fromport="0" to="m11" toport="0"/>
-    <connection id="c31" from="m14" fromport="0" to="m30" toport="0"/>
-    <connection id="c32" from="m7" fromport="0" to="m15" toport="0"/>
-    <connection id="c33" from="m40" fromport="0" to="m37" toport="1"/>
-    <connection id="c34" from="m26" fromport="0" to="m13" toport="1"/>
-    <connection id="c35" from="m38" fromport="0" to="m33" toport="1"/>
-    <connection id="c36" from="m20" fromport="0" to="m5" toport="1"/>
-    <connection id="c37" from="m20" fromport="0" to="m11" toport="1"/>
-    <connection id="c38" from="m3" fromport="1" to="m22" toport="1"/>
-    <connection id="c39" from="m16" fromport="0" to="m18" toport="1"/>
-    <connection id="c40" from="m21" fromport="0" to="m20" toport="1"/>
-    <connection id="c41" from="m23" fromport="0" to="m24" toport="1"/>
-    <connection id="c42" from="m22" fromport="0" to="m25" toport="1"/>
-    <connection id="c43" from="m37" fromport="0" to="m38" toport="1"/>
-    <connection id="c44" from="m5" fromport="2" to="m9" toport="1"/>
-    <connection id="c45" from="m25" fromport="0" to="m26" toport="1"/>
-    <connection id="c46" from="m34" fromport="0" to="m30" toport="1"/>
-    <connection id="c47" from="m11" fromport="0" to="m12" toport="1">
+    <connection id="c30" from="m10" fromport="0" to="m33" toport="0">
+      <route>{34 728 34 1063.0 769 1063.0 769 1403}</route>
+    </connection>
+    <connection id="c31" from="m14" fromport="0" to="m11" toport="0"/>
+    <connection id="c32" from="m14" fromport="0" to="m30" toport="0"/>
+    <connection id="c33" from="m7" fromport="0" to="m15" toport="0">
+      <route>{262 1202 262 1569.0 615 1569.0 615 1587}</route>
+    </connection>
+    <connection id="c34" from="m40" fromport="0" to="m37" toport="1"/>
+    <connection id="c35" from="m26" fromport="0" to="m13" toport="1"/>
+    <connection id="c36" from="m38" fromport="0" to="m41" toport="1">
+      <route>{544 1188 544 1251.0 562 1251.0 562 1273}</route>
+    </connection>
+    <connection id="c37" from="m20" fromport="0" to="m5" toport="1"/>
+    <connection id="c38" from="m20" fromport="0" to="m11" toport="1"/>
+    <connection id="c39" from="m3" fromport="1" to="m22" toport="1"/>
+    <connection id="c40" from="m16" fromport="0" to="m18" toport="1">
+      <route>{428 185 428 182.0 314 182.0 314 250}</route>
+    </connection>
+    <connection id="c41" from="m21" fromport="0" to="m20" toport="1">
+      <route>{914 225 914 215.0 677 215.0 677 260}</route>
+    </connection>
+    <connection id="c42" from="m23" fromport="0" to="m24" toport="1"/>
+    <connection id="c43" from="m22" fromport="0" to="m25" toport="1"/>
+    <connection id="c44" from="m37" fromport="0" to="m38" toport="1"/>
+    <connection id="c45" from="m5" fromport="1" to="m9" toport="1"/>
+    <connection id="c46" from="m25" fromport="0" to="m26" toport="1"/>
+    <connection id="c47" from="m41" fromport="0" to="m33" toport="1"/>
+    <connection id="c48" from="m34" fromport="0" to="m30" toport="1"/>
+    <connection id="c49" from="m11" fromport="0" to="m12" toport="1">
       <route>{963 665 963 761.0 851 761.0 851 783}</route>
     </connection>
-    <connection id="c48" from="m13" fromport="0" to="m7" toport="1"/>
-    <connection id="c49" from="m30" fromport="0" to="m29" toport="1"/>
-    <connection id="c50" from="m33" fromport="0" to="m8" toport="1"/>
-    <connection id="c51" from="m8" fromport="0" to="m15" toport="1"/>
-    <connection id="c52" from="m12" fromport="0" to="m15" toport="2">
-      <route>{837 834 837 1427.0 645 1427.0 645 1450}</route>
+    <connection id="c50" from="m13" fromport="0" to="m7" toport="1">
+      <route>{224 950 224 836.0 276 836.0 276 1201}</route>
     </connection>
-    <connection id="c53" from="m29" fromport="0" to="m15" toport="3">
-      <route>{875 929 875 1438.0 659 1438.0 659 1450}</route>
+    <connection id="c51" from="m30" fromport="0" to="m29" toport="1"/>
+    <connection id="c52" from="m33" fromport="0" to="m8" toport="1"/>
+    <connection id="c53" from="m8" fromport="0" to="m15" toport="1">
+      <route>{749 1502 749 954.0 629 954.0 629 1587}</route>
+    </connection>
+    <connection id="c54" from="m12" fromport="0" to="m15" toport="2">
+      <route>{837 834 837 1427.0 643 1427.0 643 1587}</route>
+    </connection>
+    <connection id="c55" from="m29" fromport="0" to="m15" toport="3">
+      <route>{875 879 875 1438.0 657 1438.0 657 1587}</route>
     </connection>
   </connections>
 </network>

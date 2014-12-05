@@ -45,7 +45,7 @@ itcl::class SCIRun_Math_ModelGenericCoil {
       set $this-coilRadiusTCL 10
 	  set $this-coilDistanceTCL 2
 	  set $this-coilSegmentsTCL 33
-      set $this-typeTCL "O-shaped"
+      set $this-typeTCL "0-single"
     }
  
     method make_entry {w text v c} {
@@ -70,7 +70,7 @@ itcl::class SCIRun_Math_ModelGenericCoil {
       sci_toplevel $w
       
       make_labeled_radio $w.type "Coil type:" "" left 2 $this-typeTCL \
-          {"O-shaped" {"8-shaped"}}
+          { "0-single" "0-spiral" "8-single" }
       make_entry $w.current "Current through wire:" $this-wireCurrentTCL "$this-c needexecute"
       make_entry $w.radius "Radius of coil(s):" $this-coilRadiusTCL "$this-c needexecute"
       make_entry $w.distance "Distance between centers:" $this-coilDistanceTCL "$this-c needexecute"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="3" name="{Main}" bbox="{46 78 1110 1122}" creationDate="{Thu Jun 12 2014}" creationTime="{14:24:52}" geometry="{1308x966+0+0}">
+<network version="v4.7" netversion="1" name="{Main}" bbox="{46 78 1110 1122}" creationDate="{Mon Jun 16 2014}" creationTime="{14:38:12}" geometry="{1308x966+0+0}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="Math" name="SolveBiotSavartContour" version="1.0">
@@ -60,7 +60,7 @@
       <gui_callback>
         <callback>addViewer</callback>
       </gui_callback>
-      <var name="ViewWindow_0-geometry" val="937x800+258+135" substitute="no"/>
+      <var name="ViewWindow_0-geometry" val="937x800+259+163" substitute="no"/>
       <var name="ViewWindow_0-view-eyep-x" val="{-300.71460290345993}" substitute="no"/>
       <var name="ViewWindow_0-view-eyep-y" val="{-308.3327482816025}" substitute="no"/>
       <var name="ViewWindow_0-view-eyep-z" val="{-427.59022685325533}" substitute="no"/>
@@ -188,34 +188,6 @@
       <var name="ViewWindow_0-global-movieName" val="{./movie.%04d}" substitute="no"/>
       <var name="ViewWindow_0-global-movie" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-global-sync_with_execute" val="{0}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-COIL Faces (1)&quot;" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-0-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-0-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-0-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-0-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-0-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-0-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-0-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-0-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-ClipFieldToFieldOrWidget Selection Widget (4)&quot;" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-1-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-1-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-1-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-1-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-DOMAIN Nodes (2)&quot;" val="{0}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-VECTOR_FIELD Transparent Vectors (3)&quot;" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-3-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-3-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-3-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-3-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-3-light" val="{1}" substitute="no"/>
     </module>
     <module id="m4" package="SCIRun" category="Visualization" name="CreateStandardColorMaps" version="1.0">
       <position x="90" y="551"/>
@@ -400,8 +372,8 @@
       <position x="494" y="812"/>
       <var name="main_frame" val="{}" substitute="no"/>
       <var name="isFixed" val="{0}" substitute="no"/>
-      <var name="min" val="{6.672178105360068}" substitute="no"/>
-      <var name="max" val="{33.07576539942932}" substitute="no"/>
+      <var name="min" val="{46.17806254419001}" substitute="no"/>
+      <var name="max" val="{563.3668310935082}" substitute="no"/>
       <var name="makeSymmetric" val="{0}" substitute="no"/>
     </module>
     <module id="m25" package="SCIRun" category="ChangeFieldData" name="CalculateFieldData" version="1.0">
@@ -516,7 +488,7 @@
       <var name="use-first-valid" val="{0}" substitute="no"/>
       <var name="port-valid-index" val="{0}" substitute="no"/>
       <var name="port-selected-index" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{338x235+1203+590}" substitute="no"/>
+      <var name="ui_geometry" val="{338x235+1204+618}" substitute="no"/>
     </module>
   </modules>
   <connections>

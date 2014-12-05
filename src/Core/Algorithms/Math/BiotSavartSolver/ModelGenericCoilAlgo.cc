@@ -39,8 +39,8 @@ using namespace SCIRun;
 
     struct Args
     {
-      double wireCurrent;
-      double coilRadius;
+      double wireCurrent;//Amps
+      double coilRadius;//Meters
       int type;
     };
 
@@ -63,6 +63,10 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 	  {
 		this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, args.coilRadius, args.coilDistance, args.coilSegments);
 	  }
+	  else if(args.type == 3)
+	  {
+		  this->GenerateFigure8ShapedSpiralCoil(coilPoints, coilIndices, args.coilRadius, 1);
+	  }
 	  else
 	  {
 		error("Unknown coil type!");
@@ -83,6 +87,7 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 	  //output->vfield()->set_values(dataptr,m*n);
 
 	  VMesh* mesh = meshFieldHandle->vmesh();
+	  
 
 	  // add nodes
 	  for(size_t i = 0; i < coilPoints.size(); i++)
@@ -90,8 +95,11 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 		const Point p(coilPoints[i]);
 				
 		mesh->add_point(p);
+		
+		//std::cout << " XCXCXCXCXC " << p << std::endl << std::flush;
 	  }
-
+	  
+	  
 	  VMesh::Node::array_type edge;
 
 	  for(size_t i = 0; i < coilIndices.size(); i++)
@@ -105,6 +113,7 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 			edge.clear();
 		  }
 	  }
+	  
 
 	  if(args.type == 1)
 	  {
@@ -119,7 +128,7 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 		meshFieldHandle->vfield()->resize_values();
 		meshFieldHandle->vfield()->set_values(valz);
 	  }
-	  else if(args.type == 2)
+	  else if( args.type == 2 )
 	  {
 		std::vector<double> valz(2*args.coilSegments);
 
@@ -137,6 +146,24 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 
 		meshFieldHandle->vfield()->resize_values();
 		meshFieldHandle->vfield()->set_values(valz);
+	  }
+	  else if( args.type == 3 )
+	  {
+		  
+		/*
+		std::vector<double> valz(coilPoints.size()-1);
+
+		for(size_t i = 0; i < coilPoints.size()-1; i++)
+		{
+			valz[i] = args.wireCurrent;
+		}
+
+		meshFieldHandle->vfield()->resize_values();
+		meshFieldHandle->vfield()->set_values(valz);
+		*/
+		meshFieldHandle->vfield()->resize_values();
+		meshFieldHandle->vfield()->set_all_values(args.wireCurrent);
+		
 	  }
 	  else
 	  {
@@ -184,22 +211,84 @@ GenerateCircularContour(std::vector<Vector>& points, Vector center, double r, do
 	assert(fromPI < toPI);
 	double dPI = toPI - fromPI; 
 
-	Vector p;
+	
 	
 	//what will be the circumvence of a full 0-2*pi
-	double C = 2*dPI*r;
-	double minSegmentLenght = 0.8; 
+	//double C = 2*dPI*r;
+	//double minSegmentLenght = 0.8; 
 	
-	int nsegments = Floor( C / minSegmentLenght); // Adaptive LOD for the number of piece-wise segments per full circle
-	double anglePerSegment = (2*M_PI)/nsegments;
+	// Adaptive LOD for the number of piece-wise segments per full circle
+	//int nsegments = Floor( C / minSegmentLenght); 
+	
+	//double anglePerSegment = (2*M_PI)/nsegments;
+	
+	double minPI = M_PI / 16;
+	assert(dPI > minPI);
+	
+	size_t nsegments = 2;
+	double iPI = dPI / nsegments;
+	
+	while(iPI > minPI)
+	{
+		nsegments++;
+		iPI = dPI / nsegments;
+	}
+	
+	//points.resize(nsegments);
+	
+	
+	//std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << std::endl <<std::flush;
 
 	for(size_t i = 0; i < nsegments; i++)
 	{
-		p.Set(center.x() + r * cos(fromPI + anglePerSegment*i), center.y() + r * sin(fromPI + anglePerSegment*i), center.z());
+		Vector p(center.x() + r * cos(fromPI + iPI*i), center.y() + r * sin(fromPI + iPI*i), center.z());
 		points.push_back(p);
+		
+		//std::cout << p << std::endl;
+		//points[i].Set(center.x() + r * cos(fromPI + iPI*i), center.y() + r * sin(fromPI + iPI*i), center.z());
 	}
+	
+	std::cout << " AAAAAAAA " << std::flush;
 }
+/*
+void
+ModelGenericCoilAlgo::
+GenerateCircularContour(VMesh* mesh,VField* field, double r, double fromPI, double toPI)
+{
+	assert(fromPI < toPI);
+	double dPI = toPI - fromPI; 
 
+	//what will be the circumvence of a full 0-2*pi
+	//double C = 2*dPI*r;
+	//double minSegmentLenght = 0.8; 
+	
+	// Adaptive LOD for the number of piece-wise segments per full circle
+	//int nsegments = Floor( C / minSegmentLenght); 
+	
+	//double anglePerSegment = (2*M_PI)/nsegments;
+	
+	double minPI = M_PI / 16;
+	assert(dPI > minPI);
+	
+	size_t nsegments = 2;
+	double iPI = dPI / nsegments;
+	
+	while(iPI > minPI)
+	{
+		nsegments++;
+		iPI = dPI / nsegments;
+	}
+	
+	std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << std::endl <<std::flush;
+
+VMesh::Node::array_type edge;
+
+size_type count = mesh->get_ni();
+
+
+
+}
+*/
 
 std::vector<Vector> 
 ModelGenericCoilAlgo::
@@ -252,33 +341,30 @@ void
 ModelGenericCoilAlgo::
 GenerateFigure8ShapedSpiralCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double loops)
 {
-	// Vector pos_L( -r-(d/2), 0, 0);
-	std::vector<Vector> coilPoints;
-	coilPoints.reserve(100);
-	Vector origin;
 
-	GenerateCircularContour(coilPoints, origin, r, 0, 2*M_PI);
+	Vector origin(0,0,0);
 
-	// GenerateCircleContour(coilPoints_L, coilIndices_L, pos_L, r, nsegments);
-
-	// Vector pos_R( r+(d/2), 0, 0);
-	// std::vector<Vector> coilPoints_R;
-	// std::vector<size_t> coilIndices_R;
-
-	// GenerateCircleContour(coilPoints_R, coilIndices_R, pos_R, r, nsegments);
-
-	// points = ComposePointsForCurve(coilPoints_L, coilPoints_R);
-
-	// indices = ComposeIndicesForCurve(coilIndices_L, coilIndices_R);
+	GenerateCircularContour(points, origin, r, 0, 2*M_PI);
 	
-	std::vector<size_t> coilIndices;
-	coilIndices.resize(2*coilPoints.size());
+	indices.resize(2*points.size());
 	
-	for(size_t i = 0, j = 0; i < coilIndices.size(); i++, j+=2)
+	for(size_t i = 0, j = 0; i < points.size(); i++, j+=2)
 	{
-	coilIndices[j] = i;
-	coilIndices[j+1] = i + 1;
+	indices[j] = i;
+	indices[j+1] = i + 1;
 	}
+	
+	indices[ indices.size() - 1 ] = indices[0];
+	
+	//std::cout << " BBBB " << points.size() << std::flush;
+}
+
+void
+ModelGenericCoilAlgo::
+GenerateFigure8ShapedSpiralCoil(VMesh* mesh,VField* field, Args args)
+{
+
+
 }
 
 } // end namespace SCIRunAlgo
