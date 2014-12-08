@@ -83,6 +83,7 @@ namespace SCIRun {
 		else if (coilType == "8-single") algoArgs.type = 2;
 		else if (coilType == "0-spiral") algoArgs.type = 3;
 		else algoArgs.type = 1;
+		
 
 		if (!oport_cached("Mesh") || oldArgs != algoArgs)
 		{

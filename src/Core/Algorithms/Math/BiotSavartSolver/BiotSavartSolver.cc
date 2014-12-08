@@ -18,7 +18,7 @@ namespace SCIRunAlgo {
 
 	using namespace SCIRun;
 	
-	//! Namespace used for Biot Solver kernel implementations
+	//! Namespace used for concrete kernel implementations
 	namespace details
 	{
 		class KernelBase
@@ -94,11 +94,13 @@ namespace SCIRunAlgo {
 					{ 
 						numprocessors = numproc; 
 					}
-
-					algo->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors));
-
+					
+					//#ifdef _DEBUG
 					//! DEBUG when we want to test with one CPU only
-					//numprocessors = 1;
+					numprocessors = 1;
+					//#endif
+					
+					algo->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors));
 					
 					success.resize(numprocessors,true);
 					

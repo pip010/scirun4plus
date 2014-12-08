@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="1" name="{Main}" bbox="{80 62 1097 1064}" creationDate="{Fri Dec 05 2014}" creationTime="{22:21:45}" geometry="{1340x829+239+106}">
+<network version="v4.7" netversion="1" name="{Main}" bbox="{80 62 1097 1064}" creationDate="{Mon Dec 08 2014}" creationTime="{21:37:38}" geometry="{1340x829+239+106}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="Render" name="ViewScene" version="1.0">
@@ -271,7 +271,7 @@
       <var name="coilRadiusTCL" val="{20.0}" substitute="no"/>
       <var name="coilDistanceTCL" val="{2}" substitute="no"/>
       <var name="coilSegmentsTCL" val="{33}" substitute="no"/>
-      <var name="typeTCL" val="{0-spiral}" substitute="no"/>
+      <var name="typeTCL" val="{0-single}" substitute="no"/>
       <var name="ui_geometry" val="{301x130+1590+425}" substitute="no"/>
     </module>
     <module id="m7" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">
