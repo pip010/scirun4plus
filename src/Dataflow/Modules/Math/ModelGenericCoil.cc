@@ -41,7 +41,6 @@ namespace SCIRun {
   	    
   	    GuiDouble wireCurrentTCL;
 		GuiDouble coilRadiusTCL;
-		GuiDouble coilDistanceTCL;
 		GuiDouble coilSegmentsTCL;
     	GuiString typeTCL;
 		 
@@ -56,7 +55,6 @@ namespace SCIRun {
 		Module("ModelGenericCoil", ctx, Source, "Math", "SCIRun"),
 		wireCurrentTCL(ctx->subVar("wireCurrentTCL")),
 		coilRadiusTCL(ctx->subVar("coilRadiusTCL")),
-		coilDistanceTCL(ctx->subVar("coilDistanceTCL")),
 		coilSegmentsTCL(ctx->subVar("coilSegmentsTCL")),
 		typeTCL(ctx->subVar("typeTCL")) 
 	{
@@ -73,15 +71,14 @@ namespace SCIRun {
 		std::string coilType = static_cast<std::string>(typeTCL.get());
 		algoArgs.wireCurrent = static_cast<double>(wireCurrentTCL.get());
 		algoArgs.coilRadius = static_cast<double>(coilRadiusTCL.get());
-		algoArgs.coilDistance = static_cast<double>(coilDistanceTCL.get());
 		algoArgs.coilSegments = static_cast<double>(coilSegmentsTCL.get());
 		
 		bool need_matrix_data = oport_connected("Matrix");
 		bool need_mesh_data = oport_connected("Mesh");
 
-		if (coilType == "0-single") algoArgs.type = 1;
-		else if (coilType == "8-single") algoArgs.type = 2;
-		else if (coilType == "0-spiral") algoArgs.type = 3;
+		if (coilType == "single") algoArgs.type = 1;
+		else if (coilType == "multi") algoArgs.type = 2;
+		else if (coilType == "dipol") algoArgs.type = 3;
 		else algoArgs.type = 1;
 		
 

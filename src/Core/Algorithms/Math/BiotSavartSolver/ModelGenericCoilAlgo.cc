@@ -53,9 +53,6 @@ using namespace SCIRun;
 				  algo(algo),
 				  radius(radius),
 				  current(current)
-
-				  //typeOut(t),
-				  //matOut(0)
 				{
 				}
 				
@@ -72,13 +69,22 @@ using namespace SCIRun;
 			protected:
 
 				//! ref to the executing algorithm context
-				AlgoBase* algo;
+				const AlgoBase* algo;
 				
-				double radius;
-				double current;
+				const double radius;
+				const double current;
 				
-				void GenerateCircularContour(std::vector<Vector>& points,std::vector<size_t>& indices,std::vector<double> values, Vector center, double r, double fromPI, double toPI)
+				void GenerateCircularContour(
+					std::vector<Vector>& points,
+					std::vector<size_t>& indices,
+					std::vector<double>& values, 
+					Vector origin, 
+					double r,
+					double v, 
+					double fromPI, 
+					double toPI)
 				{
+
 					assert(fromPI < toPI);
 					double dPI = toPI - fromPI;
 					
@@ -103,46 +109,41 @@ using namespace SCIRun;
 						iPI = dPI / nsegments;
 					}
 					
-					//points.resize(nsegments);
-					
-				
-					
-					std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << std::endl <<std::flush;
+					//std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << v << std::endl << std::flush;
 
 					for(size_t i = 0; i < nsegments; i++)
 					{
-						Vector p(center.x() + r * cos(fromPI + iPI*i), center.y() + r * sin(fromPI + iPI*i), center.z());
+						Vector p(origin.x() + r * cos(fromPI + iPI*i), origin.y() + r * sin(fromPI + iPI*i), origin.z());
 						points.push_back(p);
-						values.push_back(current);
-						//std::cout << p << std::endl;
-						//points[i].Set(center.x() + r * cos(fromPI + iPI*i), center.y() + r * sin(fromPI + iPI*i), center.z());
+						values.push_back(v);
 					}
 					
-					std::cout << " AAAAAAAA " << std::flush;
+					//std::cout << " AAAAAAAA " << std::flush;
 					
 					for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
 					{
-					//indices[j] = i;
-					//indices[j+1] = i + 1;
-					
-					indices.push_back(i);
-					indices.push_back(i + 1);
+						indices.push_back(i);
+						indices.push_back(i + 1);
 					}
 
 					indices[ 2*nsegments - 1 ] = indices[0];
 					
-						std::cout << " BBBBBBB " << std::flush;
-				}
+					//std::cout << " BBBBBBB " << indices.size() << std::flush;
+
+				} const
 				
 				std::vector<Vector> ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
 				{
+
 					std::vector<Vector> result(points1);
 					result.insert(result.end(), points2.begin(), points2.end());
 					return result;
+
 				}
 
 				std::vector<size_t> ComposeIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2)
 				{
+
 					std::vector<size_t> result(indices1);
 					result.insert(result.end(), indices2.begin(), indices2.end());
 
@@ -154,14 +155,20 @@ using namespace SCIRun;
 					}
 
 					return result;
+
 				}
 		};
 		
+		//! piece-wise wire discretization
 		class PiecewiseCoilgen : public BaseCoilgen
 		{
 			public:
 			
-				PiecewiseCoilgen( AlgoBase* algo, double radius, double current ) : BaseCoilgen(algo,radius,current)
+				PiecewiseCoilgen( 
+					AlgoBase* algo, 
+					double radius, 
+					double current )
+					: BaseCoilgen(algo,radius,current)
 				{
 					
 				}
@@ -170,12 +177,12 @@ using namespace SCIRun;
 				{
 				}
 				
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& outdata)
+				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params)
 				{
 					
-					  std::vector<Vector> coilPoints;
-					  std::vector<size_t> coilIndices;
-					  std::vector<double> coilValues;
+					std::vector<Vector> coilPoints;
+					std::vector<size_t> coilIndices;
+					std::vector<double> coilValues;
 	  
 					//generate the two coils
 					double d = 2.0;
@@ -183,55 +190,67 @@ using namespace SCIRun;
 					std::vector<Vector> coilPoints_L;
 					std::vector<size_t> coilIndices_L;
 
-					this->GenerateCircularContour(coilPoints_L, coilIndices_L,coilValues, pos_L, radius, 0, 2*M_PI);
+					this->GenerateCircularContour( coilPoints_L, coilIndices_L, coilValues, pos_L, radius, current, 0, 2*M_PI );
 
 					Vector pos_R( radius + (d/2), 0, 0);
 					std::vector<Vector> coilPoints_R;
 					std::vector<size_t> coilIndices_R;
 
-					this->GenerateCircularContour(coilPoints_R, coilIndices_R,coilValues, pos_R, radius, 0, 2*M_PI);
+					this->GenerateCircularContour( coilPoints_R, coilIndices_R, coilValues, pos_R, radius,-current, 0, 2*M_PI );
 
 					coilPoints = ComposePointsForCurve(coilPoints_L, coilPoints_R);
 					coilIndices = ComposeIndicesForCurve(coilIndices_L, coilIndices_R);
 					
 					
-					//SCIrun API
-					  FieldInformation fi("CurveMesh",0,"double");//0 data on elements; 1 data on nodes
-					  fi.make_curvemesh();
-					  fi.make_constantdata();
-					  fi.make_scalar();
+					//SCIrun API creating a new mesh
+					//0 data on elements; 1 data on nodes
+					FieldInformation fi("CurveMesh",0,"double");
+					fi.make_curvemesh();
+					fi.make_constantdata();
+					fi.make_scalar();
 
-					   // ALT ****************
-					  //MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
-					  //meshFieldHandle = CreateField(fi,meshHandle);
+					// ALT ****************
+					//MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
+					//meshFieldHandle = CreateField(fi,meshHandle);
 
-					  meshHandle = CreateField(fi);    
-					  //output->vfield()->set_values(dataptr,m*n);
+					meshHandle = CreateField(fi);
 
-					  VMesh* mesh = meshHandle->vmesh();
-					  
-					  
+					VMesh* mesh = meshHandle->vmesh();
 
-					  
-					 
 
-					  // add nodes
-					  for(size_t i = 0; i < coilPoints.size(); i++)
-					  {
+					//! add nodes to the new mesh
+					for(size_t i = 0; i < coilPoints.size(); i++)
+					{
 						const Point p(coilPoints[i]);
-								
+
 						mesh->add_point(p);
 						
 						//std::cout << " XCXCXCXCXC " << p << std::endl << std::flush;
-					  }
-				
-				
-				// add data
+					}
 
-				meshHandle->vfield()->resize_values();
-				meshHandle->vfield()->set_values(coilValues);
-					  
-					  
+					//! add edges to mesh
+					VMesh::Node::array_type edge;
+
+					for(size_t i = 0; i < coilIndices.size(); i++)
+					{
+					  VMesh::Node::index_type p = coilIndices[i];
+					  edge.push_back(p);
+
+					  if(edge.size() == 2)
+					  {
+						mesh->add_elem(edge);
+						edge.clear();
+					  }
+					}
+
+					//! add data to mesh
+
+					VField* field = meshHandle->vfield();
+
+					field->resize_values();
+					field->set_values(coilValues);
+
+
 				}
 
 		};
@@ -263,7 +282,7 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 	  if(args.type == 1)
 	  {
 		Vector center;//center at origin
-		helper = new PiecewiseCoilgen(this,args.wireCurrent,args.coilRadius);
+		helper = new PiecewiseCoilgen(this,args.coilRadius,args.wireCurrent);
 		//this->GenerateCircleContour(coilPoints, coilIndices, center, args.coilRadius, args.coilSegments);
 	  }
 	  else if(args.type == 2)

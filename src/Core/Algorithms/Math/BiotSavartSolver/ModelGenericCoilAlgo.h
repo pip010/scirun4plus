@@ -11,7 +11,7 @@
 //! Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-#include <Core/Algorithms/Converter/MatrixToField.h>
+//#include <Core/Algorithms/Converter/MatrixToField.h>
 
 //! for Windows support
 #include <Core/Algorithms/Fields/share.h>
@@ -49,16 +49,6 @@ class SCISHARE ModelGenericCoilAlgo : public AlgoBase
     
     //! Convert data into a matrix
     bool run(FieldHandle& mesh, MatrixHandle& params, Args& args); 
-
- // private:
- // 	std::vector<Vector> ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2);
- // 	std::vector<size_t> ComposeIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2);
-    //void GenerateCircularContour(std::vector<Vector>& points,, std::vector<size_t>& indices, Vector center, double r, double fromPI, double toPI);
-  	//void GenerateCircleContour(std::vector<Vector>& points, std::vector<size_t>& indices, Vector pos, double r, size_t nsegments);
-  	//void GenerateFigure8ShapedCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double d, size_t nsegments);
-    //void GenerateFigure8ShapedSpiralCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double loops);
-    
-    //void GenerateFigure8ShapedSpiralCoil(VMesh* mesh,VField* field, Args args);
 };
 
 } // end namespace BiotSavartSolverAlgo
