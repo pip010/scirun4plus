@@ -37,12 +37,14 @@ itcl::class SCIRun_Math_ModelGenericCoil {
 
     method set_defaults {} {
       global $this-wireCurrentTCL
-      global $this-coilRadiusTCL
-      global $this-coilSegmentsTCL
+      global $this-innerRadiusTCL
+      global $this-outerRadiusTCL
+      global $this-levelDetailTCL
       global $this-typeTCL
       set $this-wireCurrentTCL 1
-      set $this-coilRadiusTCL 10
-	    set $this-coilSegmentsTCL 33
+      set $this-innerRadiusTCL 10
+      set $this-outerRadiusTCL 10
+	    set $this-levelDetailTCL 2
       set $this-typeTCL "single"
     }
  
@@ -56,8 +58,9 @@ itcl::class SCIRun_Math_ModelGenericCoil {
     }
     method ui {} {
       global $this-wireCurrentTCL
-      global $this-coilRadiusTCL
-      global $this-coilSegmentsTCL
+      global $this-innerRadiusTCL
+      global $this-outerRadiusTCL
+      global $this-levelDetailTCL
       global $this-typeTCL
 
       set w .ui[modname]
@@ -69,14 +72,16 @@ itcl::class SCIRun_Math_ModelGenericCoil {
       make_labeled_radio $w.type "Method(s) :" "" left 3 $this-typeTCL \
           { "single" "multi" "dipole" }
       make_entry $w.current "Current through wire:" $this-wireCurrentTCL "$this-c needexecute"
-      make_entry $w.radius "Radius of coil(s):" $this-coilRadiusTCL "$this-c needexecute"
-      make_entry $w.segments "Coil segments:" $this-coilSegmentsTCL "$this-c needexecute"
+      make_entry $w.radius1 "Radius inner:" $this-innerRadiusTCL "$this-c needexecute"
+      make_entry $w.radius2 "Radius outer:" $this-outerRadiusTCL "$this-c needexecute"
+      make_entry $w.lod "Level of Details:" $this-levelDetailTCL "$this-c needexecute"
       
       bind $w.current <Return> "$this-c needexecute"
-      bind $w.radius <Return> "$this-c needexecute"
-      bind $w.segments <Return> "$this-c needexecute"
+      bind $w.radius1 <Return> "$this-c needexecute"
+      bind $w.radiu21 <Return> "$this-c needexecute"
+      bind $w.lod <Return> "$this-c needexecute"
       
-      pack $w.type $w.current $w.radius $w.segments -side top -fill x
+      pack $w.type $w.current $w.radius1 $w.radius2 $w.lod -side top -fill x
 
       makeSciButtonPanel $w $w $this
       moveToCursor $w

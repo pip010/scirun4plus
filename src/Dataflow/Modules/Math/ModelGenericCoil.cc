@@ -40,8 +40,9 @@ namespace SCIRun {
 	  private:
   	    
   	    GuiDouble wireCurrentTCL;
-		GuiDouble coilRadiusTCL;
-		GuiDouble coilSegmentsTCL;
+		GuiDouble innerRadiusTCL;
+		GuiDouble outerRadiusTCL;
+		GuiDouble coilDetailsTCL;
     	GuiString typeTCL;
 		 
 		SCIRunAlgo::ModelGenericCoilAlgo algo;
@@ -54,8 +55,9 @@ namespace SCIRun {
 	ModelGenericCoil::ModelGenericCoil(GuiContext* ctx) :
 		Module("ModelGenericCoil", ctx, Source, "Math", "SCIRun"),
 		wireCurrentTCL(ctx->subVar("wireCurrentTCL")),
-		coilRadiusTCL(ctx->subVar("coilRadiusTCL")),
-		coilSegmentsTCL(ctx->subVar("coilSegmentsTCL")),
+		innerRadiusTCL(ctx->subVar("innerRadiusTCL")),
+		outerRadiusTCL(ctx->subVar("outerRadiusTCL")),
+		coilDetailsTCL(ctx->subVar("coilDetailsTCL")),
 		typeTCL(ctx->subVar("typeTCL")) 
 	{
 		algo.set_progress_reporter(this);
@@ -70,8 +72,9 @@ namespace SCIRun {
 
 		std::string coilType = static_cast<std::string>(typeTCL.get());
 		algoArgs.wireCurrent = static_cast<double>(wireCurrentTCL.get());
-		algoArgs.coilRadius = static_cast<double>(coilRadiusTCL.get());
-		algoArgs.coilSegments = static_cast<double>(coilSegmentsTCL.get());
+		algoArgs.coilRadiusInner = static_cast<double>(innerRadiusTCL.get());
+		algoArgs.coilRadiusOuter = static_cast<double>(outerRadiusTCL.get());
+		algoArgs.coilLevelDetails = static_cast<double>(coilDetailsTCL.get());
 		
 		bool need_matrix_data = oport_connected("Matrix");
 		bool need_mesh_data = oport_connected("Mesh");

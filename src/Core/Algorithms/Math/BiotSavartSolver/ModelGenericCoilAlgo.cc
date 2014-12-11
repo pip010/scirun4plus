@@ -48,11 +48,13 @@ using namespace SCIRun;
 		class BaseCoilgen
 		{
 			public:
-				BaseCoilgen(AlgoBase* algo, double radius, double current ) :
+				BaseCoilgen(AlgoBase* algo, ModelGenericCoilAlgo::Args args ) :
 				  ref_cnt(0),
 				  algo(algo),
-				  radius(radius),
-				  current(current)
+				  innerR(args.coilRadiusInner),
+				  outerR(args.coilRadiusOuter),
+				  current(args.wireCurrent),
+				  coilLOD(args.coilLevelDetails)
 				{
 				}
 				
@@ -71,8 +73,10 @@ using namespace SCIRun;
 				//! ref to the executing algorithm context
 				const AlgoBase* algo;
 				
-				const double radius;
+				const double innerR;
+				const double outerR;
 				const double current;
+				const double coilLOD;
 				
 				void GenerateCircularContour(
 					std::vector<Vector>& points,
@@ -125,9 +129,11 @@ using namespace SCIRun;
 						indices.push_back(i);
 						indices.push_back(i + 1);
 					}
-
-					indices[ 2*nsegments - 1 ] = indices[0];
 					
+					if(dPI >= M_PI_2)
+					{
+						indices[ 2*nsegments - 1 ] = indices[0];
+					}
 					//std::cout << " BBBBBBB " << indices.size() << std::flush;
 
 				} const
@@ -160,20 +166,19 @@ using namespace SCIRun;
 		};
 		
 		//! piece-wise wire discretization
-		class PiecewiseCoilgen : public BaseCoilgen
+		class SingleloopCoilgen : public BaseCoilgen
 		{
 			public:
 			
-				PiecewiseCoilgen( 
+				SingleloopCoilgen( 
 					AlgoBase* algo, 
-					double radius, 
-					double current )
-					: BaseCoilgen(algo,radius,current)
+					ModelGenericCoilAlgo::Args args)
+					: BaseCoilgen( algo,args )
 				{
 					
 				}
 				
-				~PiecewiseCoilgen()
+				~SingleloopCoilgen()
 				{
 				}
 				
@@ -186,6 +191,7 @@ using namespace SCIRun;
 	  
 					//generate the two coils
 					double d = 2.0;
+					double radius = (outerR - innerR) / 2.0;
 					Vector pos_L( -radius - (d/2), 0, 0);
 					std::vector<Vector> coilPoints_L;
 					std::vector<size_t> coilIndices_L;
@@ -255,15 +261,144 @@ using namespace SCIRun;
 
 		};
 
+
+		
+		//! piece-wise wire discretization
+		class MultiloopsCoilgen : public BaseCoilgen
+		{
+			public:
+			
+				MultiloopsCoilgen( 
+					AlgoBase* algo, 
+					ModelGenericCoilAlgo::Args args )
+					: BaseCoilgen( algo,args )
+				{
+					
+				}
+				
+				~MultiloopsCoilgen()
+				{
+				}
+				
+				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params)
+				{
+					std::vector<Vector> coilPoints;
+					std::vector<size_t> coilIndices;
+					std::vector<double> coilValues;
+										
+					//SCIrun API creating a new mesh
+					//0 data on elements; 1 data on nodes
+					FieldInformation fi("CurveMesh",0,"double");
+					fi.make_curvemesh();
+					fi.make_constantdata();
+					fi.make_scalar();
+
+					meshHandle = CreateField(fi);
+
+					VMesh* mesh = meshHandle->vmesh();
+
+
+					//! add nodes to the new mesh
+					for(size_t i = 0; i < coilPoints.size(); i++)
+					{
+						const Point p(coilPoints[i]);
+
+						mesh->add_point(p);
+						
+						//std::cout << " XCXCXCXCXC " << p << std::endl << std::flush;
+					}
+
+					//! add edges to mesh
+					VMesh::Node::array_type edge;
+
+					for(size_t i = 0; i < coilIndices.size(); i++)
+					{
+					  VMesh::Node::index_type p = coilIndices[i];
+					  edge.push_back(p);
+
+					  if(edge.size() == 2)
+					  {
+						mesh->add_elem(edge);
+						edge.clear();
+					  }
+					}
+
+					//! add data to mesh
+
+					VField* field = meshHandle->vfield();
+					field->resize_values();
+					field->set_values(coilValues);
+				} 
+		};
+
+
+
+		//! dipoles domain discretization
+		class DipolesCoilgen : public BaseCoilgen
+		{
+			public:
+			
+				DipolesCoilgen( 
+					AlgoBase* algo, 
+					ModelGenericCoilAlgo::Args args )
+					: BaseCoilgen( algo,args )
+				{
+					
+				}
+				
+				~DipolesCoilgen()
+				{
+				}
+				
+				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params)
+				{
+					/*
+										
+					//SCIrun API creating a new mesh
+					//0 data on elements; 1 data on nodes
+					FieldInformation fi("CurveMesh",0,"double");
+					fi.make_constantmesh();
+					fi.make_lineardata();
+					fi.make_vector();
+
+					meshHandle = CreateField(fi);
+
+					VMesh* mesh = meshHandle->vmesh();
+
+
+					//! add nodes to the new mesh
+					for(size_t i = 0; i < coilPoints.size(); i++)
+					{
+						const Point p(coilPoints[i]);
+
+						mesh->add_point(p);
+						
+						//std::cout << " XCXCXCXCXC " << p << std::endl << std::flush;
+					}
+
+					//! add edges to mesh
+					VMesh::Node::array_type edge;
+					for(size_t i = 0; i < coilIndices.size(); i++)
+					{
+					  VMesh::Node::index_type p = coilIndices[i];
+					  edge.push_back(p);
+
+					  if(edge.size() == 2)
+					  {
+						mesh->add_elem(edge);
+						edge.clear();
+					  }
+					}
+
+					//! add data to mesh
+					VField* field = meshHandle->vfield();
+					field->resize_values();
+					field->set_values(coilValues);
+					*/
+				} 
+		};
+
 	}
-
-
-    struct Args
-    {
-      double wireCurrent;//Amps
-      double coilRadius;//Meters
-      int type;
-    };
 
 bool 
 ModelGenericCoilAlgo::
@@ -281,17 +416,15 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 
 	  if(args.type == 1)
 	  {
-		Vector center;//center at origin
-		helper = new PiecewiseCoilgen(this,args.coilRadius,args.wireCurrent);
-		//this->GenerateCircleContour(coilPoints, coilIndices, center, args.coilRadius, args.coilSegments);
+		helper = new SingleloopCoilgen(this,args);
 	  }
 	  else if(args.type == 2)
 	  {
-		//this->GenerateFigure8ShapedCoil(coilPoints, coilIndices, args.coilRadius, args.coilDistance, args.coilSegments);
+	  	helper = new MultiloopsCoilgen(this,args);
 	  }
 	  else if(args.type == 3)
 	  {
-		  //this->GenerateFigure8ShapedSpiralCoil(coilPoints, coilIndices, args.coilRadius, 1);
+	  	helper = new DipolesCoilgen(this,args);
 	  }
 	  else
 	  {
@@ -299,103 +432,15 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 		algo_end(); return (false);
 	  }
 		
-	helper->Generate(meshFieldHandle, params);
-	  
-	  /*
-	  
-	  FieldInformation fi("CurveMesh",0,"double");//0 data on elements; 1 data on nodes
-	  fi.make_curvemesh();
-	  fi.make_constantdata();
-	  fi.make_scalar();
-
-	   // ALT ****************
-	  //MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
-	  //meshFieldHandle = CreateField(fi,meshHandle);
-
-	  meshFieldHandle = CreateField(fi);    
-	  //output->vfield()->set_values(dataptr,m*n);
-
-	  VMesh* mesh = meshFieldHandle->vmesh();
+		helper->Generate(meshFieldHandle, params);
 	  
 
-	  // add nodes
-	  for(size_t i = 0; i < coilPoints.size(); i++)
-	  {
-		const Point p(coilPoints[i]);
-				
-		mesh->add_point(p);
-		
-		//std::cout << " XCXCXCXCXC " << p << std::endl << std::flush;
-	  }
-	  
-	  
-	  
-	  VMesh::Node::array_type edge;
-
-	  for(size_t i = 0; i < coilIndices.size(); i++)
-	  {
-		  VMesh::Node::index_type p = coilIndices[i];
-		  edge.push_back(p);
-
-		  if(edge.size() == 2)
-		  {
-			mesh->add_elem(edge);
-			edge.clear();
-		  }
-	  }
-	  
-
-	  if(args.type == 1)
-	  {
-		std::vector<double> valz(args.coilSegments);
-
-		for(size_t i = 0; i < args.coilSegments; i++)
-		{
-			valz[i] = args.wireCurrent;
-
-		}
-
-		meshFieldHandle->vfield()->resize_values();
-		meshFieldHandle->vfield()->set_values(valz);
-	  }
-	  else if( args.type == 2 )
-	  {
-		std::vector<double> valz(2*args.coilSegments);
-
-		for(size_t i = 0; i < 2*args.coilSegments; i++)
-		{
-		  if(i < args.coilSegments)
-		  {
-			valz[i] = args.wireCurrent;
-		  }
-		  else
-		  {
-			valz[i] = -args.wireCurrent;
-		  }
-		}
-
-		meshFieldHandle->vfield()->resize_values();
-		meshFieldHandle->vfield()->set_values(valz);
-	  }
-	  else if( args.type == 3 )
-	  {
-		  
-		meshFieldHandle->vfield()->resize_values();
-		meshFieldHandle->vfield()->set_all_values(args.wireCurrent);
-		
-	  }
-	  else
-	  {
-		error("Unknown coil type!");
-		algo_end(); return (false);
-	  }
-	  **/
 
 
 	}
 	catch (...)
 	{
-	error("Error alocating output matrix");
+	error("Error while running the algorithm ...");
 	algo_end(); return (false);
 	}
 

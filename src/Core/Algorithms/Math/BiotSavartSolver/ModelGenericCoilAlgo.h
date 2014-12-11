@@ -31,17 +31,17 @@ class SCISHARE ModelGenericCoilAlgo : public AlgoBase
     struct Args
     {
     	double wireCurrent;
-    	double coilRadius;
-    	double coilDistance;
-    	double coilSegments;
+    	double coilRadiusInner;
+    	double coilRadiusOuter;;
+    	double coilLevelDetails;
     	int type;
     	
     	inline bool operator==(const Args& rhs)
     	{ 
 			return wireCurrent == rhs.wireCurrent && 
-			coilRadius == rhs.coilRadius && 
-			coilDistance == rhs.coilDistance && 
-			coilSegments == rhs.coilSegments && 
+			coilRadiusInner == rhs.coilRadiusInner && 
+			coilRadiusOuter == rhs.coilRadiusOuter && 
+			coilLevelDetails == rhs.coilLevelDetails && 
 			type == rhs.type;
     	}
 		inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}
