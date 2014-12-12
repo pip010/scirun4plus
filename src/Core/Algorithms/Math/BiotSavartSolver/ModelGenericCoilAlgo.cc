@@ -139,7 +139,10 @@ using namespace SCIRun;
 
 				} const
 				
-				//void BuildEdges
+				void BuildEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
+				{
+					
+				}
 				
 				std::vector<Vector> ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
 				{
