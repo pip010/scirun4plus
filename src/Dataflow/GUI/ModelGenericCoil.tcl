@@ -78,7 +78,7 @@ itcl::class SCIRun_Math_ModelGenericCoil {
       
       bind $w.current <Return> "$this-c needexecute"
       bind $w.radius1 <Return> "$this-c needexecute"
-      bind $w.radiu21 <Return> "$this-c needexecute"
+      bind $w.radius2 <Return> "$this-c needexecute"
       bind $w.lod <Return> "$this-c needexecute"
       
       pack $w.type $w.current $w.radius1 $w.radius2 $w.lod -side top -fill x

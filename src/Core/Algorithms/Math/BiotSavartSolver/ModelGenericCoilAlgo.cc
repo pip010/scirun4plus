@@ -113,7 +113,7 @@ using namespace SCIRun;
 						iPI = dPI / nsegments;
 					}
 					
-					//std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << v << std::endl << std::flush;
+					std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << v << std::endl << std::flush;
 
 					for(size_t i = 0; i < nsegments; i++)
 					{
@@ -130,6 +130,7 @@ using namespace SCIRun;
 						indices.push_back(i + 1);
 					}
 					
+					//TODO: change this to abs(dPI - M_PI_2) < 1E-6
 					if(dPI >= M_PI_2)
 					{
 						indices[ 2*nsegments - 1 ] = indices[0];
@@ -137,6 +138,8 @@ using namespace SCIRun;
 					//std::cout << " BBBBBBB " << indices.size() << std::flush;
 
 				} const
+				
+				//void BuildEdges
 				
 				std::vector<Vector> ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
 				{
@@ -191,7 +194,7 @@ using namespace SCIRun;
 	  
 					//generate the two coils
 					double d = 2.0;
-					double radius = (outerR - innerR) / 2.0;
+					double radius = innerR + ((outerR - innerR) / 2.0);
 					Vector pos_L( -radius - (d/2), 0, 0);
 					std::vector<Vector> coilPoints_L;
 					std::vector<size_t> coilIndices_L;
