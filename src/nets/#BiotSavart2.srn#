@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="1" name="{Main}" bbox="{80 62 1097 1064}" creationDate="{Fri Dec 12 2014}" creationTime="{13:43:44}" geometry="{1340x829+239+106}">
+<network version="v4.7" netversion="1" name="{Main}" bbox="{80 62 1097 1064}" creationDate="{Fri Dec 12 2014}" creationTime="{22:04:46}" geometry="{1340x829+239+106}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="Render" name="ViewScene" version="1.0">
@@ -269,8 +269,8 @@
       <position x="764" y="62"/>
       <var name="wireCurrentTCL" val="{1.6}" substitute="no"/>
       <var name="innerRadiusTCL" val="{10}" substitute="no"/>
-      <var name="outerRadiusTCL" val="{10}" substitute="no"/>
-      <var name="typeTCL" val="{0-single}" substitute="no"/>
+      <var name="outerRadiusTCL" val="{15}" substitute="no"/>
+      <var name="typeTCL" val="{multi}" substitute="no"/>
       <var name="ui_geometry" val="{301x130+1590+425}" substitute="no"/>
     </module>
     <module id="m7" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">

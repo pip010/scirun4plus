@@ -86,7 +86,7 @@ using namespace SCIRun;
 					double r,
 					double v, 
 					double fromPI, 
-					double toPI)
+					double toPI) const
 				{
 
 					assert(fromPI < toPI);
@@ -121,7 +121,7 @@ using namespace SCIRun;
 						points.push_back(p);
 						values.push_back(v);
 					}
-					
+					/*
 					//std::cout << " AAAAAAAA " << std::flush;
 					
 					for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
@@ -136,12 +136,79 @@ using namespace SCIRun;
 						indices[ 2*nsegments - 1 ] = indices[0];
 					}
 					//std::cout << " BBBBBBB " << indices.size() << std::flush;
-
-				} const
+*/
+				}
 				
-				void BuildEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
+				void GenPointsCircular(
+					std::vector<Vector>& points,
+					Vector origin, 
+					double radius,
+					double fromPI, 
+					double toPI) const
 				{
+										
+					assert(fromPI < toPI);
+					double dPI = toPI - fromPI;
 					
+					//what will be the circumvence of a full 0-2*pi
+					//double C = 2*dPI*r;
+					//double minSegmentLenght = 0.8; 
+					
+					// Adaptive LOD for the number of piece-wise segments per full circle
+					//int nsegments = Floor( C / minSegmentLenght); 
+					
+					//double anglePerSegment = (2*M_PI)/nsegments;
+					
+					double minPI = M_PI / 16;
+					assert(dPI > minPI);
+					
+					size_t nsegments = 2;
+					double iPI = dPI / nsegments;
+					
+					while(iPI > minPI)
+					{
+						nsegments++;
+						iPI = dPI / nsegments;
+					}
+					
+					std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]"  << std::endl << std::flush;
+
+					for(size_t i = 0; i < nsegments; i++)
+					{
+						Vector p(origin.x() + radius * cos(fromPI + iPI*i), origin.y() + radius * sin(fromPI + iPI*i), origin.z());
+						points.push_back(p);
+						//values.push_back(v);
+					}
+				}
+				
+				void GenEdgesLine(const std::vector<Vector>& points, std::vector<size_t>& indices) const
+				{
+					for(size_t i = indices.size() / 2; i < points.size(); i++)
+					{
+						indices.push_back(i);
+						indices.push_back(i + 1);
+					}
+				}
+				
+				void GenEdgesLoop(const std::vector<Vector>& points, std::vector<size_t>& indices) const
+				{
+					size_t firstIDX = indices.size();
+					
+					GenEdgesLine(points,indices);
+
+					indices[ 2*points.size() - 1 ] = indices[firstIDX];
+				}
+				
+				void GenEdgesValues(const std::vector<Vector>& points, std::vector<double>& values, double value) const
+				{
+					assert(points.size() > 0);
+					
+					//size_t d = points.size() - values.size() - 1.0d;
+					
+					for(size_t i = 0; points.size() - values.size(); i++)
+					{
+						values.push_back(value);
+					}
 				}
 				
 				std::vector<Vector> ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
@@ -196,23 +263,23 @@ using namespace SCIRun;
 					std::vector<double> coilValues;
 	  
 					//generate the two coils
-					double d = 2.0;
+					const double d = 2.0;
 					double radius = innerR + ((outerR - innerR) / 2.0);
 					Vector pos_L( -radius - (d/2), 0, 0);
-					std::vector<Vector> coilPoints_L;
-					std::vector<size_t> coilIndices_L;
-
-					this->GenerateCircularContour( coilPoints_L, coilIndices_L, coilValues, pos_L, radius, current, 0, 2*M_PI );
-
 					Vector pos_R( radius + (d/2), 0, 0);
-					std::vector<Vector> coilPoints_R;
-					std::vector<size_t> coilIndices_R;
-
-					this->GenerateCircularContour( coilPoints_R, coilIndices_R, coilValues, pos_R, radius,-current, 0, 2*M_PI );
-
-					coilPoints = ComposePointsForCurve(coilPoints_L, coilPoints_R);
-					coilIndices = ComposeIndicesForCurve(coilIndices_L, coilIndices_R);
 					
+					GenPointsCircular(coilPoints,pos_L,radius,0, 2*M_PI);
+					GenEdgesLoop(coilPoints, coilIndices);
+					GenEdgesValues(coilPoints, coilValues, current);
+					
+					GenPointsCircular(coilPoints,pos_R,radius,0, 2*M_PI);
+					GenEdgesLoop(coilPoints, coilIndices);
+					GenEdgesValues(coilPoints, coilValues, -current);
+					
+					//basic topoly assumptions needs to be correct
+					assert(coilPoints.size() > 0);
+					assert(coilPoints.size() == coilValues.size() + 1);
+					assert(coilPoints.size() == coilIndices.size() * 2);
 					
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
@@ -220,10 +287,6 @@ using namespace SCIRun;
 					fi.make_curvemesh();
 					fi.make_constantdata();
 					fi.make_scalar();
-
-					// ALT ****************
-					//MeshHandle meshHandle = CreateMesh(fi,m+1,n+1,Point(0.0,0.0,0.0),Point(static_cast<double>(m+1),static_cast<double>(n+1),0.0));
-					//meshFieldHandle = CreateField(fi,meshHandle);
 
 					meshHandle = CreateField(fi);
 
@@ -291,6 +354,52 @@ using namespace SCIRun;
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
+					
+					size_t windings = 5;
+					double d = 2.0;//outer distance between left and right coils
+					double dr = (outerR - innerR) / windings;
+					//double radius = innerR + ((outerR - innerR) / 2.0);
+					
+					Vector left_c1(-outerR - (d/2),0,0);//( -radius - (d/2), 0, 0);
+					Vector left_c2(-outerR + dr/2 - (d/2),0,0);//( radius + (d/2), 0, 0);
+					
+					for (size_t i = 0; i < windings; i++)
+					{
+						GenPointsCircular(coilPoints, left_c1, innerR + i*dr, 0   , M_PI);
+						GenPointsCircular(coilPoints, left_c2, innerR + i*dr + dr/2, M_PI, 2*M_PI);
+						
+					}
+				
+					GenEdgesLine(coilPoints, coilIndices);
+					
+					//this point needs to be added to complete the contour to start location
+					//oddly it must be called after GenEdgesLine
+					//TODO refactor GenEdgesLine
+					Vector endp2(left_c1.x() + outerR * cos(2*M_PI), left_c1.y() + outerR * sin(2*M_PI), left_c1.z());
+					coilPoints.push_back(endp2);
+					
+					GenEdgesValues(coilPoints, coilValues, current);
+					
+					Vector right_c1(outerR + (d/2),0,0);//( -radius - (d/2), 0, 0);
+					Vector right_c2(outerR + dr/2 + (d/2),0,0);//( radius + (d/2), 0, 0);
+					
+					for (size_t i = 0; i < windings; i++)
+					{
+						GenPointsCircular(coilPoints, right_c1, innerR + i*dr, 0   , M_PI);
+						GenPointsCircular(coilPoints, right_c2, innerR + i*dr + dr/2, M_PI, 2*M_PI);
+						
+					}
+				
+					GenEdgesLine(coilPoints, coilIndices);
+					
+					//this point needs to be added to complete the contour to start location
+					//oddly it must be called after GenEdgesLine
+					//TODO refactor GenEdgesLine
+					Vector endp(right_c1.x() + outerR * cos(2*M_PI), right_c1.y() + outerR * sin(2*M_PI), right_c1.z());
+					coilPoints.push_back(endp);
+					
+					GenEdgesValues(coilPoints, coilValues, current);
+					
 										
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
@@ -311,7 +420,7 @@ using namespace SCIRun;
 
 						mesh->add_point(p);
 						
-						//std::cout << " XCXCXCXCXC " << p << std::endl << std::flush;
+						std::cout << " Adding a node to mesh: " << p << std::endl << std::flush;
 					}
 
 					//! add edges to mesh
@@ -330,7 +439,6 @@ using namespace SCIRun;
 					}
 
 					//! add data to mesh
-
 					VField* field = meshHandle->vfield();
 					field->resize_values();
 					field->set_values(coilValues);

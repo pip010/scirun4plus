@@ -43,7 +43,7 @@ itcl::class SCIRun_Math_ModelGenericCoil {
       global $this-typeTCL
       set $this-wireCurrentTCL 1
       set $this-innerRadiusTCL 10
-      set $this-outerRadiusTCL 10
+      set $this-outerRadiusTCL 15
 	    set $this-levelDetailTCL 2
       set $this-typeTCL "single"
     }
