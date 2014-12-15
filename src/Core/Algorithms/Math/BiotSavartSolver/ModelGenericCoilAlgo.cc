@@ -410,8 +410,9 @@ using namespace SCIRun;
 				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
 				{
 					std::vector<Vector> dipolPoints;
-					std::vector<double> dipolValues;
-					double d = 2.0;//outer distance between left and right coils
+					std::vector<Vector> dipolValues;
+					
+					//double d = 2.0;//outer distance between left and right coils
 					
 					
 					//Vector rightCenter(outerR + (d/2),0,0);
@@ -440,14 +441,14 @@ using namespace SCIRun;
 										
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
-					FieldInformation fi("PointCloudMesh",0,"double");
+					FieldInformation fi("PointCloudMesh",1,"vector");
 					fi.make_pointcloudmesh();
 					fi.make_lineardata();
 					fi.make_vector();
 
 					meshHandle = CreateField(fi);
 					
-					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
+					BuildScirunMesh(dipolPoints,dipolValues,meshHandle);
 				}
 				
 		private:
@@ -462,6 +463,28 @@ using namespace SCIRun;
 					{
 						values.push_back(value);
 					}
+				}
+				
+				void BuildScirunMesh(const std::vector<Vector>& points, 
+						const std::vector<Vector>& values,
+						FieldHandle& meshHandle) const
+				{
+					
+					VMesh* mesh = meshHandle->vmesh();
+
+					//! add nodes to the new mesh
+					for(size_t i = 0; i < points.size(); i++)
+					{
+						const Point p(points[i]);
+						mesh->add_point(p);
+					}
+
+					//! add data to mesh
+
+					VField* field = meshHandle->vfield();
+
+					field->resize_values();
+					field->set_values(values);
 				}
 		};
 
