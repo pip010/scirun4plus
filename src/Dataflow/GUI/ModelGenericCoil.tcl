@@ -37,14 +37,16 @@ itcl::class SCIRun_Math_ModelGenericCoil {
 
     method set_defaults {} {
       global $this-wireCurrentTCL
+      global $this-wireLoopsTCL
       global $this-innerRadiusTCL
       global $this-outerRadiusTCL
       global $this-levelDetailTCL
       global $this-typeTCL
       set $this-wireCurrentTCL 1
+      set $this-wireLoopsTCL 5
       set $this-innerRadiusTCL 10
       set $this-outerRadiusTCL 15
-	    set $this-levelDetailTCL 2
+	  set $this-levelDetailTCL 2
       set $this-typeTCL "single"
     }
  
@@ -58,6 +60,7 @@ itcl::class SCIRun_Math_ModelGenericCoil {
     }
     method ui {} {
       global $this-wireCurrentTCL
+      global $this-wireLoopsTCL
       global $this-innerRadiusTCL
       global $this-outerRadiusTCL
       global $this-levelDetailTCL
@@ -71,17 +74,19 @@ itcl::class SCIRun_Math_ModelGenericCoil {
       
       make_labeled_radio $w.type "Method(s) :" "" left 3 $this-typeTCL \
           { "single" "multi" "dipole" }
-      make_entry $w.current "Current through wire:" $this-wireCurrentTCL "$this-c needexecute"
+      make_entry $w.current "Current:" $this-wireCurrentTCL "$this-c needexecute"
+      make_entry $w.loops "Windings:" $this-wireLoopsTCL "$this-c needexecute"
       make_entry $w.radius1 "Radius inner:" $this-innerRadiusTCL "$this-c needexecute"
       make_entry $w.radius2 "Radius outer:" $this-outerRadiusTCL "$this-c needexecute"
       make_entry $w.lod "Level of Details:" $this-levelDetailTCL "$this-c needexecute"
       
       bind $w.current <Return> "$this-c needexecute"
+      bind $w.loops <Return> "$this-c needexecute"
       bind $w.radius1 <Return> "$this-c needexecute"
       bind $w.radius2 <Return> "$this-c needexecute"
       bind $w.lod <Return> "$this-c needexecute"
       
-      pack $w.type $w.current $w.radius1 $w.radius2 $w.lod -side top -fill x
+      pack $w.type $w.current $w.loops $w.radius1 $w.radius2 $w.lod -side top -fill x
 
       makeSciButtonPanel $w $w $this
       moveToCursor $w

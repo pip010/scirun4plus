@@ -35,6 +35,7 @@
 #include <Core/Algorithms/Util/AlgoBase.h>
 
 #include <vector>
+#include <cassert>
 
 namespace SCIRunAlgo {
 
@@ -54,6 +55,7 @@ using namespace SCIRun;
 				  innerR(args.coilRadiusInner),
 				  outerR(args.coilRadiusOuter),
 				  current(args.wireCurrent),
+				  windings(args.wireLoops),
 				  coilLOD(args.coilLevelDetails)
 				{
 				}
@@ -63,7 +65,7 @@ using namespace SCIRun;
 				}
 							
 				//! Local entry function, must be implemented by each specific kernel
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) = 0;
+				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const = 0;
 		
 				//! Global reference counting
 				int ref_cnt;
@@ -76,6 +78,7 @@ using namespace SCIRun;
 				const double innerR;
 				const double outerR;
 				const double current;
+				const size_t windings;
 				const double coilLOD;
 				
 				void GenerateCircularContour(
@@ -113,7 +116,7 @@ using namespace SCIRun;
 						iPI = dPI / nsegments;
 					}
 					
-					std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << v << std::endl << std::flush;
+					//std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << v << std::endl << std::flush;
 
 					for(size_t i = 0; i < nsegments; i++)
 					{
@@ -121,22 +124,6 @@ using namespace SCIRun;
 						points.push_back(p);
 						values.push_back(v);
 					}
-					/*
-					//std::cout << " AAAAAAAA " << std::flush;
-					
-					for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
-					{
-						indices.push_back(i);
-						indices.push_back(i + 1);
-					}
-					
-					//TODO: change this to abs(dPI - M_PI_2) < 1E-6
-					if(dPI >= M_PI_2)
-					{
-						indices[ 2*nsegments - 1 ] = indices[0];
-					}
-					//std::cout << " BBBBBBB " << indices.size() << std::flush;
-*/
 				}
 				
 				void GenPointsCircular(
@@ -171,71 +158,59 @@ using namespace SCIRun;
 						iPI = dPI / nsegments;
 					}
 					
-					std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]"  << std::endl << std::flush;
+					//std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]"  << std::endl << std::flush;
 
 					for(size_t i = 0; i < nsegments; i++)
 					{
 						Vector p(origin.x() + radius * cos(fromPI + iPI*i), origin.y() + radius * sin(fromPI + iPI*i), origin.z());
 						points.push_back(p);
-						//values.push_back(v);
 					}
 				}
 				
-				void GenEdgesLine(const std::vector<Vector>& points, std::vector<size_t>& indices) const
-				{
-					for(size_t i = indices.size() / 2; i < points.size(); i++)
-					{
-						indices.push_back(i);
-						indices.push_back(i + 1);
-					}
-				}
+
 				
-				void GenEdgesLoop(const std::vector<Vector>& points, std::vector<size_t>& indices) const
+
+				
+				void BuildScirunMesh(const std::vector<Vector>& points, 
+						const std::vector<size_t>& indices, 
+						const std::vector<double>& values,
+						FieldHandle& meshHandle) const
 				{
-					size_t firstIDX = indices.size();
 					
-					GenEdgesLine(points,indices);
+					VMesh* mesh = meshHandle->vmesh();
 
-					indices[ 2*points.size() - 1 ] = indices[firstIDX];
-				}
-				
-				void GenEdgesValues(const std::vector<Vector>& points, std::vector<double>& values, double value) const
-				{
-					assert(points.size() > 0);
-					
-					//size_t d = points.size() - values.size() - 1.0d;
-					
-					for(size_t i = 0; points.size() - values.size(); i++)
+
+					//! add nodes to the new mesh
+					for(size_t i = 0; i < points.size(); i++)
 					{
-						values.push_back(value);
-					}
-				}
-				
-				std::vector<Vector> ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
-				{
-
-					std::vector<Vector> result(points1);
-					result.insert(result.end(), points2.begin(), points2.end());
-					return result;
-
-				}
-
-				std::vector<size_t> ComposeIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2)
-				{
-
-					std::vector<size_t> result(indices1);
-					result.insert(result.end(), indices2.begin(), indices2.end());
-
-					size_t offset = indices1.size() / 2;
-
-					for(size_t i = indices1.size(); i < result.size(); i++)
-					{
-					result[i] += offset;
+						const Point p(points[i]);
+						mesh->add_point(p);
 					}
 
-					return result;
+					//! add edges to mesh
+					VMesh::Node::array_type edge;
 
+					for(size_t i = 0; i < indices.size(); i++)
+					{
+					  VMesh::Node::index_type p = indices[i];
+					  edge.push_back(p);
+
+					  if(edge.size() == 2)
+					  {
+						mesh->add_elem(edge);
+						edge.clear();
+					  }
+					}
+
+					//! add data to mesh
+
+					VField* field = meshHandle->vfield();
+
+					field->resize_values();
+					field->set_values(values);
 				}
+						
+				
 		};
 		
 		//! piece-wise wire discretization
@@ -255,7 +230,7 @@ using namespace SCIRun;
 				{
 				}
 				
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params)
+				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
 				{
 					
 					std::vector<Vector> coilPoints;
@@ -265,16 +240,18 @@ using namespace SCIRun;
 					//generate the two coils
 					const double d = 2.0;
 					double radius = innerR + ((outerR - innerR) / 2.0);
+					
+					//LEFT
 					Vector pos_L( -radius - (d/2), 0, 0);
-					Vector pos_R( radius + (d/2), 0, 0);
-					
 					GenPointsCircular(coilPoints,pos_L,radius,0, 2*M_PI);
-					GenEdgesLoop(coilPoints, coilIndices);
-					GenEdgesValues(coilPoints, coilValues, current);
+					GenSegmentEdges(coilPoints, coilIndices);
+					GenSegmentValues(coilPoints, coilValues, current);
 					
+					//RIGHT
+					Vector pos_R( radius + (d/2), 0, 0);
 					GenPointsCircular(coilPoints,pos_R,radius,0, 2*M_PI);
-					GenEdgesLoop(coilPoints, coilIndices);
-					GenEdgesValues(coilPoints, coilValues, -current);
+					GenSegmentEdges(coilPoints, coilIndices);
+					GenSegmentValues(coilPoints, coilValues, -current);
 					
 					//basic topoly assumptions needs to be correct
 					assert(coilPoints.size() > 0);
@@ -290,42 +267,50 @@ using namespace SCIRun;
 
 					meshHandle = CreateField(fi);
 
-					VMesh* mesh = meshHandle->vmesh();
-
-
-					//! add nodes to the new mesh
-					for(size_t i = 0; i < coilPoints.size(); i++)
+					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
+				}
+				
+			private:
+				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
+				{
+					size_t firstIDX = indices.size();
+					
+					size_t start = firstIDX > 0 ?  firstIDX / 2 : 0 ;
+					
+					for(size_t i = start; i < points.size() -1; i++)
 					{
-						const Point p(coilPoints[i]);
-
-						mesh->add_point(p);
-						
-						//std::cout << " XCXCXCXCXC " << p << std::endl << std::flush;
+						indices.push_back(i);
+						indices.push_back(i + 1);
 					}
+					
+					size_t lastIDX = indices.size() -1;
+					
+					indices.push_back(indices[lastIDX]);
+					indices.push_back(indices[firstIDX]);
+					
+					/*
+					size_t firstIDX = indices.size();// > 0 ?  indices.size() -1 : 0 ; 
+					
+					GenEdgesLine(points,indices);
+					
+					size_t lastIDX = indices.size() -1;
 
-					//! add edges to mesh
-					VMesh::Node::array_type edge;
-
-					for(size_t i = 0; i < coilIndices.size(); i++)
+					//indices[ 2*points.size() - 1 ] = indices[firstIDX];
+					//close the loop
+					indices.push_back(indices[lastIDX]);
+					indices.push_back(indices[firstIDX]);
+					*/
+					
+				}
+				
+				void GenSegmentValues(const std::vector<Vector>& points, std::vector<double>& values, double value) const
+				{
+					assert(points.size() > 0);
+					
+					for(size_t i = values.size(); i < points.size(); i++)
 					{
-					  VMesh::Node::index_type p = coilIndices[i];
-					  edge.push_back(p);
-
-					  if(edge.size() == 2)
-					  {
-						mesh->add_elem(edge);
-						edge.clear();
-					  }
+						values.push_back(value);
 					}
-
-					//! add data to mesh
-
-					VField* field = meshHandle->vfield();
-
-					field->resize_values();
-					field->set_values(coilValues);
-
-
 				}
 
 		};
@@ -349,56 +334,29 @@ using namespace SCIRun;
 				{
 				}
 				
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params)
+				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
 				{
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
-					
-					size_t windings = 5;
 					double d = 2.0;//outer distance between left and right coils
-					double dr = (outerR - innerR) / windings;
-					//double radius = innerR + ((outerR - innerR) / 2.0);
 					
-					Vector left_c1(-outerR - (d/2),0,0);//( -radius - (d/2), 0, 0);
-					Vector left_c2(-outerR + dr/2 - (d/2),0,0);//( radius + (d/2), 0, 0);
+					//LEFT
+					Vector leftCenter(-outerR - (d/2),0,0);
+					GenPointsSpiral(coilPoints, leftCenter);
+					GenSegmentEdges(coilPoints, coilIndices);
+					GenSegmentValues(coilPoints, coilValues, current);
 					
-					for (size_t i = 0; i < windings; i++)
-					{
-						GenPointsCircular(coilPoints, left_c1, innerR + i*dr, 0   , M_PI);
-						GenPointsCircular(coilPoints, left_c2, innerR + i*dr + dr/2, M_PI, 2*M_PI);
-						
-					}
-				
-					GenEdgesLine(coilPoints, coilIndices);
+					//RIGHT
+					Vector rightCenter(outerR + (d/2),0,0);
+					GenPointsSpiral(coilPoints, rightCenter);
+					GenSegmentEdges(coilPoints, coilIndices);
+					GenSegmentValues(coilPoints, coilValues, -current);
 					
-					//this point needs to be added to complete the contour to start location
-					//oddly it must be called after GenEdgesLine
-					//TODO refactor GenEdgesLine
-					Vector endp2(left_c1.x() + outerR * cos(2*M_PI), left_c1.y() + outerR * sin(2*M_PI), left_c1.z());
-					coilPoints.push_back(endp2);
-					
-					GenEdgesValues(coilPoints, coilValues, current);
-					
-					Vector right_c1(outerR + (d/2),0,0);//( -radius - (d/2), 0, 0);
-					Vector right_c2(outerR + dr/2 + (d/2),0,0);//( radius + (d/2), 0, 0);
-					
-					for (size_t i = 0; i < windings; i++)
-					{
-						GenPointsCircular(coilPoints, right_c1, innerR + i*dr, 0   , M_PI);
-						GenPointsCircular(coilPoints, right_c2, innerR + i*dr + dr/2, M_PI, 2*M_PI);
-						
-					}
-				
-					GenEdgesLine(coilPoints, coilIndices);
-					
-					//this point needs to be added to complete the contour to start location
-					//oddly it must be called after GenEdgesLine
-					//TODO refactor GenEdgesLine
-					Vector endp(right_c1.x() + outerR * cos(2*M_PI), right_c1.y() + outerR * sin(2*M_PI), right_c1.z());
-					coilPoints.push_back(endp);
-					
-					GenEdgesValues(coilPoints, coilValues, current);
+					//basic topoly assumptions needs to be correct
+					assert(coilPoints.size() > 0);
+					assert(coilPoints.size() == coilValues.size() + 1);
+					assert(coilPoints.size() == coilIndices.size() * 2);
 					
 										
 					//SCIrun API creating a new mesh
@@ -409,40 +367,52 @@ using namespace SCIRun;
 					fi.make_scalar();
 
 					meshHandle = CreateField(fi);
+					
+					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
+				}
+				
+			private:
+				
+				void GenPointsSpiral(std::vector<Vector>& points, Vector center) const
 
-					VMesh* mesh = meshHandle->vmesh();
-
-
-					//! add nodes to the new mesh
-					for(size_t i = 0; i < coilPoints.size(); i++)
+				{
+					double dr = (outerR - innerR) / windings;		
+					
+					Vector center_offset(center.x()+ dr/2,center.y(),center.z());
+					
+					for (size_t i = 0; i < windings; i++)
 					{
-						const Point p(coilPoints[i]);
-
-						mesh->add_point(p);
-						
-						std::cout << " Adding a node to mesh: " << p << std::endl << std::flush;
+						GenPointsCircular(points, center, innerR + i*dr, 0   , M_PI);
+						GenPointsCircular(points, center_offset, innerR + i*dr + dr/2, M_PI, 2*M_PI);	
 					}
+				
+					//TODO not needed here
+					Vector endp(center.x() + outerR * cos(2*M_PI), center.y() + outerR * sin(2*M_PI), center.z());
+					points.push_back(endp);
 
-					//! add edges to mesh
-					VMesh::Node::array_type edge;
-
-					for(size_t i = 0; i < coilIndices.size(); i++)
+				}
+				
+				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
+				{
+					size_t start = indices.size() > 0 ?  indices.size() / 2 + 1 : 0 ;
+					
+					for(size_t i = start; i < points.size() -1; i++)
 					{
-					  VMesh::Node::index_type p = coilIndices[i];
-					  edge.push_back(p);
-
-					  if(edge.size() == 2)
-					  {
-						mesh->add_elem(edge);
-						edge.clear();
-					  }
+						indices.push_back(i);
+						indices.push_back(i + 1);
 					}
-
-					//! add data to mesh
-					VField* field = meshHandle->vfield();
-					field->resize_values();
-					field->set_values(coilValues);
-				} 
+				}
+				
+				void GenSegmentValues(const std::vector<Vector>& points, std::vector<double>& values, double value) const
+				{
+					assert(points.size() > 0);
+					
+					for(size_t i = values.size(); i < points.size(); i++)
+					{
+						values.push_back(value);
+					}
+				}
+				
 		};
 
 
@@ -464,51 +434,9 @@ using namespace SCIRun;
 				{
 				}
 				
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params)
+				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
 				{
-					/*
-										
-					//SCIrun API creating a new mesh
-					//0 data on elements; 1 data on nodes
-					FieldInformation fi("CurveMesh",0,"double");
-					fi.make_constantmesh();
-					fi.make_lineardata();
-					fi.make_vector();
 
-					meshHandle = CreateField(fi);
-
-					VMesh* mesh = meshHandle->vmesh();
-
-
-					//! add nodes to the new mesh
-					for(size_t i = 0; i < coilPoints.size(); i++)
-					{
-						const Point p(coilPoints[i]);
-
-						mesh->add_point(p);
-						
-						//std::cout << " XCXCXCXCXC " << p << std::endl << std::flush;
-					}
-
-					//! add edges to mesh
-					VMesh::Node::array_type edge;
-					for(size_t i = 0; i < coilIndices.size(); i++)
-					{
-					  VMesh::Node::index_type p = coilIndices[i];
-					  edge.push_back(p);
-
-					  if(edge.size() == 2)
-					  {
-						mesh->add_elem(edge);
-						edge.clear();
-					  }
-					}
-
-					//! add data to mesh
-					VField* field = meshHandle->vfield();
-					field->resize_values();
-					field->set_values(coilValues);
-					*/
 				} 
 		};
 
@@ -560,205 +488,7 @@ run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
 
 	return (true);
 }
-/*
-void
-ModelGenericCoilAlgo::
-GenerateCircleContour(std::vector<Vector> &points, std::vector<size_t> &indices, Vector pos,double r,size_t nsegments)
-{
-	double anglePerSegment = 2*M_PI/nsegments;
-	points.resize(nsegments);
-	indices.resize(2*nsegments);
 
-	for(size_t i = 0; i < nsegments; i++)
-	{
-	points[i].Set(pos.x() + r * cos(anglePerSegment*i), pos.y() + r * sin(anglePerSegment*i), pos.z());
-	}
-
-	for(size_t i = 0, j = 0; i < nsegments; i++, j+=2)
-	{
-	indices[j] = i;
-	indices[j+1] = i + 1;
-	}
-
-	indices[ 2*nsegments - 1 ] = indices[0];
-}
-
-
-
-void
-ModelGenericCoilAlgo::
-GenerateCircularContour(std::vector<Vector>& points,, std::vector<size_t>& indices, Vector center, double r, double fromPI, double toPI)
-{
-	assert(fromPI < toPI);
-	double dPI = toPI - fromPI; 
-
-	
-	
-	//what will be the circumvence of a full 0-2*pi
-	//double C = 2*dPI*r;
-	//double minSegmentLenght = 0.8; 
-	
-	// Adaptive LOD for the number of piece-wise segments per full circle
-	//int nsegments = Floor( C / minSegmentLenght); 
-	
-	//double anglePerSegment = (2*M_PI)/nsegments;
-	
-	double minPI = M_PI / 16;
-	assert(dPI > minPI);
-	
-	size_t nsegments = 2;
-	double iPI = dPI / nsegments;
-	
-	while(iPI > minPI)
-	{
-		nsegments++;
-		iPI = dPI / nsegments;
-	}
-	
-	//points.resize(nsegments);
-	
-	
-	//std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << std::endl <<std::flush;
-
-	for(size_t i = 0; i < nsegments; i++)
-	{
-		Vector p(center.x() + r * cos(fromPI + iPI*i), center.y() + r * sin(fromPI + iPI*i), center.z());
-		points.push_back(p);
-		
-		//std::cout << p << std::endl;
-		//points[i].Set(center.x() + r * cos(fromPI + iPI*i), center.y() + r * sin(fromPI + iPI*i), center.z());
-	}
-	
-	//std::cout << " AAAAAAAA " << std::flush;
-	indices.resize(2*points.size());
-	
-	for(size_t i = 0, j = 0; i < points.size(); i++, j+=2)
-	{
-	indices[j] = i;
-	indices[j+1] = i + 1;
-	}
-	
-	indices[ indices.size() - 1 ] = indices[0];
-	
-}
-
-void
-ModelGenericCoilAlgo::
-GenerateCircularContour(VMesh* mesh,VField* field, double r, double fromPI, double toPI)
-{
-	assert(fromPI < toPI);
-	double dPI = toPI - fromPI; 
-
-	//what will be the circumvence of a full 0-2*pi
-	//double C = 2*dPI*r;
-	//double minSegmentLenght = 0.8; 
-	
-	// Adaptive LOD for the number of piece-wise segments per full circle
-	//int nsegments = Floor( C / minSegmentLenght); 
-	
-	//double anglePerSegment = (2*M_PI)/nsegments;
-	
-	double minPI = M_PI / 16;
-	assert(dPI > minPI);
-	
-	size_t nsegments = 2;
-	double iPI = dPI / nsegments;
-	
-	while(iPI > minPI)
-	{
-		nsegments++;
-		iPI = dPI / nsegments;
-	}
-	
-	std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << std::endl <<std::flush;
-
-VMesh::Node::array_type edge;
-
-size_type count = mesh->get_ni();
-
-
-
-}
-
-
-std::vector<Vector> 
-ModelGenericCoilAlgo::
-ComposePointsForCurve(std::vector<Vector>& points1, std::vector<Vector>& points2)
-{
-	std::vector<Vector> result(points1);
-	result.insert(result.end(), points2.begin(), points2.end());
-	return result;
-}
-
-std::vector<size_t> 
-ModelGenericCoilAlgo::
-ComposeIndicesForCurve(std::vector<size_t>& indices1,std::vector<size_t>& indices2)
-{
-	std::vector<size_t> result(indices1);
-	result.insert(result.end(), indices2.begin(), indices2.end());
-
-	size_t offset = indices1.size() / 2;
-
-	for(size_t i = indices1.size(); i < result.size(); i++)
-	{
-	result[i] += offset;
-	}
-
-	return result;
-}
-
-
-void
-ModelGenericCoilAlgo::
-GenerateFigure8ShapedCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double d, size_t nsegments)
-{
-	Vector pos_L( -r-(d/2), 0, 0);
-	std::vector<Vector> coilPoints_L;
-	std::vector<size_t> coilIndices_L;
-
-	GenerateCircleContour(coilPoints_L, coilIndices_L, pos_L, r, nsegments);
-
-	Vector pos_R( r+(d/2), 0, 0);
-	std::vector<Vector> coilPoints_R;
-	std::vector<size_t> coilIndices_R;
-
-	GenerateCircleContour(coilPoints_R, coilIndices_R, pos_R, r, nsegments);
-
-	points = ComposePointsForCurve(coilPoints_L, coilPoints_R);
-
-	indices = ComposeIndicesForCurve(coilIndices_L, coilIndices_R);
-}
-
-void
-ModelGenericCoilAlgo::
-GenerateFigure8ShapedSpiralCoil(std::vector<Vector>& points, std::vector<size_t>& indices, double r, double loops)
-{
-
-	Vector origin(0,0,0);
-
-	GenerateCircularContour(points, origin, r, 0, 2*M_PI);
-	
-	indices.resize(2*points.size());
-	
-	for(size_t i = 0, j = 0; i < points.size(); i++, j+=2)
-	{
-	indices[j] = i;
-	indices[j+1] = i + 1;
-	}
-	
-	indices[ indices.size() - 1 ] = indices[0];
-	
-	//std::cout << " BBBB " << points.size() << std::flush;
-}
-
-void
-ModelGenericCoilAlgo::
-GenerateFigure8ShapedSpiralCoil(VMesh* mesh,VField* field, Args args)
-{
-
-
-}
-* */
 
 } // end namespace SCIRunAlgo
 

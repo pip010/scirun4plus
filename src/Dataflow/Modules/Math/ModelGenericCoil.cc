@@ -2,8 +2,8 @@
 /*
  *  ModelGenericCoil.cc:  TODO DEscription
  *
- *  Written by:
- *   Petar Petrov
+ *  Author:
+ *   Petar Petrov, MSc
  *   Utrecht Medical Center
  *   University of Utrecht
  *   January 2014
@@ -40,6 +40,7 @@ namespace SCIRun {
 	  private:
   	    
   	    GuiDouble wireCurrentTCL;
+  	    GuiInt wireLoopsTCL;
 		GuiDouble innerRadiusTCL;
 		GuiDouble outerRadiusTCL;
 		GuiDouble coilDetailsTCL;
@@ -55,6 +56,7 @@ namespace SCIRun {
 	ModelGenericCoil::ModelGenericCoil(GuiContext* ctx) :
 		Module("ModelGenericCoil", ctx, Source, "Math", "SCIRun"),
 		wireCurrentTCL(ctx->subVar("wireCurrentTCL")),
+		wireLoopsTCL(ctx->subVar("wireLoopsTCL")),
 		innerRadiusTCL(ctx->subVar("innerRadiusTCL")),
 		outerRadiusTCL(ctx->subVar("outerRadiusTCL")),
 		coilDetailsTCL(ctx->subVar("coilDetailsTCL")),
@@ -72,6 +74,7 @@ namespace SCIRun {
 
 		std::string coilType = static_cast<std::string>(typeTCL.get());
 		algoArgs.wireCurrent = static_cast<double>(wireCurrentTCL.get());
+		algoArgs.wireLoops = static_cast<size_t>(wireLoopsTCL.get());
 		algoArgs.coilRadiusInner = static_cast<double>(innerRadiusTCL.get());
 		algoArgs.coilRadiusOuter = static_cast<double>(outerRadiusTCL.get());
 		algoArgs.coilLevelDetails = static_cast<double>(coilDetailsTCL.get());
