@@ -81,50 +81,7 @@ using namespace SCIRun;
 				const size_t windings;
 				const double coilLOD;
 				
-				void GenerateCircularContour(
-					std::vector<Vector>& points,
-					std::vector<size_t>& indices,
-					std::vector<double>& values, 
-					Vector origin, 
-					double r,
-					double v, 
-					double fromPI, 
-					double toPI) const
-				{
 
-					assert(fromPI < toPI);
-					double dPI = toPI - fromPI;
-					
-					//what will be the circumvence of a full 0-2*pi
-					//double C = 2*dPI*r;
-					//double minSegmentLenght = 0.8; 
-					
-					// Adaptive LOD for the number of piece-wise segments per full circle
-					//int nsegments = Floor( C / minSegmentLenght); 
-					
-					//double anglePerSegment = (2*M_PI)/nsegments;
-					
-					double minPI = M_PI / 16;
-					assert(dPI > minPI);
-					
-					size_t nsegments = 2;
-					double iPI = dPI / nsegments;
-					
-					while(iPI > minPI)
-					{
-						nsegments++;
-						iPI = dPI / nsegments;
-					}
-					
-					//std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]" << v << std::endl << std::flush;
-
-					for(size_t i = 0; i < nsegments; i++)
-					{
-						Vector p(origin.x() + r * cos(fromPI + iPI*i), origin.y() + r * sin(fromPI + iPI*i), origin.z());
-						points.push_back(p);
-						values.push_back(v);
-					}
-				}
 				
 				void GenPointsCircular(
 					std::vector<Vector>& points,
@@ -158,6 +115,24 @@ using namespace SCIRun;
 						iPI = dPI / nsegments;
 					}
 					
+					GenPointsCircular(points, origin, radius, nsegments, fromPI, toPI);
+
+				}
+				
+				void GenPointsCircular(
+					std::vector<Vector>& points,
+					Vector origin, 
+					double radius,
+					double nsegments,
+					double fromPI, 
+					double toPI) const
+				{
+										
+					assert(fromPI < toPI);
+					double dPI = toPI - fromPI;
+					
+					double iPI = dPI / nsegments;
+					
 					//std::cout << "[dPI:" << dPI << "]" << "[iPI:" << iPI << "]" << "[nsegs:" << nsegments << "]"  << std::endl << std::flush;
 
 					for(size_t i = 0; i < nsegments; i++)
@@ -166,8 +141,6 @@ using namespace SCIRun;
 						points.push_back(p);
 					}
 				}
-				
-
 				
 
 				
@@ -436,8 +409,60 @@ using namespace SCIRun;
 				
 				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
 				{
+					std::vector<Vector> dipolPoints;
+					std::vector<double> dipolValues;
+					double d = 2.0;//outer distance between left and right coils
+					
+					
+					//Vector rightCenter(outerR + (d/2),0,0);
+					//GenPointsSpiral(coilPoints, rightCenter);
+					//GenSegmentEdges(coilPoints, coilIndices);
+					//GenSegmentValues(coilPoints, coilValues, -current);
+					
 
-				} 
+					
+					double dr = (outerR - innerR) / windings;		
+					
+					//Vector center_offset(center.x()+ dr/2,center.y(),center.z());
+					Vector center;
+					
+					for (size_t i = 0; i < windings + 1; i++)
+					{
+						GenPointsCircular(dipolPoints, center, innerR + i*dr, 0   , M_PI);
+						GenSegmentValues(dipolPoints, dipolValues, i );
+					}
+					
+					//basic topoly assumptions needs to be correct
+					//assert(coilPoints.size() > 0);
+					//assert(coilPoints.size() == coilValues.size() + 1);
+					//assert(coilPoints.size() == coilIndices.size() * 2);
+					
+										
+					//SCIrun API creating a new mesh
+					//0 data on elements; 1 data on nodes
+					FieldInformation fi("PointCloudMesh",0,"double");
+					fi.make_pointcloudmesh();
+					fi.make_lineardata();
+					fi.make_vector();
+
+					meshHandle = CreateField(fi);
+					
+					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
+				}
+				
+		private:
+						
+				void GenSegmentValues(const std::vector<Vector>& points, std::vector<Vector>& values, size_t ring) const
+				{
+					assert(points.size() > 0);
+					
+					Vector value(0,0,1.0d);
+					
+					for(size_t i = values.size(); i < points.size(); i++)
+					{
+						values.push_back(value);
+					}
+				}
 		};
 
 	}
