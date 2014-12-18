@@ -35,6 +35,7 @@
 #include <Core/Algorithms/Util/AlgoBase.h>
 
 #include <vector>
+//#include <array>
 #include <cassert>
 
 namespace SCIRunAlgo {
@@ -359,7 +360,7 @@ using namespace SCIRun;
 						GenPointsCircular(points, center_offset, innerR + i*dr + dr/2, M_PI, 2*M_PI);	
 					}
 				
-					//TODO not needed here
+					//TODO refactor to avoid this
 					Vector endp(center.x() + outerR * cos(2*M_PI), center.y() + outerR * sin(2*M_PI), center.z());
 					points.push_back(endp);
 
@@ -380,7 +381,9 @@ using namespace SCIRun;
 				{
 					assert(points.size() > 0);
 					
-					for(size_t i = values.size(); i < points.size(); i++)
+					size_t start = values.size() > 0 ?  values.size() + 1 : 0 ;
+					
+					for(size_t i = start; i < points.size() - 1; i++)
 					{
 						values.push_back(value);
 					}
@@ -400,7 +403,7 @@ using namespace SCIRun;
 					ModelGenericCoilAlgo::Args args )
 					: BaseCoilgen( algo,args )
 				{
-					
+
 				}
 				
 				~DipolesCoilgen()
@@ -414,8 +417,9 @@ using namespace SCIRun;
 					
 					//double d = 2.0;//outer distance between left and right coils
 					
-					
+					//Vector leftCenter(-outerR - (d/2),0,0);
 					//Vector rightCenter(outerR + (d/2),0,0);
+					
 					//GenPointsSpiral(coilPoints, rightCenter);
 					//GenSegmentEdges(coilPoints, coilIndices);
 					//GenSegmentValues(coilPoints, coilValues, -current);
@@ -452,7 +456,28 @@ using namespace SCIRun;
 				}
 				
 		private:
-						
+				
+				const std::vector<double> preRadii() const
+				{
+					//std::array<int, 3> a = {1,2,3};
+					
+					const double vals[4] = {0.3d , 0.7d , 1.1d, 1.5d};
+					std::vector<double> preRadii(vals,vals+4);
+					return preRadii;
+				}
+				/*
+				std::vector<size_t> preNumElem() const
+				{
+					std::vector<size_t> preNumElem = {3l,9l,12l,16l};
+					return preNumElem;
+
+				}
+				std::vector<size_t> preNumAdjElem() const
+				{
+						std::vector<size_t> preNumAdjElem = {9l,9l,9l,9l};
+						return preNumAdjElem;
+				}
+				*/		
 				void GenSegmentValues(const std::vector<Vector>& points, std::vector<Vector>& values, size_t ring) const
 				{
 					assert(points.size() > 0);
@@ -480,9 +505,7 @@ using namespace SCIRun;
 					}
 
 					//! add data to mesh
-
 					VField* field = meshHandle->vfield();
-
 					field->resize_values();
 					field->set_values(values);
 				}
