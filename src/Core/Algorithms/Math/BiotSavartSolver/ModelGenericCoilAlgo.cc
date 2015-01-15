@@ -57,6 +57,7 @@ using namespace SCIRun;
 				  algo(algo),
 				  innerR(args.coilRadiusInner),
 				  outerR(args.coilRadiusOuter),
+				  outerD(args.coilDistanceOuter),
 				  current(args.wireCurrent),
 				  windings(args.wireLoops),
 				  coilLOD(args.coilLevelDetails)
@@ -82,6 +83,7 @@ using namespace SCIRun;
 				const double innerR;
 				const double outerR;
 				const double current;
+				const double outerD;
 				const size_t windings;
 				const size_t coilLOD;
 				
@@ -119,7 +121,7 @@ using namespace SCIRun;
 						iPI = dPI / nsegments;
 					}
 
-					algo->remark("LOD:  " + boost::lexical_cast<std::string>(this->coilLOD) );
+					//algo->remark("LOD:  " + boost::lexical_cast<std::string>(this->coilLOD) );
 
 					algo->remark("Segments:  " +  boost::lexical_cast<std::string>(nsegments) );
 					
@@ -221,17 +223,17 @@ using namespace SCIRun;
 					std::vector<double> coilValues;
 	  
 					//generate the two coils
-					const double d = 0.002;
+					
 					double radius = innerR + ((outerR - innerR) / 2.0);
 					
 					//LEFT
-					Vector pos_L( -radius - (d/2), 0, 0);
+					Vector pos_L( -radius - (outerD/2), 0, 0);
 					GenPointsCircular(coilPoints,pos_L,radius,0, 2*M_PI);
 					GenSegmentEdges(coilPoints, coilIndices);
 					GenSegmentValues(coilPoints, coilValues, current);
 					
 					//RIGHT
-					Vector pos_R( radius + (d/2), 0, 0);
+					Vector pos_R( radius + (outerD/2), 0, 0);
 					GenPointsCircular(coilPoints,pos_R,radius,0, 2*M_PI);
 					GenSegmentEdges(coilPoints, coilIndices);
 					GenSegmentValues(coilPoints, coilValues, -current);
@@ -370,16 +372,15 @@ using namespace SCIRun;
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
-					double d = 2.0;//outer distance between left and right coils
 					
 					//LEFT
-					Vector leftCenter(-outerR - (d/2),0,0);
+					Vector leftCenter(-outerR - (outerD/2),0,0);
 					GenPointsSpiral(coilPoints, leftCenter);
 					GenSegmentEdges(coilPoints, coilIndices);
 					GenSegmentValues(coilPoints, coilValues, current);
 					
 					//RIGHT
-					Vector rightCenter(outerR + (d/2),0,0);
+					Vector rightCenter(outerR + (outerD/2),0,0);
 					GenPointsSpiral(coilPoints, rightCenter);
 					GenSegmentEdges(coilPoints, coilIndices);
 					GenSegmentValues(coilPoints, coilValues, -current);

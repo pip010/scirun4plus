@@ -43,6 +43,7 @@ namespace SCIRun {
   	    GuiInt wireLoopsTCL;
 		GuiDouble innerRadiusTCL;
 		GuiDouble outerRadiusTCL;
+		GuiDouble outerDistanceTCL;
 		GuiInt coilDetailsTCL;
     	GuiString typeTCL;
 		 
@@ -59,6 +60,7 @@ namespace SCIRun {
 		wireLoopsTCL(ctx->subVar("wireLoopsTCL")),
 		innerRadiusTCL(ctx->subVar("innerRadiusTCL")),
 		outerRadiusTCL(ctx->subVar("outerRadiusTCL")),
+		outerDistanceTCL(ctx->subVar("outerDistanceTCL")),
 		coilDetailsTCL(ctx->subVar("levelDetailTCL")),
 		typeTCL(ctx->subVar("typeTCL")) 
 	{
@@ -77,6 +79,7 @@ namespace SCIRun {
 		algoArgs.wireLoops = static_cast<size_t>(wireLoopsTCL.get());
 		algoArgs.coilRadiusInner = static_cast<double>(innerRadiusTCL.get());
 		algoArgs.coilRadiusOuter = static_cast<double>(outerRadiusTCL.get());
+		algoArgs.coilDistanceOuter = static_cast<double>(outerDistanceTCL.get());
 		algoArgs.coilLevelDetails = static_cast<size_t>(coilDetailsTCL.get());
 		
 		bool need_matrix_data = oport_connected("Matrix");

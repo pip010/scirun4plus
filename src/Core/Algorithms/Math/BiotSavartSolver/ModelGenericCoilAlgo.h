@@ -33,7 +33,8 @@ class SCISHARE ModelGenericCoilAlgo : public AlgoBase
     	double wireCurrent;
     	size_t wireLoops;
     	double coilRadiusInner;
-    	double coilRadiusOuter;;
+    	double coilRadiusOuter;
+      double coilDistanceOuter;
     	size_t coilLevelDetails;
     	int type;
     	
@@ -43,7 +44,8 @@ class SCISHARE ModelGenericCoilAlgo : public AlgoBase
 			wireLoops == rhs.wireLoops &&
 			coilRadiusInner == rhs.coilRadiusInner && 
 			coilRadiusOuter == rhs.coilRadiusOuter && 
-			coilLevelDetails == rhs.coilLevelDetails && 
+			coilLevelDetails == rhs.coilLevelDetails &&
+      coilDistanceOuter == rhs.coilDistanceOuter &&
 			type == rhs.type;
     	}
 		inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}
