@@ -200,7 +200,7 @@ namespace SCIRunAlgo {
 				
 			private:
 
-				//! integration step
+				//! integration step, will auto adapt
 				double step;
 
 				//! keep nodes on the coil cached
@@ -594,8 +594,8 @@ namespace SCIRunAlgo {
 
 					int cnt = 0;
 					Point modelNode;
-					Point coilCenter;
-					Vector current;
+					Point dipoleLocation;
+					Vector dipoleMoment;
 					
 					const VMesh::Node::index_type begins = (modelSize * proc_num) / numprocessors;
 					const VMesh::Node::index_type ends  = (modelSize * (proc_num+1)) / numprocessors;
@@ -604,44 +604,39 @@ namespace SCIRunAlgo {
 
 					try{
 
-/*
+
 						for(VMesh::Node::index_type iM = begins; iM < ends;	iM++)
 						{
 							vmesh->get_node(modelNode,iM); 
 
-							//! accumulatedresult
+							//! accumulated result
 							Vector F;
 							
 							Vector R;
-							
-							double evol = 0.0;
 							
 							double Rl;
 
 							for(VMesh::Elem::index_type  iC = 0; iC < coilSize; iC++)
 							{
-								vcoilField->get_value(current,iC);
+								vcoilField->get_value(dipoleMoment,iC);
 								
-								vcoilField->get_center(coilCenter, iC);//auto resolve based on basis_order
+								vcoilField->get_center(dipoleLocation, iC);//auto resolve based on basis_order
 
-								evol = vcoil->get_volume(iC);
 								
-								R = coilCenter - modelNode;
+								R = dipoleLocation - modelNode;
 								
 								Rl = R.length();
 
 								if(typeOut == 1)
 								{
 									//! Biot-Savart Magnetic Field
-									//F += Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );	
-									F += Cross ( current , R ) * ( evol / (4.0 * M_PI * Rl) );
+									F += 1.0e-7 * ( 3 * R * Dot ( dipoleMoment, R ) / (Rl*Rl*Rl*Rl*Rl) - dipoleMoment / (Rl*Rl*Rl) ) ; 
 								}	
 							
 								if(typeOut == 2)
 								{
 									//! Biot-Savart Magnetic Vector Potential Field
-									//F += dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
-									F += current * ( evol / (4.0 * M_PI * Rl) );
+									F += 1.0e-7 * Cross ( dipoleMoment , R ) / (Rl*Rl*Rl) ;
 								}
 									
 							}
@@ -661,7 +656,7 @@ namespace SCIRunAlgo {
 								}
 							} 
 						}
-*/
+
 						success[proc_num] = true;
 					}
 					catch (...)
