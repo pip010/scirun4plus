@@ -46,7 +46,7 @@ itcl::class SCIRun_Math_ModelGenericCoil {
       set $this-wireLoopsTCL 5
       set $this-innerRadiusTCL 10
       set $this-outerRadiusTCL 15
-	  set $this-levelDetailTCL 2
+	    set $this-levelDetailTCL 2
       set $this-typeTCL "single"
     }
  
@@ -73,7 +73,7 @@ itcl::class SCIRun_Math_ModelGenericCoil {
       sci_toplevel $w
       
       make_labeled_radio $w.type "Method(s) :" "" left 3 $this-typeTCL \
-          { "single" "multi" "dipole" }
+          { "single" "multi" "dipole" "test" }
       make_entry $w.current "Current:" $this-wireCurrentTCL "$this-c needexecute"
       make_entry $w.loops "Windings:" $this-wireLoopsTCL "$this-c needexecute"
       make_entry $w.radius1 "Radius inner:" $this-innerRadiusTCL "$this-c needexecute"

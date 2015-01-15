@@ -34,7 +34,7 @@ class SCISHARE ModelGenericCoilAlgo : public AlgoBase
     	size_t wireLoops;
     	double coilRadiusInner;
     	double coilRadiusOuter;;
-    	double coilLevelDetails;
+    	size_t coilLevelDetails;
     	int type;
     	
     	inline bool operator==(const Args& rhs)

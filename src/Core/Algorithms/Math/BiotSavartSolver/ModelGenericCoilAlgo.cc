@@ -38,6 +38,8 @@
 //#include <array>
 #include <cassert>
 
+#include <boost/lexical_cast.hpp>
+
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
@@ -59,6 +61,7 @@ using namespace SCIRun;
 				  windings(args.wireLoops),
 				  coilLOD(args.coilLevelDetails)
 				{
+
 				}
 				
 				virtual ~BaseCoilgen()
@@ -80,7 +83,7 @@ using namespace SCIRun;
 				const double outerR;
 				const double current;
 				const size_t windings;
-				const double coilLOD;
+				const size_t coilLOD;
 				
 
 				
@@ -104,7 +107,7 @@ using namespace SCIRun;
 					
 					//double anglePerSegment = (2*M_PI)/nsegments;
 					
-					double minPI = M_PI / 16;
+					double minPI = M_PI / (8.0d * coilLOD);
 					assert(dPI > minPI);
 					
 					size_t nsegments = 2;
@@ -115,6 +118,10 @@ using namespace SCIRun;
 						nsegments++;
 						iPI = dPI / nsegments;
 					}
+
+					algo->remark("LOD:  " + boost::lexical_cast<std::string>(this->coilLOD) );
+
+					algo->remark("Segments:  " +  boost::lexical_cast<std::string>(nsegments) );
 					
 					GenPointsCircular(points, origin, radius, nsegments, fromPI, toPI);
 
@@ -186,6 +193,8 @@ using namespace SCIRun;
 						
 				
 		};
+
+
 		
 		//! piece-wise wire discretization
 		class SingleloopCoilgen : public BaseCoilgen
@@ -212,7 +221,7 @@ using namespace SCIRun;
 					std::vector<double> coilValues;
 	  
 					//generate the two coils
-					const double d = 2.0;
+					const double d = 0.002;
 					double radius = innerR + ((outerR - innerR) / 2.0);
 					
 					//LEFT
@@ -229,8 +238,8 @@ using namespace SCIRun;
 					
 					//basic topoly assumptions needs to be correct
 					assert(coilPoints.size() > 0);
-					assert(coilPoints.size() == coilValues.size() + 1);
-					assert(coilPoints.size() == coilIndices.size() * 2);
+					assert(coilPoints.size() == coilValues.size());
+					assert(coilPoints.size()*2 == coilIndices.size());
 					
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
@@ -244,7 +253,7 @@ using namespace SCIRun;
 					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
 				}
 				
-			private:
+			protected:
 				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
 				{
 					size_t firstIDX = indices.size();
@@ -287,6 +296,54 @@ using namespace SCIRun;
 					}
 				}
 
+		};
+
+
+		class TestCoilgen : public SingleloopCoilgen
+		{
+			public:
+				TestCoilgen( 
+					AlgoBase* algo, 
+					ModelGenericCoilAlgo::Args args)
+					: SingleloopCoilgen( algo,args )
+				{
+					
+				}
+				
+				~TestCoilgen()
+				{
+				}
+
+				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
+				{
+					
+					std::vector<Vector> coilPoints;
+					std::vector<size_t> coilIndices;
+					std::vector<double> coilValues;
+	  
+					//generate a sible coil single loop
+					double radius = innerR + ((outerR - innerR) / 2.0);
+					Vector pos( 0, 0, 0);
+					GenPointsCircular(coilPoints,pos,radius,0, 2*M_PI);
+					GenSegmentEdges(coilPoints, coilIndices);
+					GenSegmentValues(coilPoints, coilValues, current);
+					
+					//basic topoly assumptions needs to be correct
+					assert(coilPoints.size() > 0);
+					assert(coilPoints.size() == coilValues.size());
+					assert(coilPoints.size()*2 == coilIndices.size());
+					
+					//SCIrun API creating a new mesh
+					//0 data on elements; 1 data on nodes
+					FieldInformation fi("CurveMesh",0,"double");
+					fi.make_curvemesh();
+					fi.make_constantdata();
+					fi.make_scalar();
+
+					meshHandle = CreateField(fi);
+
+					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
+				}
 		};
 
 
@@ -513,52 +570,56 @@ using namespace SCIRun;
 
 	}
 
-bool 
-ModelGenericCoilAlgo::
-run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
-{
-	
-	try
-	{
-	  std::vector<Vector> coilPoints;
-	  std::vector<size_t> coilIndices;
-	  
-	  using namespace details;
-	  
-	  Handle<BaseCoilgen> helper;
 
-	  if(args.type == 1)
-	  {
-		helper = new SingleloopCoilgen(this,args);
-	  }
-	  else if(args.type == 2)
-	  {
-	  	helper = new MultiloopsCoilgen(this,args);
-	  }
-	  else if(args.type == 3)
-	  {
-	  	helper = new DipolesCoilgen(this,args);
-	  }
-	  else
-	  {
-		error("Unknown coil type!");
-		algo_end(); return (false);
-	  }
+
+	bool 
+	ModelGenericCoilAlgo::
+	run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
+	{
 		
+		try
+		{
+		  std::vector<Vector> coilPoints;
+		  std::vector<size_t> coilIndices;
+		  
+		  using namespace details;
+		  
+		  Handle<BaseCoilgen> helper;
+
+		  if(args.type == 1)
+		  {
+			helper = new SingleloopCoilgen(this,args);
+		  }
+		  else if(args.type == 2)
+		  {
+		  	helper = new MultiloopsCoilgen(this,args);
+		  }
+		  else if(args.type == 3)
+		  {
+		  	helper = new DipolesCoilgen(this,args);
+		  }
+		  else if(args.type == 4)
+		  {
+		  	helper = new TestCoilgen(this,args);
+		  }
+		  else
+		  {
+			error("Unknown coil type!");
+			algo_end(); return (false);
+		  }
+			
 		helper->Generate(meshFieldHandle, params);
-	  
+		
 
+		}
+		catch (...)
+		{
+		error("Error while running the algorithm ...");
+		algo_end(); return (false);
+		}
 
-
+		return (true);
 	}
-	catch (...)
-	{
-	error("Error while running the algorithm ...");
-	algo_end(); return (false);
-	}
-
-	return (true);
-}
 
 
 } // end namespace SCIRunAlgo

@@ -43,7 +43,7 @@ namespace SCIRun {
   	    GuiInt wireLoopsTCL;
 		GuiDouble innerRadiusTCL;
 		GuiDouble outerRadiusTCL;
-		GuiDouble coilDetailsTCL;
+		GuiInt coilDetailsTCL;
     	GuiString typeTCL;
 		 
 		SCIRunAlgo::ModelGenericCoilAlgo algo;
@@ -59,7 +59,7 @@ namespace SCIRun {
 		wireLoopsTCL(ctx->subVar("wireLoopsTCL")),
 		innerRadiusTCL(ctx->subVar("innerRadiusTCL")),
 		outerRadiusTCL(ctx->subVar("outerRadiusTCL")),
-		coilDetailsTCL(ctx->subVar("coilDetailsTCL")),
+		coilDetailsTCL(ctx->subVar("levelDetailTCL")),
 		typeTCL(ctx->subVar("typeTCL")) 
 	{
 		algo.set_progress_reporter(this);
@@ -77,7 +77,7 @@ namespace SCIRun {
 		algoArgs.wireLoops = static_cast<size_t>(wireLoopsTCL.get());
 		algoArgs.coilRadiusInner = static_cast<double>(innerRadiusTCL.get());
 		algoArgs.coilRadiusOuter = static_cast<double>(outerRadiusTCL.get());
-		algoArgs.coilLevelDetails = static_cast<double>(coilDetailsTCL.get());
+		algoArgs.coilLevelDetails = static_cast<size_t>(coilDetailsTCL.get());
 		
 		bool need_matrix_data = oport_connected("Matrix");
 		bool need_mesh_data = oport_connected("Mesh");
@@ -85,6 +85,7 @@ namespace SCIRun {
 		if (coilType == "single") algoArgs.type = 1;
 		else if (coilType == "multi") algoArgs.type = 2;
 		else if (coilType == "dipol") algoArgs.type = 3;
+		else if (coilType == "test") algoArgs.type = 4;
 		else algoArgs.type = 1;
 		
 

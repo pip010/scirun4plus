@@ -95,10 +95,10 @@ namespace SCIRunAlgo {
 						numprocessors = numproc; 
 					}
 					
-					//#ifdef _DEBUG
+					#ifdef _DEBUG
 					//! DEBUG when we want to test with one CPU only
 					numprocessors = 1;
-					//#endif
+					#endif
 					
 					algo->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors));
 					
@@ -142,6 +142,10 @@ namespace SCIRunAlgo {
 			
 				PieceWiseKernel( AlgoBase* algo, int t ) : KernelBase(algo,t)
 				{
+					//we keep last calculated step
+					//however if segments lenght varies,
+					//it makes more sense to keep a look-up table of previous steps for given lenght
+					step = 0.1d;
 				}
 				
 				~PieceWiseKernel()
@@ -195,7 +199,10 @@ namespace SCIRunAlgo {
 				
 				
 			private:
-			
+
+				//! integration step
+				double step;
+
 				//! keep nodes on the coil cached
 				std::vector<Vector> coilNodes;
 				
@@ -254,7 +261,7 @@ namespace SCIRunAlgo {
 								double lenSegment = diffNodes.length();
 
 								// TODO optimize via promoting to member scope in case a constant is not vaiable for varying line segments lenght
-								int numIntegrPoints = AdjustNumberOfIntegrationPoints(0.15,lenSegment);
+								int numIntegrPoints = AdjustNumberOfIntegrationPoints(lenSegment);
 
 								std::vector<Vector> integrPoints(numIntegrPoints);
 								
@@ -262,6 +269,7 @@ namespace SCIRunAlgo {
 								for(int iip = 0; iip < numIntegrPoints; iip++)
 								{
 									integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, static_cast<double>(iip) / static_cast<double>(numIntegrPoints) );
+									
 									//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
 								}
 
@@ -269,27 +277,29 @@ namespace SCIRunAlgo {
 								//! integration step over line segment				
 								for(int iip = 0; iip < numIntegrPoints -1; iip++)								
 								{
-									double M_MU = 4.0*M_PI*1.0e-7;
+									//double M_MU = 4*M_PI*1.0e-7;
 									
 									//! Vector connecting the infinitesimal curve-element			
-									Vector Rxyz = integrPoints[iip] - Vector(modelNode);
+									Vector Rxyz = (integrPoints[iip] + integrPoints[iip+1] ) / 2  - Vector(modelNode);
 
 									//! Infinitesimal curve-element components
 									Vector dLxyz = integrPoints[iip+1] - integrPoints[iip];
 
 									//double dLn = dLxyz.length();
 									double Rn = Rxyz.length();
+									//double Rn = Rxyz.normalize();
 
 									if(typeOut == 1)
 									{
 										//! Biot-Savart Magnetic Field
-										F +=  M_MU * Cross( Rxyz, dLxyz ) * ( std::abs(current) / (4.0*M_PI*Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
+										F +=  1.0e-7 * Cross( Rxyz, dLxyz ) * ( Abs(current) / (Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
+									
 									}	
 								
 									if(typeOut == 2)
 									{
 										//! Biot-Savart Magnetic Vector Potential Field
-										F += M_MU * dLxyz * ( std::abs(current) / (4.0*M_PI*Rn) );
+										F += 1.0e-7 * dLxyz * ( Abs(current) / (Rn) );
 									}
 									
 								}
@@ -333,25 +343,28 @@ namespace SCIRunAlgo {
 				}
 				
 				//! Auto adjust accuracy of integration
-				int AdjustNumberOfIntegrationPoints(double step, double len) const
+				int AdjustNumberOfIntegrationPoints(double len)
 				{
-					assert(step < len);
-					int minNP = 3;//more than 1 for sure
-					int maxNP = 100;//no more than 1000 i guess
+					//assert(step < len);
+					
+					int minNP = 100;//more than 1 for sure
+					int maxNP = 200;//no more than 1000
 					int NP = 0;
 					bool over = false;
 					bool under = false;
 
 					do
 					{
+						NP = Ceil( len / step );
+
 						under = NP < minNP ? true : false;
 						over = NP > maxNP ? true : false; 
 
-						if(under) step*=0.5;
-						if(over) step*=1.5;
-
-						NP=Ceil(len/step);
-						//std::cout << "\t integration step : " << step << std::endl;//DEBUG TODO TBR
+						if(under) step *= 0.5d;
+						if(over) step *= 1.5d;
+						
+						//DEBUG
+						//std::cout << "\t integration step : " << step << ",for segment lenght :" << len <<", with number of points per segment :" << NP << std::endl;
 
 					}while( under || over );
 
