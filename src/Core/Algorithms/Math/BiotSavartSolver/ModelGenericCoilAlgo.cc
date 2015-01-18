@@ -387,9 +387,8 @@ using namespace SCIRun;
 					
 					//basic topoly assumptions needs to be correct
 					assert(coilPoints.size() > 0);
-					assert(coilPoints.size() == coilValues.size() + 1);
-					assert(coilPoints.size() == coilIndices.size() * 2);
-					
+					assert(coilPoints.size() - 2 == coilValues.size());
+					assert(coilPoints.size()*2 - 4 == coilIndices.size());
 										
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
