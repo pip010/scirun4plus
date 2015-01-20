@@ -87,7 +87,7 @@ namespace SCIRun {
 
 		if (coilType == "single") algoArgs.type = 1;
 		else if (coilType == "multi") algoArgs.type = 2;
-		else if (coilType == "dipol") algoArgs.type = 3;
+		else if (coilType == "dipole") algoArgs.type = 3;
 		else if (coilType == "test") algoArgs.type = 4;
 		else algoArgs.type = 1;
 		

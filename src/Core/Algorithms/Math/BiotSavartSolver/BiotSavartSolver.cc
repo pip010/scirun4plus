@@ -564,6 +564,8 @@ namespace SCIRunAlgo {
 					{
 						return (false);
 					}
+
+					algo->remark(std::string("[ Dipole Kernel ]"));
 					
 
 					//! get numbder of nodes for the coil

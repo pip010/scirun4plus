@@ -384,6 +384,8 @@ using namespace SCIRun;
 					GenPointsSpiral(coilPoints, rightCenter);
 					GenSegmentEdges(coilPoints, coilIndices);
 					GenSegmentValues(coilPoints, coilValues, -current);
+
+					FlipX(coilPoints,rightCenter);
 					
 					//basic topoly assumptions needs to be correct
 					assert(coilPoints.size() > 0);
@@ -403,6 +405,20 @@ using namespace SCIRun;
 				}
 				
 			private:
+
+				void FlipX(std::vector<Vector>& points, Vector origin) const
+				{
+					for(size_t i = points.size()/2; i < points.size(); i++)
+					{
+						Vector* v = &points[i];
+
+						//std::cout << "flipping : " << *v ;
+
+						v->x( origin.x() - ( v->x() - origin.x() ) );
+
+						//std::cout << " to " << *v << std::endl;
+					}
+				}
 				
 				void GenPointsSpiral(std::vector<Vector>& points, Vector center) const
 
@@ -451,6 +467,7 @@ using namespace SCIRun;
 
 
 		//! dipoles domain discretization
+		// (replicating paper doi:10.1006/nimg.2002.1282)
 		class DipolesCoilgen : public BaseCoilgen
 		{
 			public:
@@ -460,7 +477,6 @@ using namespace SCIRun;
 					ModelGenericCoilAlgo::Args args )
 					: BaseCoilgen( algo,args )
 				{
-
 				}
 				
 				~DipolesCoilgen()
@@ -469,36 +485,53 @@ using namespace SCIRun;
 				
 				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
 				{
-					std::vector<Vector> dipolPoints;
-					std::vector<Vector> dipolValues;
+					std::vector<Vector> dipolePoints;
+					std::vector<Vector> dipoleValues;
+					std::vector<double> radiiInner = preRadiiInner();
+					std::vector<double> radiiOuter = preRadiiOuter();
+					std::vector<double> numElements = preNumElem();
+					std::vector<double> numCoupling = preNumAdjElem();
 					
-					//double d = 2.0;//outer distance between left and right coils
 					
-					//Vector leftCenter(-outerR - (d/2),0,0);
-					//Vector rightCenter(outerR + (d/2),0,0);
-					
-					//GenPointsSpiral(coilPoints, rightCenter);
-					//GenSegmentEdges(coilPoints, coilIndices);
-					//GenSegmentValues(coilPoints, coilValues, -current);
-					
+					Vector originL(- radiiOuter[15] - outerD / 2.0d, 0, 0);
+					Vector originR( radiiOuter[15] + outerD / 2.0d, 0, 0 );
 
 					
-					double dr = (outerR - innerR) / windings;		
 					
-					//Vector center_offset(center.x()+ dr/2,center.y(),center.z());
-					Vector center;
 					
-					for (size_t i = 0; i < windings + 1; i++)
+					for (size_t i = 0; i < 16; i++)
 					{
-						GenPointsCircular(dipolPoints, center, innerR + i*dr, 0   , M_PI);
-						GenSegmentValues(dipolPoints, dipolValues, i );
+						double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;
+
+						double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
+
+						double dipoleMoment = current * ringArea * numCoupling[i] / numElements[i];
+						
+						
+						// LEFT COIL
+
+						Vector dipoleNormL(0,0,1.0*dipoleMoment);
+
+						GenPointsCircular(dipolePoints, originL, ringRad, numElements[i], 0.0d, 2*M_PI);
+						
+						GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
+
+
+						// RIGHT COIL
+						
+						Vector dipoleNormR(0,0,-1.0*dipoleMoment);
+
+						GenPointsCircular(dipolePoints, originR, ringRad, numElements[i], 0.0d, 2*M_PI);
+
+						GenSegmentValues(dipolePoints, dipoleValues, dipoleNormR );
 					}
+
+
 					
 					//basic topoly assumptions needs to be correct
-					//assert(coilPoints.size() > 0);
-					//assert(coilPoints.size() == coilValues.size() + 1);
-					//assert(coilPoints.size() == coilIndices.size() * 2);
-					
+					assert(dipolePoints.size() > 0);
+					assert(dipolePoints.size() == dipoleValues.size());
+
 										
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
@@ -509,41 +542,47 @@ using namespace SCIRun;
 
 					meshHandle = CreateField(fi);
 					
-					BuildScirunMesh(dipolPoints,dipolValues,meshHandle);
+					BuildScirunMesh(dipolePoints,dipoleValues,meshHandle);
 				}
 				
 		private:
 				
-				const std::vector<double> preRadii() const
+				const std::vector<double> preRadiiInner() const
 				{
-					//std::array<int, 3> a = {1,2,3};
-					
-					const double vals[4] = {0.3d , 0.7d , 1.1d, 1.5d};
-					std::vector<double> preRadii(vals,vals+4);
+					const double vals[16] = {0.00d, 0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d};
+					std::vector<double> preRadii(vals,vals+16);
 					return preRadii;
 				}
-				/*
-				std::vector<size_t> preNumElem() const
+				
+				const std::vector<double> preRadiiOuter() const
 				{
-					std::vector<size_t> preNumElem = {3l,9l,12l,16l};
+					const double vals[16] = {0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d, 0.044d};
+					std::vector<double> preRadii(vals,vals+16);
+					return preRadii;
+				}
+
+				const std::vector<double> preNumElem() const
+				{
+					const double vals[16] = {3.0d, 9.0d, 12.0d, 16.0d, 20.0d, 24.0d, 28.0d, 30.0d, 32.0d, 34.0d, 36.0d, 38.0d, 40.0d, 42.0d, 44.0d, 44.0d};
+					std::vector<double> preNumElem(vals,vals+16);
 					return preNumElem;
 
 				}
-				std::vector<size_t> preNumAdjElem() const
+
+				const std::vector<double> preNumAdjElem() const
 				{
-						std::vector<size_t> preNumAdjElem = {9l,9l,9l,9l};
-						return preNumAdjElem;
+					const double vals[16] = {9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 8.0d, 7.0d, 6.0d, 5.0d, 4.0d, 3.0d, 2.0d, 1.0d};
+					std::vector<double> preNumAdjElem(vals,vals+16);
+					return preNumAdjElem;
 				}
-				*/		
-				void GenSegmentValues(const std::vector<Vector>& points, std::vector<Vector>& values, size_t ring) const
+					
+				void GenSegmentValues(const std::vector<Vector>& points, std::vector<Vector>& values, Vector val) const
 				{
 					assert(points.size() > 0);
 					
-					Vector value(0,0,1.0d);
-					
 					for(size_t i = values.size(); i < points.size(); i++)
 					{
-						values.push_back(value);
+						values.push_back(val);
 					}
 				}
 				
