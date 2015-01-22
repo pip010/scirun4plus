@@ -1,6 +1,6 @@
 
 /*
- *  ModelGenericCoil.cc:  TODO DEscription
+ *  ModelTMSCoilSpiral.cc:  TODO DEscription
  *
  *  Author:
  *   Petar Petrov, MSc
@@ -21,19 +21,19 @@
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
 
-#include <Core/Algorithms/Math/BiotSavartSolver/ModelGenericCoilAlgo.h>
+#include <Core/Algorithms/Math/TMS/ModelGenericCoilAlgo.h>
 
 namespace SCIRun {
 
 	using namespace SCIRun;
 
-	class ModelGenericCoil : public Module
+	class ModelTMSCoilSpiral : public Module
 	{
 	  public:
 
-		ModelGenericCoil(GuiContext*);
+		ModelTMSCoilSpiral(GuiContext*);
 		
-		virtual ~ModelGenericCoil() {}
+		virtual ~ModelTMSCoilSpiral() {}
 
 		virtual void execute();
 
@@ -47,15 +47,15 @@ namespace SCIRun {
 		GuiInt coilDetailsTCL;
     	GuiString typeTCL;
 		 
-		SCIRunAlgo::ModelGenericCoilAlgo algo;
-		SCIRunAlgo::ModelGenericCoilAlgo::Args oldArgs;
+		SCIRunAlgo::ModelTMSCoilSpiralAlgo algo;
+		SCIRunAlgo::ModelTMSCoilSpiralAlgo::Args oldArgs;
 	};
 
 
-	DECLARE_MAKER(ModelGenericCoil)
+	DECLARE_MAKER(ModelTMSCoilSpiral)
 
-	ModelGenericCoil::ModelGenericCoil(GuiContext* ctx) :
-		Module("ModelGenericCoil", ctx, Source, "Math", "SCIRun"),
+	ModelTMSCoilSpiral::ModelTMSCoilSpiral(GuiContext* ctx) :
+		Module("ModelTMSCoilSpiral", ctx, Source, "TMS", "SCIRun"),
 		wireCurrentTCL(ctx->subVar("wireCurrentTCL")),
 		wireLoopsTCL(ctx->subVar("wireLoopsTCL")),
 		innerRadiusTCL(ctx->subVar("innerRadiusTCL")),
@@ -68,10 +68,10 @@ namespace SCIRun {
 	}
 
 	void
-	ModelGenericCoil::execute()
+	ModelTMSCoilSpiral::execute()
 	{
-		SCIRunAlgo::ModelGenericCoilAlgo::Args algoArgs;
-		MatrixHandle omatrix;
+		SCIRunAlgo::ModelTMSCoilSpiralAlgo::Args algoArgs;
+		//MatrixHandle omatrix;
 		FieldHandle ofield;
 
 		std::string coilType = static_cast<std::string>(typeTCL.get());
@@ -96,15 +96,15 @@ namespace SCIRun {
 		{
 		    update_state(Executing);
 		    
-		    if (!(algo.run(ofield,omatrix,algoArgs))) return;
+		    if (!(algo.run(ofield,algoArgs))) return;
 		  
 		    //! send new Mesh output if there is any: 
 		    if(need_mesh_data)
 		    send_output_handle("Mesh",ofield);
 			
 			//! send new Matri utput if there is any: 
-			if(need_matrix_data)
-			send_output_handle("Matrix", omatrix);
+			// if(need_matrix_data)
+			// send_output_handle("Matrix", omatrix);
 			
 			oldArgs = algoArgs;
 		}

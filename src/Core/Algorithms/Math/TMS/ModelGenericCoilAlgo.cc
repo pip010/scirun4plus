@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Math/BiotSavartSolver/ModelGenericCoilAlgo.h>
+#include <Core/Algorithms/Math/TMS/ModelGenericCoilAlgo.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
 #include <Core/Math/MiscMath.h>
@@ -52,15 +52,10 @@ using namespace SCIRun;
 		class BaseCoilgen
 		{
 			public:
-				BaseCoilgen(AlgoBase* algo, ModelGenericCoilAlgo::Args args ) :
+				BaseCoilgen(AlgoBase* algo) :
 				  ref_cnt(0),
-				  algo(algo),
-				  innerR(args.coilRadiusInner),
-				  outerR(args.coilRadiusOuter),
-				  outerD(args.coilDistanceOuter),
-				  current(args.wireCurrent),
-				  windings(args.wireLoops),
-				  coilLOD(args.coilLevelDetails)
+				  coilLOD(12),
+				  algo(algo)
 				{
 
 				}
@@ -70,7 +65,7 @@ using namespace SCIRun;
 				}
 							
 				//! Local entry function, must be implemented by each specific kernel
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const = 0;
+				virtual void Generate(FieldHandle& meshHandle) const = 0;
 		
 				//! Global reference counting
 				int ref_cnt;
@@ -79,15 +74,7 @@ using namespace SCIRun;
 
 				//! ref to the executing algorithm context
 				const AlgoBase* algo;
-				
-				const double innerR;
-				const double outerR;
-				const double current;
-				const double outerD;
-				const size_t windings;
-				const size_t coilLOD;
-				
-
+				size_t coilLOD;
 				
 				void GenPointsCircular(
 					std::vector<Vector>& points,
@@ -205,17 +192,22 @@ using namespace SCIRun;
 			
 				SingleloopCoilgen( 
 					AlgoBase* algo, 
-					ModelGenericCoilAlgo::Args args)
-					: BaseCoilgen( algo,args )
+					ModelTMSCoilSingleAlgo::Args args)
+					: BaseCoilgen( algo ),
+					  	innerR(args.coilRadiusInner),
+					  	outerR(args.coilRadiusOuter),
+					  	outerD(args.coilDistanceOuter),
+					  	current(args.wireCurrent),
+					  	windings(args.wireLoops)
 				{
-					
+					coilLOD = args.coilLevelDetails;
 				}
 				
 				~SingleloopCoilgen()
 				{
 				}
 				
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
+				virtual void Generate(FieldHandle& meshHandle) const
 				{
 					
 					std::vector<Vector> coilPoints;
@@ -256,6 +248,14 @@ using namespace SCIRun;
 				}
 				
 			protected:
+
+					const double innerR;
+					const double outerR;
+					const double current;
+					const double outerD;
+					const size_t windings;
+					
+
 				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
 				{
 					size_t firstIDX = indices.size();
@@ -300,13 +300,13 @@ using namespace SCIRun;
 
 		};
 
-
+		/*
 		class TestCoilgen : public SingleloopCoilgen
 		{
 			public:
 				TestCoilgen( 
 					AlgoBase* algo, 
-					ModelGenericCoilAlgo::Args args)
+					ModelTMSCoilSingleAlgo::Args args)
 					: SingleloopCoilgen( algo,args )
 				{
 					
@@ -316,7 +316,7 @@ using namespace SCIRun;
 				{
 				}
 
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
+				virtual void Generate(FieldHandle& meshHandle) const
 				{
 					
 					std::vector<Vector> coilPoints;
@@ -347,7 +347,7 @@ using namespace SCIRun;
 					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
 				}
 		};
-
+		*/
 
 		
 		//! piece-wise wire discretization
@@ -357,17 +357,22 @@ using namespace SCIRun;
 			
 				MultiloopsCoilgen( 
 					AlgoBase* algo, 
-					ModelGenericCoilAlgo::Args args )
-					: BaseCoilgen( algo,args )
+					ModelTMSCoilSpiralAlgo::Args args )
+					: BaseCoilgen( algo ),
+					  	innerR(args.coilRadiusInner),
+					  	outerR(args.coilRadiusOuter),
+					  	outerD(args.coilDistanceOuter),
+					  	current(args.wireCurrent),
+					  	windings(args.wireLoops)
 				{
-					
+					coilLOD = args.coilLevelDetails;
 				}
 				
 				~MultiloopsCoilgen()
 				{
 				}
 				
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
+				virtual void Generate(FieldHandle& meshHandle) const
 				{
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
@@ -404,7 +409,14 @@ using namespace SCIRun;
 					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
 				}
 				
-			private:
+			protected:
+
+				const double innerR;
+				const double outerR;
+				const double current;
+				const double outerD;
+				const size_t windings;
+				//const size_t coilLOD;
 
 				void FlipX(std::vector<Vector>& points, Vector origin) const
 				{
@@ -474,16 +486,23 @@ using namespace SCIRun;
 			
 				DipolesCoilgen( 
 					AlgoBase* algo, 
-					ModelGenericCoilAlgo::Args args )
-					: BaseCoilgen( algo,args )
+					ModelTMSCoilDipoleAlgo::Args args )
+					: BaseCoilgen( algo ),
+					  	innerR(args.coilRadiusInner),
+					  	outerR(args.coilRadiusOuter),
+					  	outerD(args.coilDistanceOuter),
+					  	current(args.wireCurrent),
+					  	windings(args.wireLoops)
+					  	
 				{
+					coilLOD = args.coilLevelDetails;
 				}
 				
 				~DipolesCoilgen()
 				{
 				}
 				
-				virtual void Generate(FieldHandle& meshHandle, MatrixHandle& params) const
+				virtual void Generate(FieldHandle& meshHandle) const
 				{
 					std::vector<Vector> dipolePoints;
 					std::vector<Vector> dipoleValues;
@@ -545,7 +564,14 @@ using namespace SCIRun;
 					BuildScirunMesh(dipolePoints,dipoleValues,meshHandle);
 				}
 				
-		private:
+		protected:
+
+				const double innerR;
+				const double outerR;
+				const double current;
+				const double outerD;
+				const size_t windings;
+				//const size_t coilLOD;
 				
 				const std::vector<double> preRadiiInner() const
 				{
@@ -607,54 +633,91 @@ using namespace SCIRun;
 				}
 		};
 
-	}
+	}// end namespace details
 
 
 
 	bool 
-	ModelGenericCoilAlgo::
-	run(FieldHandle& meshFieldHandle, MatrixHandle& params, Args& args)
+	ModelTMSCoilSingleAlgo::
+	run(FieldHandle& meshFieldHandle, Args& args)
 	{
 		
 		try
 		{
-		  std::vector<Vector> coilPoints;
-		  std::vector<size_t> coilIndices;
-		  
-		  using namespace details;
-		  
-		  Handle<BaseCoilgen> helper;
+			std::vector<Vector> coilPoints;
+			std::vector<size_t> coilIndices;
 
-		  if(args.type == 1)
-		  {
+			using namespace details;
+
+			Handle<BaseCoilgen> helper;
+
 			helper = new SingleloopCoilgen(this,args);
-		  }
-		  else if(args.type == 2)
-		  {
-		  	helper = new MultiloopsCoilgen(this,args);
-		  }
-		  else if(args.type == 3)
-		  {
-		  	helper = new DipolesCoilgen(this,args);
-		  }
-		  else if(args.type == 4)
-		  {
-		  	helper = new TestCoilgen(this,args);
-		  }
-		  else
-		  {
-			error("Unknown coil type!");
-			algo_end(); return (false);
-		  }
-			
-		helper->Generate(meshFieldHandle, params);
-		
+
+			helper->Generate(meshFieldHandle);
 
 		}
 		catch (...)
 		{
-		error("Error while running the algorithm ...");
-		algo_end(); return (false);
+			error("Error while running the algorithm ...");
+			algo_end(); return (false);
+		}
+
+		return (true);
+	}
+
+
+	bool 
+	ModelTMSCoilSpiralAlgo::
+	run(FieldHandle& meshFieldHandle, Args& args)
+	{
+		
+		try
+		{
+			std::vector<Vector> coilPoints;
+			std::vector<size_t> coilIndices;
+
+			using namespace details;
+
+			Handle<BaseCoilgen> helper;
+
+			helper = new MultiloopsCoilgen(this,args);
+
+			helper->Generate(meshFieldHandle);
+
+		}
+		catch (...)
+		{
+			error("Error while running the algorithm ...");
+			algo_end(); return (false);
+		}
+
+		return (true);
+	}
+
+
+	bool 
+	ModelTMSCoilDipoleAlgo::
+	run(FieldHandle& meshFieldHandle, Args& args)
+	{
+		
+		try
+		{
+			std::vector<Vector> coilPoints;
+			std::vector<size_t> coilIndices;
+
+			using namespace details;
+
+			Handle<BaseCoilgen> helper;
+
+			helper = new DipolesCoilgen(this,args);
+
+			helper->Generate(meshFieldHandle);
+
+		}
+		catch (...)
+		{
+			error("Error while running the algorithm ...");
+			algo_end(); return (false);
 		}
 
 		return (true);

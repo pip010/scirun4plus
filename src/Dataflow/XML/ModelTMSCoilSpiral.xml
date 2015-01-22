@@ -29,7 +29,7 @@
 -->
 
 
-<component name="ModelGenericCoil" category="Math">
+<component name="ModelTMSCoilSpiral" category="TMS">
   <overview>
     <authors>
       <author>Petar Petrov</author>
@@ -41,13 +41,9 @@
     </inputs>
     <outputs>
 	    <port>
-        <name>Mesh</name>
-        <datatype>SCIRun::Field</datatype>
-      </port>
-      <port>
-        <name>Matrix</name>
-        <datatype>SCIRun::Matrix</datatype>
-      </port>
+			<name>Mesh</name>
+			<datatype>SCIRun::Field</datatype>
+		</port>
     </outputs>
   </io>
 </component>

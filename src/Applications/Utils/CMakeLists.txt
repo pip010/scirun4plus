@@ -103,6 +103,7 @@ SET(Utils_SRCS
   TextToCurve
   UnorientNrrdAndGetTransform
   TransformFieldWithTransform
+  CoilModelCalibration
 )
 
 IF(WITH_TETGEN)

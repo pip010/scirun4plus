@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="4" name="{Main}" bbox="{10 62 1097 1064}" creationDate="{Thu Jan 22 2015}" creationTime="{11:39:52}" geometry="{1615x1026+65+24}">
+<network version="v4.7" netversion="6" name="{Main}" bbox="{80 62 1353 1064}" creationDate="{Thu Jan 22 2015}" creationTime="{11:39:52}" geometry="{1615x1026+65+24}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="Render" name="ViewScene" version="1.0">
@@ -9,15 +9,15 @@
         <callback>addViewer</callback>
       </gui_callback>
       <var name="ViewWindow_0-geometry" val="1615x1029+65+24" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{0.08475946850198324}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{-0.5285762120186457}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{0.10922090343077102}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{0.08485070743444728}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{-0.04454921756762855}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{-0.5608467927585642}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-x" val="{-0.004014108645075081}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-y" val="{0.0023347586706764486}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-z" val="{-0.01713839907441407}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{-0.013202050825586847}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{0.22942728448173336}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{0.9732362647319183}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{-0.015353128729873627}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{-0.9963970383053207}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{0.08340997239292877}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -542,7 +542,7 @@
       <var name="ui_geometry" val="{367x753+1175+274}" substitute="no"/>
     </module>
     <module id="m24" package="SCIRun" category="Math" name="GetColumnOrRowFromMatrix" version="1.0" gui_visible="yes">
-      <position x="10" y="140"/>
+      <position x="1162" y="136"/>
       <var name="row_or_col" val="{row}" substitute="no"/>
       <var name="selectable_min" val="{0}" substitute="no"/>
       <var name="selectable_max" val="{100}" substitute="no"/>
@@ -557,7 +557,7 @@
       <var name="inc-amount" val="{1}" substitute="no"/>
       <var name="send-amount" val="{1}" substitute="no"/>
       <var name="data_series_done" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{230x629+65+52}" substitute="no"/>
+      <var name="ui_geometry" val="{230x629+1044+192}" substitute="no"/>
     </module>
   </modules>
   <connections>

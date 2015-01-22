@@ -26,12 +26,12 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-itcl::class SCIRun_Math_ModelGenericCoil {
+itcl::class SCIRun_TMS_ModelTMSCoilDipole {
     inherit Module
 
      constructor { {args ""} } {
         eval configure $args
-      set name ModelGenericCoil
+      set name ModelTMSCoilDipole
       set_defaults
     }
 

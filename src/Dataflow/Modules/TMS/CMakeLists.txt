@@ -26,16 +26,42 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Converter)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(DataStreaming)
-ADD_SUBDIRECTORY(FieldArray)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Geometry)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Regression)
-ADD_SUBDIRECTORY(SignalProcessing)
-ADD_SUBDIRECTORY(Util)
-ADD_SUBDIRECTORY(Visualization)
+# CMakeLists.txt for Dataflow/Modules/TMS
 
+SET(Dataflow_Modules_TMS_SRCS
+  ModelTMSCoilDipole.cc
+  ModelTMSCoilSingle.cc
+  ModelTMSCoilSpiral.cc
+)
+
+SCIRUN_ADD_LIBRARY(Dataflow_Modules_TMS ${Dataflow_Modules_TMS_SRCS})
+
+TARGET_LINK_LIBRARIES(Dataflow_Modules_TMS
+  Core_Algorithms_Util
+  Core_Algorithms_Math
+  Core_Algorithms_FiniteElements
+  Core_Algorithms_Converter
+  Core_Datatypes
+  Core_Exceptions
+  Core_Geom
+  Core_GeomInterface
+  Core_Geometry
+  Dataflow_GuiInterface
+  Dataflow_Widgets
+  Core_Math
+  Core_Parser
+  Core_Persistent
+  Core_Thread
+  Dataflow_TkExtensions
+  Core_Util
+  Dataflow_Network
+  ${TK_LIBRARY}
+  ${GL_LIBRARY}
+  ${M_LIBRARY}
+  ${PETSC_UNI_LIBRARY}
+  ${SCI_TEEM_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Dataflow_Modules_TMS)
+ENDIF(BUILD_SHARED_LIBS)
