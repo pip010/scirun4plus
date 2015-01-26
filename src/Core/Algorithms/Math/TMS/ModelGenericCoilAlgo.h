@@ -32,8 +32,7 @@ using namespace SCIRun;
         {
         	double wireCurrent;
         	size_t wireLoops;
-        	double coilRadiusInner;
-        	double coilRadiusOuter;
+        	double coilRadius;
             double coilDistanceOuter;
         	size_t coilLevelDetails;
         	int type;
@@ -42,8 +41,7 @@ using namespace SCIRun;
         	{ 
     			return wireCurrent == rhs.wireCurrent && 
     			wireLoops == rhs.wireLoops &&
-    			coilRadiusInner == rhs.coilRadiusInner && 
-    			coilRadiusOuter == rhs.coilRadiusOuter && 
+    			coilRadius == rhs.coilRadius && 
     			coilLevelDetails == rhs.coilLevelDetails &&
                 coilDistanceOuter == rhs.coilDistanceOuter &&
     			type == rhs.type;
@@ -99,8 +97,8 @@ using namespace SCIRun;
 
         struct Args
         {
-            double wireCurrent;
-            size_t wireLoops;
+            double totalCurrent;
+            size_t numberSegments;
             double coilRadiusInner;
             double coilRadiusOuter;
             double coilDistanceOuter;
@@ -109,8 +107,9 @@ using namespace SCIRun;
             
             inline bool operator==(const Args& rhs)
             { 
-                return wireCurrent == rhs.wireCurrent && 
-                wireLoops == rhs.wireLoops &&
+                return 
+                totalCurrent == rhs.totalCurrent && 
+                numberSegments == rhs.numberSegments &&
                 coilRadiusInner == rhs.coilRadiusInner && 
                 coilRadiusOuter == rhs.coilRadiusOuter && 
                 coilLevelDetails == rhs.coilLevelDetails &&

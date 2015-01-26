@@ -194,11 +194,9 @@ using namespace SCIRun;
 					AlgoBase* algo, 
 					ModelTMSCoilSingleAlgo::Args args)
 					: BaseCoilgen( algo ),
-					  	innerR(args.coilRadiusInner),
-					  	outerR(args.coilRadiusOuter),
+					  	radius(args.coilRadius),
 					  	outerD(args.coilDistanceOuter),
-					  	current(args.wireCurrent),
-					  	windings(args.wireLoops)
+					  	current(args.wireCurrent)
 				{
 					coilLOD = args.coilLevelDetails;
 				}
@@ -214,29 +212,29 @@ using namespace SCIRun;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
 	  
-					//generate the two coils
+					///generate the two coils
 					
-					double radius = innerR + ((outerR - innerR) / 2.0);
+					//double radius = innerR + ((outerR - innerR) / 2.0);
 					
-					//LEFT
+					///LEFT
 					Vector pos_L( -radius - (outerD/2), 0, 0);
 					GenPointsCircular(coilPoints,pos_L,radius,0, 2*M_PI);
 					GenSegmentEdges(coilPoints, coilIndices);
 					GenSegmentValues(coilPoints, coilValues, current);
 					
-					//RIGHT
+					///RIGHT
 					Vector pos_R( radius + (outerD/2), 0, 0);
 					GenPointsCircular(coilPoints,pos_R,radius,0, 2*M_PI);
 					GenSegmentEdges(coilPoints, coilIndices);
 					GenSegmentValues(coilPoints, coilValues, -current);
 					
-					//basic topoly assumptions needs to be correct
+					///basic topoly assumptions needs to be correct
 					assert(coilPoints.size() > 0);
 					assert(coilPoints.size() == coilValues.size());
 					assert(coilPoints.size()*2 == coilIndices.size());
 					
-					//SCIrun API creating a new mesh
-					//0 data on elements; 1 data on nodes
+					///SCIrun API creating a new mesh
+					///0 data on elements; 1 data on nodes
 					FieldInformation fi("CurveMesh",0,"double");
 					fi.make_curvemesh();
 					fi.make_constantdata();
@@ -249,11 +247,9 @@ using namespace SCIRun;
 				
 			protected:
 
-					const double innerR;
-					const double outerR;
-					const double current;
-					const double outerD;
-					const size_t windings;
+				const double radius;
+				const double current;
+				const double outerD;
 					
 
 				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
@@ -491,8 +487,8 @@ using namespace SCIRun;
 					  	innerR(args.coilRadiusInner),
 					  	outerR(args.coilRadiusOuter),
 					  	outerD(args.coilDistanceOuter),
-					  	current(args.wireCurrent),
-					  	windings(args.wireLoops)
+					  	current(args.totalCurrent),
+					  	segments(args.numberSegments)
 					  	
 				{
 					coilLOD = args.coilLevelDetails;
@@ -527,7 +523,7 @@ using namespace SCIRun;
 						double dipoleMoment = current * ringArea * numCoupling[i] / numElements[i];
 						
 						
-						// LEFT COIL
+						/// LEFT COIL
 
 						Vector dipoleNormL(0,0,1.0*dipoleMoment);
 
@@ -536,7 +532,7 @@ using namespace SCIRun;
 						GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 
 
-						// RIGHT COIL
+						/// RIGHT COIL
 						
 						Vector dipoleNormR(0,0,-1.0*dipoleMoment);
 
@@ -547,13 +543,13 @@ using namespace SCIRun;
 
 
 					
-					//basic topoly assumptions needs to be correct
+					///basic topoly assumptions needs to be correct
 					assert(dipolePoints.size() > 0);
 					assert(dipolePoints.size() == dipoleValues.size());
 
 										
-					//SCIrun API creating a new mesh
-					//0 data on elements; 1 data on nodes
+					///SCIrun API creating a new mesh
+					///0 data on elements; 1 data on nodes
 					FieldInformation fi("PointCloudMesh",1,"vector");
 					fi.make_pointcloudmesh();
 					fi.make_lineardata();
@@ -570,7 +566,7 @@ using namespace SCIRun;
 				const double outerR;
 				const double current;
 				const double outerD;
-				const size_t windings;
+				const size_t segments;
 				//const size_t coilLOD;
 				
 				const std::vector<double> preRadiiInner() const

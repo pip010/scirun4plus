@@ -47,7 +47,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilSpiral {
       set $this-wireLoopsTCL 5
       set $this-innerRadiusTCL 10
       set $this-outerRadiusTCL 15
-	    set $this-levelDetailTCL 2
+	  set $this-levelDetailTCL 2
       set $this-outerDistanceTCL 2
       set $this-typeTCL "single"
     }

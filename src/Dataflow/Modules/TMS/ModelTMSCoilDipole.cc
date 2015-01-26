@@ -39,8 +39,8 @@ namespace SCIRun {
 
 	  private:
   	    
-  	    GuiDouble wireCurrentTCL;
-  	    GuiInt wireLoopsTCL;
+  	    GuiDouble totalCurrentTCL;
+  	    GuiInt numberSegmentsTCL;
 		GuiDouble innerRadiusTCL;
 		GuiDouble outerRadiusTCL;
 		GuiDouble outerDistanceTCL;
@@ -56,8 +56,8 @@ namespace SCIRun {
 
 	ModelTMSCoilDipole::ModelTMSCoilDipole(GuiContext* ctx) :
 		Module("ModelTMSCoilDipole", ctx, Source, "TMS", "SCIRun"),
-		wireCurrentTCL(ctx->subVar("wireCurrentTCL")),
-		wireLoopsTCL(ctx->subVar("wireLoopsTCL")),
+		totalCurrentTCL(ctx->subVar("totalCurrentTCL")),
+		numberSegmentsTCL(ctx->subVar("numberSegmentsTCL")),
 		innerRadiusTCL(ctx->subVar("innerRadiusTCL")),
 		outerRadiusTCL(ctx->subVar("outerRadiusTCL")),
 		outerDistanceTCL(ctx->subVar("outerDistanceTCL")),
@@ -75,8 +75,8 @@ namespace SCIRun {
 		FieldHandle ofield;
 
 		std::string coilType = static_cast<std::string>(typeTCL.get());
-		algoArgs.wireCurrent = static_cast<double>(wireCurrentTCL.get());
-		algoArgs.wireLoops = static_cast<size_t>(wireLoopsTCL.get());
+		algoArgs.totalCurrent = static_cast<double>(totalCurrentTCL.get());
+		algoArgs.numberSegments = static_cast<size_t>(numberSegmentsTCL.get());
 		algoArgs.coilRadiusInner = static_cast<double>(innerRadiusTCL.get());
 		algoArgs.coilRadiusOuter = static_cast<double>(outerRadiusTCL.get());
 		algoArgs.coilDistanceOuter = static_cast<double>(outerDistanceTCL.get());
@@ -85,10 +85,8 @@ namespace SCIRun {
 		bool need_matrix_data = oport_connected("Matrix");
 		bool need_mesh_data = oport_connected("Mesh");
 
-		if (coilType == "single") algoArgs.type = 1;
-		else if (coilType == "multi") algoArgs.type = 2;
-		else if (coilType == "dipole") algoArgs.type = 3;
-		else if (coilType == "test") algoArgs.type = 4;
+		if (coilType == "0-shape") algoArgs.type = 1;
+		else if (coilType == "8-shape") algoArgs.type = 2;
 		else algoArgs.type = 1;
 		
 

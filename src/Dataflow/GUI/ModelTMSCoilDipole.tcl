@@ -36,18 +36,18 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
     }
 
     method set_defaults {} {
-      global $this-wireCurrentTCL
-      global $this-wireLoopsTCL
+      global $this-totalCurrentTCL
+      global $this-numberSegmentsTCL
       global $this-innerRadiusTCL
       global $this-outerRadiusTCL
       global $this-outerDistanceTCL
       global $this-levelDetailTCL
       global $this-typeTCL
-      set $this-wireCurrentTCL 1
-      set $this-wireLoopsTCL 5
+      set $this-totalCurrentTCL 1
+      set $this-numberSegmentsTCL 5
       set $this-innerRadiusTCL 10
       set $this-outerRadiusTCL 15
-	    set $this-levelDetailTCL 2
+	  set $this-levelDetailTCL 2
       set $this-outerDistanceTCL 2
       set $this-typeTCL "single"
     }
@@ -61,8 +61,8 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
         pack $w.e -side right
     }
     method ui {} {
-      global $this-wireCurrentTCL
-      global $this-wireLoopsTCL
+      global $this-totalCurrentTCL
+      global $this-numberSegmentsTCL
       global $this-innerRadiusTCL
       global $this-outerRadiusTCL
       global $this-outerDistanceTCL
@@ -77,21 +77,21 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       
       make_labeled_radio $w.type "Method(s) :" "" left 3 $this-typeTCL \
           { "single" "multi" "dipole" "test" }
-      make_entry $w.current "Current:" $this-wireCurrentTCL "$this-c needexecute"
-      make_entry $w.loops "Windings:" $this-wireLoopsTCL "$this-c needexecute"
+      make_entry $w.current "Current:" $this-totalCurrentTCL "$this-c needexecute"
+      make_entry $w.segments "Segments:" $this-numberSegmentsTCL "$this-c needexecute"
       make_entry $w.radius1 "Radius inner:" $this-innerRadiusTCL "$this-c needexecute"
       make_entry $w.radius2 "Radius outer:" $this-outerRadiusTCL "$this-c needexecute"
       make_entry $w.distance "Distance outer:" $this-outerDistanceTCL "$this-c needexecute"
       make_entry $w.lod "Level of Details:" $this-levelDetailTCL "$this-c needexecute"
       
       bind $w.current <Return> "$this-c needexecute"
-      bind $w.loops <Return> "$this-c needexecute"
+      bind $w.segments <Return> "$this-c needexecute"
       bind $w.radius1 <Return> "$this-c needexecute"
       bind $w.radius2 <Return> "$this-c needexecute"
       bind $w.distance <Return> "$this-c needexecute"
       bind $w.lod <Return> "$this-c needexecute"
       
-      pack $w.type $w.current $w.loops $w.radius1 $w.radius2 $w.distance $w.lod -side top -fill x
+      pack $w.type $w.current $w.segments $w.radius1 $w.radius2 $w.distance $w.lod -side top -fill x
 
       makeSciButtonPanel $w $w $this
       moveToCursor $w

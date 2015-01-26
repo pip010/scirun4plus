@@ -85,10 +85,8 @@ namespace SCIRun {
 		bool need_matrix_data = oport_connected("Matrix");
 		bool need_mesh_data = oport_connected("Mesh");
 
-		if (coilType == "single") algoArgs.type = 1;
-		else if (coilType == "multi") algoArgs.type = 2;
-		else if (coilType == "dipole") algoArgs.type = 3;
-		else if (coilType == "test") algoArgs.type = 4;
+		if (coilType == "0-shape") algoArgs.type = 1;
+		else if (coilType == "8-shape") algoArgs.type = 2;
 		else algoArgs.type = 1;
 		
 

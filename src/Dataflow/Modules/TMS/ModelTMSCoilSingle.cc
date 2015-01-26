@@ -40,7 +40,7 @@ namespace SCIRun {
 	  private:
   	    
   	    GuiDouble wireCurrentTCL;
-		GuiDouble radiusTCL;
+		GuiDouble coilRadiusTCL;
 		GuiDouble outerDistanceTCL;
 		GuiInt coilDetailsTCL;
     	GuiString typeTCL;
@@ -55,7 +55,7 @@ namespace SCIRun {
 	ModelTMSCoilSingle::ModelTMSCoilSingle(GuiContext* ctx) :
 		Module("ModelTMSCoilSingle", ctx, Source, "TMS", "SCIRun"),
 		wireCurrentTCL(ctx->subVar("wireCurrentTCL")),
-		radiusTCL(ctx->subVar("coilRadiusTCL")),
+		coilRadiusTCL(ctx->subVar("coilRadiusTCL")),
 		coilDetailsTCL(ctx->subVar("levelDetailTCL")),
 		outerDistanceTCL(ctx->subVar("outerDistanceTCL")),
 		typeTCL(ctx->subVar("typeTCL")) 
@@ -72,18 +72,15 @@ namespace SCIRun {
 
 		std::string coilType = static_cast<std::string>(typeTCL.get());
 		algoArgs.wireCurrent = static_cast<double>(wireCurrentTCL.get());
-		algoArgs.coilRadiusInner = static_cast<double>(radiusTCL.get());
-		algoArgs.coilRadiusOuter = static_cast<double>(radiusTCL.get());
+		algoArgs.coilRadius = static_cast<double>(coilRadiusTCL.get());
 		algoArgs.coilDistanceOuter = static_cast<double>(outerDistanceTCL.get());
 		algoArgs.coilLevelDetails = static_cast<size_t>(coilDetailsTCL.get());
 		
 		bool need_matrix_data = oport_connected("Matrix");
 		bool need_mesh_data = oport_connected("Mesh");
 
-		if (coilType == "single") algoArgs.type = 1;
-		else if (coilType == "multi") algoArgs.type = 2;
-		else if (coilType == "dipole") algoArgs.type = 3;
-		else if (coilType == "test") algoArgs.type = 4;
+		if (coilType == "0-shape") algoArgs.type = 1;
+		else if (coilType == "8-shape") algoArgs.type = 2;
 		else algoArgs.type = 1;
 		
 
