@@ -43,10 +43,10 @@ itcl::class SCIRun_TMS_ModelTMSCoilSingle {
       global $this-typeTCL
       
       set $this-wireCurrentTCL 1
-      set $this-coilRadiusTCL 0.44
-	  set $this-levelDetailTCL 2
-      set $this-outerDistanceTCL 2
-      set $this-typeTCL "0-shape"
+      set $this-coilRadiusTCL 0.035
+	    set $this-levelDetailTCL 6
+      set $this-outerDistanceTCL 0.002
+      set $this-typeTCL "8-shape"
     }
  
     method make_entry {w text v c} {
@@ -70,7 +70,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilSingle {
       }
       sci_toplevel $w
       
-      make_labeled_radio $w.type "Type :" "" left 3 $this-typeTCL \
+      make_labeled_radio $w.type "Type :" "" left 2 $this-typeTCL \
           { "0-shape" "8-shape" }
       make_entry $w.current "Current:" $this-wireCurrentTCL "$this-c needexecute"
       make_entry $w.radius "Radius :" $this-coilRadiusTCL "$this-c needexecute"
@@ -78,12 +78,11 @@ itcl::class SCIRun_TMS_ModelTMSCoilSingle {
       make_entry $w.lod "LOD:" $this-levelDetailTCL "$this-c needexecute"
       
       bind $w.current <Return> "$this-c needexecute"
-      bind $w.loops <Return> "$this-c needexecute"
       bind $w.radius <Return> "$this-c needexecute"
       bind $w.distance <Return> "$this-c needexecute"
       bind $w.lod <Return> "$this-c needexecute"
       
-      pack $w.type $w.current $w.lo $w.radius $w.distance $w.lod -side top -fill x
+      pack $w.type $w.current $w.radius $w.distance $w.lod -side top -fill x
 
       makeSciButtonPanel $w $w $this
       moveToCursor $w

@@ -126,6 +126,7 @@ using namespace SCIRun;
 				{
 										
 					assert(fromPI < toPI);
+
 					double dPI = toPI - fromPI;
 					
 					double iPI = dPI / nsegments;
@@ -212,9 +213,6 @@ using namespace SCIRun;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
 	  
-					///generate the two coils
-					
-					//double radius = innerR + ((outerR - innerR) / 2.0);
 					
 					///LEFT
 					Vector pos_L( -radius - (outerD/2), 0, 0);
@@ -269,19 +267,6 @@ using namespace SCIRun;
 					indices.push_back(indices[lastIDX]);
 					indices.push_back(indices[firstIDX]);
 					
-					/*
-					size_t firstIDX = indices.size();// > 0 ?  indices.size() -1 : 0 ; 
-					
-					GenEdgesLine(points,indices);
-					
-					size_t lastIDX = indices.size() -1;
-
-					//indices[ 2*points.size() - 1 ] = indices[firstIDX];
-					//close the loop
-					indices.push_back(indices[lastIDX]);
-					indices.push_back(indices[firstIDX]);
-					*/
-					
 				}
 				
 				void GenSegmentValues(const std::vector<Vector>& points, std::vector<double>& values, double value) const
@@ -295,55 +280,6 @@ using namespace SCIRun;
 				}
 
 		};
-
-		/*
-		class TestCoilgen : public SingleloopCoilgen
-		{
-			public:
-				TestCoilgen( 
-					AlgoBase* algo, 
-					ModelTMSCoilSingleAlgo::Args args)
-					: SingleloopCoilgen( algo,args )
-				{
-					
-				}
-				
-				~TestCoilgen()
-				{
-				}
-
-				virtual void Generate(FieldHandle& meshHandle) const
-				{
-					
-					std::vector<Vector> coilPoints;
-					std::vector<size_t> coilIndices;
-					std::vector<double> coilValues;
-	  
-					//generate a sible coil single loop
-					double radius = innerR + ((outerR - innerR) / 2.0);
-					Vector pos( 0, 0, 0);
-					GenPointsCircular(coilPoints,pos,radius,0, 2*M_PI);
-					GenSegmentEdges(coilPoints, coilIndices);
-					GenSegmentValues(coilPoints, coilValues, current);
-					
-					//basic topoly assumptions needs to be correct
-					assert(coilPoints.size() > 0);
-					assert(coilPoints.size() == coilValues.size());
-					assert(coilPoints.size()*2 == coilIndices.size());
-					
-					//SCIrun API creating a new mesh
-					//0 data on elements; 1 data on nodes
-					FieldInformation fi("CurveMesh",0,"double");
-					fi.make_curvemesh();
-					fi.make_constantdata();
-					fi.make_scalar();
-
-					meshHandle = CreateField(fi);
-
-					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
-				}
-		};
-		*/
 
 		
 		//! piece-wise wire discretization

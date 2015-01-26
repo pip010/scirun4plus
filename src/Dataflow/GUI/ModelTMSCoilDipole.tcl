@@ -43,13 +43,14 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       global $this-outerDistanceTCL
       global $this-levelDetailTCL
       global $this-typeTCL
+
       set $this-totalCurrentTCL 1
       set $this-numberSegmentsTCL 5
-      set $this-innerRadiusTCL 10
-      set $this-outerRadiusTCL 15
-	  set $this-levelDetailTCL 2
-      set $this-outerDistanceTCL 2
-      set $this-typeTCL "single"
+      set $this-innerRadiusTCL 0.026
+      set $this-outerRadiusTCL 0.044
+	    set $this-levelDetailTCL 0.002
+      set $this-outerDistanceTCL 6
+      set $this-typeTCL "8-shape"
     }
  
     method make_entry {w text v c} {
@@ -75,8 +76,8 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       }
       sci_toplevel $w
       
-      make_labeled_radio $w.type "Method(s) :" "" left 3 $this-typeTCL \
-          { "single" "multi" "dipole" "test" }
+      make_labeled_radio $w.type "Type :" "" left 2 $this-typeTCL \
+          { "0-shape" "8-shape" }
       make_entry $w.current "Current:" $this-totalCurrentTCL "$this-c needexecute"
       make_entry $w.segments "Segments:" $this-numberSegmentsTCL "$this-c needexecute"
       make_entry $w.radius1 "Radius inner:" $this-innerRadiusTCL "$this-c needexecute"

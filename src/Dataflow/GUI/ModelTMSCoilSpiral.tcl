@@ -44,12 +44,12 @@ itcl::class SCIRun_TMS_ModelTMSCoilSpiral {
       global $this-levelDetailTCL
       global $this-typeTCL
       set $this-wireCurrentTCL 1
-      set $this-wireLoopsTCL 5
-      set $this-innerRadiusTCL 10
-      set $this-outerRadiusTCL 15
-	  set $this-levelDetailTCL 2
-      set $this-outerDistanceTCL 2
-      set $this-typeTCL "single"
+      set $this-wireLoopsTCL 9
+      set $this-innerRadiusTCL 0.026
+      set $this-outerRadiusTCL 0.044
+	    set $this-levelDetailTCL 6
+      set $this-outerDistanceTCL 0.002
+      set $this-typeTCL "8-shape"
     }
  
     method make_entry {w text v c} {
@@ -75,8 +75,8 @@ itcl::class SCIRun_TMS_ModelTMSCoilSpiral {
       }
       sci_toplevel $w
       
-      make_labeled_radio $w.type "Method(s) :" "" left 3 $this-typeTCL \
-          { "single" "multi" "dipole" "test" }
+      make_labeled_radio $w.type "Type :" "" left 2 $this-typeTCL \
+          { "0-shape" "8-shape" }
       make_entry $w.current "Current:" $this-wireCurrentTCL "$this-c needexecute"
       make_entry $w.loops "Windings:" $this-wireLoopsTCL "$this-c needexecute"
       make_entry $w.radius1 "Radius inner:" $this-innerRadiusTCL "$this-c needexecute"

@@ -71,7 +71,7 @@ namespace SCIRun {
 	ModelTMSCoilDipole::execute()
 	{
 		SCIRunAlgo::ModelTMSCoilDipoleAlgo::Args algoArgs;
-		//MatrixHandle omatrix;
+
 		FieldHandle ofield;
 
 		std::string coilType = static_cast<std::string>(typeTCL.get());
@@ -82,7 +82,6 @@ namespace SCIRun {
 		algoArgs.coilDistanceOuter = static_cast<double>(outerDistanceTCL.get());
 		algoArgs.coilLevelDetails = static_cast<size_t>(coilDetailsTCL.get());
 		
-		bool need_matrix_data = oport_connected("Matrix");
 		bool need_mesh_data = oport_connected("Mesh");
 
 		if (coilType == "0-shape") algoArgs.type = 1;
@@ -99,10 +98,6 @@ namespace SCIRun {
 		    //! send new Mesh output if there is any: 
 		    if(need_mesh_data)
 		    send_output_handle("Mesh",ofield);
-			
-			//! send new Matri utput if there is any: 
-			// if(need_matrix_data)
-			// send_output_handle("Matrix", omatrix);
 			
 			oldArgs = algoArgs;
 		}
