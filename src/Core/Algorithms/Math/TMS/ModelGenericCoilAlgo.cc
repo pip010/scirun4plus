@@ -55,6 +55,7 @@ using namespace SCIRun;
 				BaseCoilgen(AlgoBase* algo) :
 				  ref_cnt(0),
 				  coilLOD(12),
+				  coilType(1),
 				  algo(algo)
 				{
 
@@ -75,6 +76,7 @@ using namespace SCIRun;
 				//! ref to the executing algorithm context
 				const AlgoBase* algo;
 				size_t coilLOD;
+				size_t coilType;
 				
 				void GenPointsCircular(
 					std::vector<Vector>& points,
@@ -200,6 +202,7 @@ using namespace SCIRun;
 					  	current(args.wireCurrent)
 				{
 					coilLOD = args.coilLevelDetails;
+					coilType = args.type;
 				}
 				
 				~SingleloopCoilgen()
@@ -213,18 +216,33 @@ using namespace SCIRun;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
 	  
-					
-					///LEFT
-					Vector pos_L( -radius - (outerD/2), 0, 0);
-					GenPointsCircular(coilPoints,pos_L,radius,0, 2*M_PI);
-					GenSegmentEdges(coilPoints, coilIndices);
-					GenSegmentValues(coilPoints, coilValues, current);
-					
-					///RIGHT
-					Vector pos_R( radius + (outerD/2), 0, 0);
-					GenPointsCircular(coilPoints,pos_R,radius,0, 2*M_PI);
-					GenSegmentEdges(coilPoints, coilIndices);
-					GenSegmentValues(coilPoints, coilValues, -current);
+					if(coilType == 1)
+					{
+						///SINGLE
+						Vector pos(0, 0, 0);
+						GenPointsCircular(coilPoints,pos,radius,0, 2*M_PI);
+						GenSegmentEdges(coilPoints, coilIndices);
+						GenSegmentValues(coilPoints, coilValues, current);
+					}
+					else if(coilType == 2)
+					{
+						///LEFT
+						Vector pos_L( -radius - (outerD/2), 0, 0);
+						GenPointsCircular(coilPoints,pos_L,radius,0, 2*M_PI);
+						GenSegmentEdges(coilPoints, coilIndices);
+						GenSegmentValues(coilPoints, coilValues, current);
+						
+						///RIGHT
+						Vector pos_R( radius + (outerD/2), 0, 0);
+						GenPointsCircular(coilPoints,pos_R,radius,0, 2*M_PI);
+						GenSegmentEdges(coilPoints, coilIndices);
+						GenSegmentValues(coilPoints, coilValues, -current);
+					}
+					else
+					{
+						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
+						return;
+					}
 					
 					///basic topoly assumptions needs to be correct
 					assert(coilPoints.size() > 0);
@@ -298,6 +316,7 @@ using namespace SCIRun;
 					  	windings(args.wireLoops)
 				{
 					coilLOD = args.coilLevelDetails;
+					coilType = args.type;
 				}
 				
 				~MultiloopsCoilgen()
@@ -309,25 +328,48 @@ using namespace SCIRun;
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
-					
-					//LEFT
-					Vector leftCenter(-outerR - (outerD/2),0,0);
-					GenPointsSpiral(coilPoints, leftCenter);
-					GenSegmentEdges(coilPoints, coilIndices);
-					GenSegmentValues(coilPoints, coilValues, current);
-					
-					//RIGHT
-					Vector rightCenter(outerR + (outerD/2),0,0);
-					GenPointsSpiral(coilPoints, rightCenter);
-					GenSegmentEdges(coilPoints, coilIndices);
-					GenSegmentValues(coilPoints, coilValues, -current);
 
-					FlipX(coilPoints,rightCenter);
+
+					if(coilType == 1)
+					{
+						///SINGLE coil
+						Vector center(0, 0, 0);
+						GenPointsSpiral(coilPoints, center);
+						GenSegmentEdges(coilPoints, coilIndices);
+						GenSegmentValues(coilPoints, coilValues, current);
+
+						//basic topoly assumptions needs to be correct
+						assert(coilPoints.size() > 0);
+						assert(coilPoints.size() - 1 == coilValues.size());
+						assert(coilPoints.size()*2 - 2 == coilIndices.size());
+					}
+					else if(coilType == 2)
+					{
+						//LEFT coil
+						Vector leftCenter(-outerR - (outerD/2),0,0);
+						GenPointsSpiral(coilPoints, leftCenter);
+						GenSegmentEdges(coilPoints, coilIndices);
+						GenSegmentValues(coilPoints, coilValues, current);
+						
+						//RIGHT coil
+						Vector rightCenter(outerR + (outerD/2),0,0);
+						GenPointsSpiral(coilPoints, rightCenter);
+						GenSegmentEdges(coilPoints, coilIndices);
+						GenSegmentValues(coilPoints, coilValues, -current);
+
+						FlipX(coilPoints,rightCenter);
+
+						//basic topoly assumptions needs to be correct
+						assert(coilPoints.size() > 0);
+						assert(coilPoints.size() - 2 == coilValues.size());
+						assert(coilPoints.size()*2 - 4 == coilIndices.size());
+					}
+					else
+					{
+						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
+						return;
+					}
 					
-					//basic topoly assumptions needs to be correct
-					assert(coilPoints.size() > 0);
-					assert(coilPoints.size() - 2 == coilValues.size());
-					assert(coilPoints.size()*2 - 4 == coilIndices.size());
 										
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
@@ -428,6 +470,7 @@ using namespace SCIRun;
 					  	
 				{
 					coilLOD = args.coilLevelDetails;
+					coilType = args.type;
 				}
 				
 				~DipolesCoilgen()
@@ -442,42 +485,55 @@ using namespace SCIRun;
 					std::vector<double> radiiOuter = preRadiiOuter();
 					std::vector<double> numElements = preNumElem();
 					std::vector<double> numCoupling = preNumAdjElem();
-					
-					
-					Vector originL(- radiiOuter[15] - outerD / 2.0d, 0, 0);
-					Vector originR( radiiOuter[15] + outerD / 2.0d, 0, 0 );
 
-					
-					
-					
-					for (size_t i = 0; i < 16; i++)
+
+					if(coilType == 1)
 					{
-						double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;
+						Vector center(0, 0, 0);
 
-						double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
-
-						double dipoleMoment = current * ringArea * numCoupling[i] / numElements[i];
-						
-						
-						/// LEFT COIL
-
-						Vector dipoleNormL(0,0,1.0*dipoleMoment);
-
-						GenPointsCircular(dipolePoints, originL, ringRad, numElements[i], 0.0d, 2*M_PI);
-						
-						GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
-
-
-						/// RIGHT COIL
-						
-						Vector dipoleNormR(0,0,-1.0*dipoleMoment);
-
-						GenPointsCircular(dipolePoints, originR, ringRad, numElements[i], 0.0d, 2*M_PI);
-
-						GenSegmentValues(dipolePoints, dipoleValues, dipoleNormR );
+						for (size_t i = 0; i < 16; i++)
+						{
+							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;
+							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
+							double dipoleMoment = current * ringArea * numCoupling[i] / numElements[i];
+							
+							/// SINGLE COIL
+							Vector dipoleNormL(0,0,1.0*dipoleMoment);
+							GenPointsCircular(dipolePoints, center, ringRad, numElements[i], 0.0d, 2*M_PI);
+							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
+						}
 					}
+					else if(coilType == 2)
+					{
+						Vector originL(- radiiOuter[15] - outerD / 2.0d, 0, 0);
+						Vector originR( radiiOuter[15] + outerD / 2.0d, 0, 0 );
+						
+						for (size_t i = 0; i < 16; i++)
+						{
+							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;
+							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
+							double dipoleMoment = current * ringArea * numCoupling[i] / numElements[i];
+							
+							
+							/// LEFT COIL
+							Vector dipoleNormL(0,0,1.0*dipoleMoment);
+							GenPointsCircular(dipolePoints, originL, ringRad, numElements[i], 0.0d, 2*M_PI);
+							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 
 
+							/// RIGHT COIL
+							Vector dipoleNormR(0,0,-1.0*dipoleMoment);
+							GenPointsCircular(dipolePoints, originR, ringRad, numElements[i], 0.0d, 2*M_PI);
+							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormR );
+						}
+
+					}
+					else
+					{
+						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
+						return;
+					}
+					
 					
 					///basic topoly assumptions needs to be correct
 					assert(dipolePoints.size() > 0);

@@ -48,8 +48,8 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       set $this-numberSegmentsTCL 5
       set $this-innerRadiusTCL 0.026
       set $this-outerRadiusTCL 0.044
-	    set $this-levelDetailTCL 0.002
-      set $this-outerDistanceTCL 6
+	    set $this-levelDetailTCL 6
+      set $this-outerDistanceTCL 0.002
       set $this-typeTCL "8-shape"
     }
  
