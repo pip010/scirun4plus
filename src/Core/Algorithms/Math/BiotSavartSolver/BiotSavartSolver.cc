@@ -41,6 +41,7 @@ namespace SCIRunAlgo {
 			
 			//! Local entry function, must be implemented by each specific kernel
 			virtual bool Integrate(FieldHandle& mesh, FieldHandle& coil, MatrixHandle& outdata) = 0;
+
 	
 			//! Global reference counting
 			int ref_cnt;
@@ -70,7 +71,7 @@ namespace SCIRunAlgo {
 			int typeOut;
 			DenseMatrix *matOut;
 			MatrixHandle matOutHandle;
-			
+
 			bool PreIntegration( FieldHandle& mesh, FieldHandle& coil )
 			{
 					this->vmesh = mesh->vmesh();
@@ -136,6 +137,7 @@ namespace SCIRunAlgo {
 			}
 		};
 		
+
 		class PieceWiseKernel : public KernelBase
 		{
 			public:
@@ -145,7 +147,8 @@ namespace SCIRunAlgo {
 					//we keep last calculated step
 					//however if segments lenght varies,
 					//it makes more sense to keep a look-up table of previous steps for given lenght
-					step = 0.1d;
+					autostep = 0.1d;
+					extstep = -1.0d;
 				}
 				
 				~PieceWiseKernel()
@@ -196,12 +199,19 @@ namespace SCIRunAlgo {
 					
 					return PostIntegration(outdata);
 				}
+
+				void SetIntegrationStep(double step)
+				{
+					assert(step > 0.0d);
+					extstep = step;
+				}
 				
 				
 			private:
 
 				//! integration step, will auto adapt
-				double step;
+				double autostep;
+				double extstep;
 
 				//! keep nodes on the coil cached
 				std::vector<Vector> coilNodes;
@@ -261,7 +271,10 @@ namespace SCIRunAlgo {
 								double lenSegment = diffNodes.length();
 
 								// TODO optimize via promoting to member scope in case a constant is not vaiable for varying line segments lenght
-								int numIntegrPoints = AdjustNumberOfIntegrationPoints(lenSegment);
+								// depends whether an external integratio step was supplied
+								int numIntegrPoints = extstep > 0.0d ? lenSegment / extstep : AdjustNumberOfIntegrationPoints(lenSegment);
+
+								assert( numIntegrPoints > 2 ); 
 
 								std::vector<Vector> integrPoints(numIntegrPoints);
 								
@@ -288,11 +301,19 @@ namespace SCIRunAlgo {
 									//double dLn = dLxyz.length();
 									double Rn = Rxyz.length();
 									//double Rn = Rxyz.normalize();
+									
+									//! check for distance between coil and model close to zero
+									//! it might cause numerical stability issues with respect to the cross-product
+									if(Rn < 0.00001)
+									{
+										algo->warning("coil-model distance approaching zero!");
+									}
 
 									if(typeOut == 1)
 									{
 										//! Biot-Savart Magnetic Field
-										F +=  1.0e-7 * Cross( Rxyz, dLxyz ) * ( Abs(current) / (Rn*Rn*Rn) );//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
+										F +=  1.0e-7 * Cross( Rxyz, dLxyz ) * ( Abs(current) / (Rn*Rn*Rn) );
+										//Vector dB = Cross(Rxyz,dLxyz) * ( abs(current)/4/M_PI/Rn/Rn/Rn );	
 									
 									}	
 								
@@ -355,13 +376,13 @@ namespace SCIRunAlgo {
 
 					do
 					{
-						NP = Ceil( len / step );
+						NP = Ceil( len / autostep );
 
 						under = NP < minNP ? true : false;
 						over = NP > maxNP ? true : false; 
 
-						if(under) step *= 0.5d;
-						if(over) step *= 1.5d;
+						if(under) autostep *= 0.5d;
+						if(over) autostep *= 1.5d;
 						
 						//DEBUG
 						//std::cout << "\t integration step : " << step << ",for segment lenght :" << len <<", with number of points per segment :" << NP << std::endl;
@@ -545,7 +566,7 @@ namespace SCIRunAlgo {
 				}
 		};
 		
-		//! TODO
+		//! Magnetic Dipoles solver
 		class DipolesKernel : public KernelBase
 		{
 			public:

@@ -31,7 +31,6 @@ using namespace SCIRun;
         struct Args
         {
         	double wireCurrent;
-        	size_t wireLoops;
         	double coilRadius;
             double coilDistanceOuter;
         	size_t coilLevelDetails;
@@ -40,7 +39,6 @@ using namespace SCIRun;
         	inline bool operator==(const Args& rhs)
         	{ 
     			return wireCurrent == rhs.wireCurrent && 
-    			wireLoops == rhs.wireLoops &&
     			coilRadius == rhs.coilRadius && 
     			coilLevelDetails == rhs.coilLevelDetails &&
                 coilDistanceOuter == rhs.coilDistanceOuter &&
