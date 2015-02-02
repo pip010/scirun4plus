@@ -10,6 +10,8 @@
 
 #include <Core/Datatypes/FieldInformation.h>
 
+#include <Core/Math/MiscMath.h>
+
 #include <string>
 #include <iostream>
 #include <cstdlib>
@@ -95,18 +97,38 @@ void CreateCoil(FieldHandle& fh, int type, int lod, double rad)
 	}
 }
 
-void CalcAnalyticalBfield(const std::vector<Vector>& points)
+void CalcAnalyticalBfield(const std::vector<Vector>& points, std::vector<Vector>& data, const double R,const double current)
 {
 	/// the analytical B-field: B = MU_0*I / 2 * (  R^2 / ( X^2+ R^2 ) ^ 3/2 )
 	/// where R is the radius of the circular coil and X is an offset along its central/middle axis
+	for(size_t i =0; i < points.size(); i++)
+	{
+		Vector v;
+		double Z = points[i].z();
+		v.z( (M_PI * 1E-7 / 2) * ( R*R / Pow( (Z*Z + R*R), 3/2 ) ) );
+		data.push_back(v);
+	}
+
+}
+
+void PrintAnalyticalBfield(const std::vector<Vector>& data)
+{
+
+	for(size_t i =0; i < data.size(); i++)
+	{
+		std::cout << data[i].length() << ", ";
+	}
+
+	std::cout << std::endl;
 }
 
 void printUsageInfo(char *progName) 
 {
-	std::cerr << "\n Usage: "<<progName<<" type lod istep radius\n\n";
+	std::cerr << "\n Usage: " << progName << " type lod istep radius\n\n";
 	std::cerr << "\t where, type: 1 - circular coil  \n";
 	std::cerr << "\t              2 - spiral coil \n";
 	std::cerr << "\t              3 - dipoles model \n";
+	std::cerr << "\t              0 - analytical \n";
 	std::cerr << "\t lod: level of detail for coil geom [integer] \n";
 	std::cerr << "\t istep: integration step [real]\n";
 	std::cerr << "\t radius: radius of the coil [real] \n\n";
@@ -124,7 +146,7 @@ int parseArgs(mainargs& margs, int argc, char *argv[])
 	std::string arg3(argv[3]);
 	std::string arg4(argv[4]);
 
-	if( !isNumber(arg1) || !isNumber(arg2) || !isNumber(arg3))
+	if( !isNumber(arg1) || !isNumber(arg2) || !isNumber(arg3) || !isNumber(arg4))
 	{
 		return 0;
 	}
@@ -136,6 +158,12 @@ int parseArgs(mainargs& margs, int argc, char *argv[])
 	margs.lod = atoi(arg2.c_str());
 	margs.istep = atof(arg3.c_str());
 	margs.radius = atof(arg4.c_str());
+
+	//check valid range for type
+	if(margs.type < 0 || margs.type > 3)
+	{
+		return 0;
+	}
 
 	return 1;
 }
@@ -177,10 +205,7 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
-	//! create the domain
-	FieldHandle domainMesh;
-	MatrixHandle domainData;
-	
+	//!sample points are fixed
 	std::vector<Vector> domainPoints;
 	domainPoints.reserve(5);
 
@@ -194,9 +219,24 @@ int main(int argc, char *argv[])
 	domainPoints.push_back(p3);
 	domainPoints.push_back(p4);
 	domainPoints.push_back(p5);
-	
+
+	if(margs.type == 0)
+	{
+		std::vector<Vector> dataPoints;
+		dataPoints.reserve(5);
+
+		CalcAnalyticalBfield(domainPoints, dataPoints, margs.radius, 55);
+
+		PrintAnalyticalBfield(dataPoints);
+
+		return 0;
+	}
+
+
+	//! create the domain
+	FieldHandle domainMesh;
+	MatrixHandle domainData;
 	CreteDomain(domainMesh,domainPoints);
-	
 
 	//! creates coil
 	FieldHandle coilMesh;
