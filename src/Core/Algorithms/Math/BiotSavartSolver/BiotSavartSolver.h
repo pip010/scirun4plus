@@ -24,7 +24,7 @@ class SCISHARE BiotSavartSolverAlgo : public AlgoBase
     {
       // Number of processors to use
       add_int("num_processors",-1);
-      istep = -1.0d;
+      istep = 0.0d;
     }
     
     //! Solve magnetic field via Biot-Savart piece-wise linear intergation

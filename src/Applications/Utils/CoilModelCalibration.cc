@@ -105,7 +105,7 @@ void CalcAnalyticalBfield(const std::vector<Vector>& points, std::vector<Vector>
 	{
 		Vector v;
 		double Z = points[i].z();
-		v.z( (current * M_PI * 1E-7 / 2) * ( R*R / Pow( (Z*Z + R*R), 3/2 ) ) );
+		v.z( (current * 2.0 * M_PI * 1E-7) * ( R*R / Pow( (Z*Z + R*R), 3.0 / 2.0 ) ) );
 		data.push_back(v);
 	}
 
