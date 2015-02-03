@@ -202,8 +202,13 @@ namespace SCIRunAlgo {
 
 				void SetIntegrationStep(double step)
 				{
-					assert(step > 0.0d);
+					assert(step >= 0.0d);
 					extstep = step;
+				}
+
+				double GetIntegrationStep() const
+				{
+					return extstep;
 				}
 				
 				
@@ -211,6 +216,8 @@ namespace SCIRunAlgo {
 
 				//! integration step, will auto adapt
 				double autostep;
+
+				//! integration step, externally provided
 				double extstep;
 
 				//! keep nodes on the coil cached
@@ -230,6 +237,14 @@ namespace SCIRunAlgo {
 					const index_type ends  = (modelSize * (proc_num+1)) / numprocessors;
 
 					assert( begins <= ends );
+
+
+					//keep previous step length
+					//used for optimation purpose
+					double prevSegLen = 12345679.123456;
+
+					//number of integration points
+					int nips = 0;
 
 					try{
 
@@ -268,27 +283,53 @@ namespace SCIRunAlgo {
 
 								//! Length of the curve element
 								Vector diffNodes = coilNodeNext - coilNodeThis;
-								double lenSegment = diffNodes.length();
+								double newSegLen = diffNodes.length();
 
-								// TODO optimize via promoting to member scope in case a constant is not vaiable for varying line segments lenght
-								// depends whether an external integratio step was supplied
-								int numIntegrPoints = extstep > 0.0d ? lenSegment / extstep : AdjustNumberOfIntegrationPoints(lenSegment);
+								//first check if externally suplied integration step is available and use it
+								if(extstep > 0)
+								{
+									nips = newSegLen / extstep;
+									//std::cout << "external integration" << std::endl;
+								}
+								else
+								{
+									//! optimization
+									//! only rexompute integration step only if segment length changes
+									if( Abs(prevSegLen - newSegLen ) > 0.00000001 )
+									{
+										prevSegLen = newSegLen;
 
-								assert( numIntegrPoints > 2 ); 
+										//auto adaptive integration step calculation
+										nips =  AdjustNumberOfIntegrationPoints(newSegLen);
+										
+										//std::cout << "\t\t integration step: " << newSegLen / static_cast<double>(nips) << std::endl;//DEBUG
+										algo->status("\nintegration step: "+boost::lexical_cast<std::string>(newSegLen / static_cast<double>(nips)));
+									}
+								}
 
-								std::vector<Vector> integrPoints(numIntegrPoints);
+
+								assert( nips > 2 );
+								if(nips < 3)
+								{
+									algo->warning("integration step too big");
+									
+								}
+
+								std::vector<Vector> integrPoints(nips);
+
+								
 								
 								//! curve discretization
-								for(int iip = 0; iip < numIntegrPoints; iip++)
+								for(int iip = 0; iip < nips; iip++)
 								{
-									integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, static_cast<double>(iip) / static_cast<double>(numIntegrPoints) );
-									
+									double interp = static_cast<double>(iip) / static_cast<double>(nips);
+									integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, interp );
 									//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
 								}
 
 
 								//! integration step over line segment				
-								for(int iip = 0; iip < numIntegrPoints -1; iip++)								
+								for(int iip = 0; iip < nips -1; iip++)								
 								{
 									//double M_MU = 4*M_PI*1.0e-7;
 									
@@ -306,7 +347,7 @@ namespace SCIRunAlgo {
 									//! it might cause numerical stability issues with respect to the cross-product
 									if(Rn < 0.00001)
 									{
-										algo->warning("coil-model distance approaching zero!");
+										algo->warning("coil<->model distance approaching zero!");
 									}
 
 									if(typeOut == 1)
@@ -586,7 +627,7 @@ namespace SCIRunAlgo {
 						return (false);
 					}
 
-					algo->remark(std::string("[ Dipole Kernel ]"));
+					//algo->remark(std::string("[ Dipole Kernel ]"));
 					
 
 					//! get numbder of nodes for the coil
@@ -740,6 +781,11 @@ namespace SCIRunAlgo {
 			if(coil->vfield()->is_constantdata() && coil->vfield()->is_scalar())
 			{
 				helper = new PieceWiseKernel(this, outtype);
+
+				PieceWiseKernel* pwk = static_cast<PieceWiseKernel*>(helper.get_rep());
+
+				//! deligate the externally defined inteegration step
+				pwk->SetIntegrationStep(this->istep);
 			}
 			else
 			{
@@ -778,6 +824,7 @@ namespace SCIRunAlgo {
 			algo_end(); return (false);
 		}
 		
+		//! do the solving
 		if( !helper->Integrate(mesh,coil,outdata) )
 		{
 			error("Aborted during integration");
