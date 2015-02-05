@@ -54,7 +54,7 @@ using namespace SCIRun;
 			public:
 				BaseCoilgen(AlgoBase* algo) :
 				  ref_cnt(0),
-				  coilLOD(12),
+				  coilLOD(3),
 				  coilType(1),
 				  algo(algo)
 				{

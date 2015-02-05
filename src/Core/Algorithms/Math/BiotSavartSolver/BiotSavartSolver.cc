@@ -149,6 +149,7 @@ namespace SCIRunAlgo {
 					//it makes more sense to keep a look-up table of previous steps for given lenght
 					autostep = 0.1d;
 					extstep = -1.0d;
+					
 				}
 				
 				~PieceWiseKernel()
@@ -222,6 +223,9 @@ namespace SCIRunAlgo {
 
 				//! keep nodes on the coil cached
 				std::vector<Vector> coilNodes;
+
+				//! buffer of points used for integration
+				//std::vector<Vector> integrPoints;
 				
 				//! execute in parallel
 				void ParallelKernel(int proc_num)
@@ -238,12 +242,15 @@ namespace SCIRunAlgo {
 
 					assert( begins <= ends );
 
+					//! buffer of points used for integration
+					std::vector<Vector> integrPoints;
+					integrPoints.reserve(256);
 
-					//keep previous step length
-					//used for optimation purpose
-					double prevSegLen = 12345679.123456;
+					//! keep previous step length
+					//! used for optimization purpose
+					double prevSegLen = 123456789.12345678;
 
-					//number of integration points
+					//! number of integration points
 					int nips = 0;
 
 					try{
@@ -303,27 +310,29 @@ namespace SCIRunAlgo {
 										nips =  AdjustNumberOfIntegrationPoints(newSegLen);
 										
 										//std::cout << "\t\t integration step: " << newSegLen / static_cast<double>(nips) << std::endl;//DEBUG
-										algo->status("\nintegration step: "+boost::lexical_cast<std::string>(newSegLen / static_cast<double>(nips)));
+										algo->status( "integration step: " + boost::lexical_cast<std::string>(newSegLen / static_cast<double>(nips)) );
 									}
 								}
 
 
 								assert( nips > 2 );
-								if(nips < 3)
+								if( nips < 3 )
 								{
 									algo->warning("integration step too big");
-									
 								}
 
-								std::vector<Vector> integrPoints(nips);
+
+								//std::vector<Vector> integrPoints(nips);
+								
+								integrPoints.clear();
 
 								
-								
-								//! curve discretization
+								//! curve segment discretization
 								for(int iip = 0; iip < nips; iip++)
 								{
-									double interp = static_cast<double>(iip) / static_cast<double>(nips);
-									integrPoints[iip] = Interpolate( coilNodeThis, coilNodeNext, interp );
+									double interpolant = static_cast<double>(iip) / static_cast<double>(nips);
+									Vector v = Interpolate( coilNodeThis, coilNodeNext, interpolant );
+									integrPoints.push_back( v );
 									//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
 								}
 
