@@ -16,6 +16,8 @@
 #include <iostream>
 #include <cstdlib>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 using namespace SCIRun;
 
 //! struct holding argumetns from the terminal
@@ -168,7 +170,7 @@ int parseArgs(mainargs& margs, int argc, char *argv[])
 	return 1;
 }
 
-void PrintResults(MatrixHandle& mh)
+void PrintResults(MatrixHandle& mh, long timing)
 {
 
 	const DenseMatrix* const m = dynamic_cast<DenseMatrix *>(mh.get_rep());
@@ -185,6 +187,8 @@ void PrintResults(MatrixHandle& mh)
 		//std::cout << "Vector: " << v << " len=" << v.length() << std::endl;
 		std::cout << v.length() << ", ";
 	}
+
+	std::cout << timing ;
 
 	std::cout << std::endl;
 }
@@ -232,6 +236,9 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	//! timing the process: start
+	boost::posix_time::ptime pt1 = boost::posix_time::microsec_clock::local_time();
+
 
 	//! create the domain
 	FieldHandle domainMesh;
@@ -251,8 +258,14 @@ int main(int argc, char *argv[])
 	//! solver 
 	solverAlgo.run(domainMesh, coilMesh, 1, domainData);
 
+	//! timing the process: end
+	boost::posix_time::ptime pt2 = boost::posix_time::microsec_clock::local_time();
+
+	//! timing the duration im milliseconds
+	boost::posix_time::time_duration pt_diff = pt2 - pt1;
+	
 	//! export results
-	PrintResults(domainData);
+	PrintResults( domainData, pt_diff.total_milliseconds() );
 	//std::string  strdata = to_string(domainData);
 	//std::cout << strdata << std::endl;
 

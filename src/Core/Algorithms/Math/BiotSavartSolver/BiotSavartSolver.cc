@@ -315,7 +315,7 @@ namespace SCIRunAlgo {
 								}
 
 
-								assert( nips > 2 );
+								//assert( nips > 2 );
 								if( nips < 3 )
 								{
 									algo->warning("integration step too big");
