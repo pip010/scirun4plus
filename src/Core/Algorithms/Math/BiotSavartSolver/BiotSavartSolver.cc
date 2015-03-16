@@ -310,7 +310,8 @@ namespace SCIRunAlgo {
 										nips =  AdjustNumberOfIntegrationPoints(newSegLen);
 										
 										//std::cout << "\t\t integration step: " << newSegLen / static_cast<double>(nips) << std::endl;//DEBUG
-										algo->status( "integration step: " + boost::lexical_cast<std::string>(newSegLen / static_cast<double>(nips)) );
+										
+										//algo->status( "integration step: " + boost::lexical_cast<std::string>(newSegLen / static_cast<double>(nips)) );
 									}
 								}
 

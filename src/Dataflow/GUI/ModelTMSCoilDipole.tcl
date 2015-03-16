@@ -42,6 +42,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       global $this-outerRadiusTCL
       global $this-outerDistanceTCL
       global $this-levelDetailTCL
+      global $this-coilLayersTCL
       global $this-typeTCL
 
       set $this-totalCurrentTCL 1
@@ -50,6 +51,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       set $this-outerRadiusTCL 0.044
 	    set $this-levelDetailTCL 6
       set $this-outerDistanceTCL 0.002
+      set $this-coilLayersTCL 1
       set $this-typeTCL "8-shape"
     }
  
@@ -68,6 +70,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       global $this-outerRadiusTCL
       global $this-outerDistanceTCL
       global $this-levelDetailTCL
+      global $this-coilLayersTCL
       global $this-typeTCL
 
       set w .ui[modname]
@@ -83,6 +86,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       make_entry $w.radius1 "Radius inner:" $this-innerRadiusTCL "$this-c needexecute"
       make_entry $w.radius2 "Radius outer:" $this-outerRadiusTCL "$this-c needexecute"
       make_entry $w.distance "Distance outer:" $this-outerDistanceTCL "$this-c needexecute"
+      make_entry $w.layers "Layers:" $this-coilLayersTCL "$this-c needexecute"
       make_entry $w.lod "Level of Details:" $this-levelDetailTCL "$this-c needexecute"
       
       bind $w.current <Return> "$this-c needexecute"
@@ -90,9 +94,10 @@ itcl::class SCIRun_TMS_ModelTMSCoilDipole {
       bind $w.radius1 <Return> "$this-c needexecute"
       bind $w.radius2 <Return> "$this-c needexecute"
       bind $w.distance <Return> "$this-c needexecute"
+      bind $w.layers <Return> "$this-c needexecute"
       bind $w.lod <Return> "$this-c needexecute"
       
-      pack $w.type $w.current $w.segments $w.radius1 $w.radius2 $w.distance $w.lod -side top -fill x
+      pack $w.type $w.current $w.segments $w.radius1 $w.radius2 $w.distance $w.layers $w.lod -side top -fill x
 
       makeSciButtonPanel $w $w $this
       moveToCursor $w

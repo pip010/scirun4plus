@@ -34,6 +34,7 @@ using namespace SCIRun;
         	double coilRadius;
             double coilDistanceOuter;
         	size_t coilLevelDetails;
+            size_t coilLayers;
         	int type;
         	
         	inline bool operator==(const Args& rhs)
@@ -42,6 +43,7 @@ using namespace SCIRun;
     			coilRadius == rhs.coilRadius && 
     			coilLevelDetails == rhs.coilLevelDetails &&
                 coilDistanceOuter == rhs.coilDistanceOuter &&
+                coilLayers == rhs.coilLayers &&
     			type == rhs.type;
         	}
     		inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}
@@ -65,6 +67,7 @@ using namespace SCIRun;
             double coilRadiusInner;
             double coilRadiusOuter;
             double coilDistanceOuter;
+            size_t coilLayers;
             size_t coilLevelDetails;
             int type;
             
@@ -75,6 +78,7 @@ using namespace SCIRun;
                 coilRadiusInner == rhs.coilRadiusInner && 
                 coilRadiusOuter == rhs.coilRadiusOuter && 
                 coilLevelDetails == rhs.coilLevelDetails &&
+                coilLayers == rhs.coilLayers &&
                 coilDistanceOuter == rhs.coilDistanceOuter &&
                 type == rhs.type;
             }
@@ -100,6 +104,7 @@ using namespace SCIRun;
             double coilRadiusInner;
             double coilRadiusOuter;
             double coilDistanceOuter;
+            size_t coilLayers;
             size_t coilLevelDetails;
             int type;
             
@@ -112,6 +117,7 @@ using namespace SCIRun;
                 coilRadiusOuter == rhs.coilRadiusOuter && 
                 coilLevelDetails == rhs.coilLevelDetails &&
                 coilDistanceOuter == rhs.coilDistanceOuter &&
+                coilLayers == rhs.coilLayers &&
                 type == rhs.type;
             }
             inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}

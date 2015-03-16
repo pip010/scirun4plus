@@ -43,6 +43,7 @@ namespace SCIRun {
 		GuiDouble coilRadiusTCL;
 		GuiDouble outerDistanceTCL;
 		GuiInt coilDetailsTCL;
+		GuiInt coilLayersTCL;
     	GuiString typeTCL;
 		 
 		SCIRunAlgo::ModelTMSCoilSingleAlgo algo;
@@ -58,6 +59,7 @@ namespace SCIRun {
 		coilRadiusTCL(ctx->subVar("coilRadiusTCL")),
 		coilDetailsTCL(ctx->subVar("levelDetailTCL")),
 		outerDistanceTCL(ctx->subVar("outerDistanceTCL")),
+		coilLayersTCL(ctx->subVar("coilLayersTCL")),
 		typeTCL(ctx->subVar("typeTCL")) 
 	{
 		algo.set_progress_reporter(this);
@@ -74,6 +76,7 @@ namespace SCIRun {
 		algoArgs.wireCurrent = static_cast<double>(wireCurrentTCL.get());
 		algoArgs.coilRadius = static_cast<double>(coilRadiusTCL.get());
 		algoArgs.coilDistanceOuter = static_cast<double>(outerDistanceTCL.get());
+		algoArgs.coilLayers = static_cast<size_t>(coilLayersTCL.get());
 		algoArgs.coilLevelDetails = static_cast<size_t>(coilDetailsTCL.get());
 		
 		bool need_mesh_data = oport_connected("Mesh");

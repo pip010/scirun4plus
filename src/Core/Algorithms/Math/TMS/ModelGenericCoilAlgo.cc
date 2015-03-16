@@ -56,6 +56,7 @@ using namespace SCIRun;
 				  ref_cnt(0),
 				  coilLOD(3),
 				  coilType(1),
+				  coilLayers(1),
 				  algo(algo)
 				{
 
@@ -77,6 +78,7 @@ using namespace SCIRun;
 				const AlgoBase* algo;
 				size_t coilLOD;
 				size_t coilType;
+				size_t coilLayers;
 				
 				void GenPointsCircular(
 					std::vector<Vector>& points,
@@ -203,6 +205,9 @@ using namespace SCIRun;
 				{
 					coilLOD = args.coilLevelDetails;
 					coilType = args.type;
+					coilLayers = args.coilLayers;
+
+					coilLayers = coilLayers == 0 ? 1 : coilLayers;
 				}
 				
 				~SingleloopCoilgen()
@@ -219,24 +224,37 @@ using namespace SCIRun;
 					if(coilType == 1)
 					{
 						///SINGLE
-						Vector pos(0, 0, 0);
-						GenPointsCircular(coilPoints,pos,radius,0, 2*M_PI);
-						GenSegmentEdges(coilPoints, coilIndices);
-						GenSegmentValues(coilPoints, coilValues, current);
+						Vector origin(0, 0, -0.5*(1.0/coilLayers));
+						Vector step(0,0,-1.0/coilLayers);
+
+						for(size_t l = 0; l < coilLayers; l++)
+						{
+							GenPointsCircular(coilPoints, origin, radius, 0.0, 2.0*M_PI);
+							GenSegmentEdges(coilPoints, coilIndices);
+							GenSegmentValues(coilPoints, coilValues, current);
+							origin += step;
+						}
 					}
 					else if(coilType == 2)
 					{
-						///LEFT
-						Vector pos_L( -radius - (outerD/2), 0, 0);
-						GenPointsCircular(coilPoints,pos_L,radius,0, 2*M_PI);
-						GenSegmentEdges(coilPoints, coilIndices);
-						GenSegmentValues(coilPoints, coilValues, current);
-						
-						///RIGHT
-						Vector pos_R( radius + (outerD/2), 0, 0);
-						GenPointsCircular(coilPoints,pos_R,radius,0, 2*M_PI);
-						GenSegmentEdges(coilPoints, coilIndices);
-						GenSegmentValues(coilPoints, coilValues, -current);
+						Vector originLeft( -radius - (outerD/2), 0, 0);
+						Vector originRight( radius + (outerD/2), 0, 0);
+						Vector step(0,0,-1.0/coilLayers);
+
+						for(size_t l = 0; l < coilLayers; l++)
+						{
+							///LEFT
+							GenPointsCircular(coilPoints, originLeft, radius, 0.0, 2.0*M_PI);
+							GenSegmentEdges(coilPoints, coilIndices);
+							GenSegmentValues(coilPoints, coilValues, current);
+							originLeft += step;
+							
+							///RIGHT
+							GenPointsCircular(coilPoints, originRight, radius, 0.0, 2.0*M_PI);
+							GenSegmentEdges(coilPoints, coilIndices);
+							GenSegmentValues(coilPoints, coilValues, -current);
+							originRight += step;
+						}
 					}
 					else
 					{
@@ -317,6 +335,9 @@ using namespace SCIRun;
 				{
 					coilLOD = args.coilLevelDetails;
 					coilType = args.type;
+					coilLayers = args.coilLayers;
+
+					coilLayers = coilLayers == 0 ? 1 : coilLayers;
 				}
 				
 				~MultiloopsCoilgen()
@@ -332,43 +353,74 @@ using namespace SCIRun;
 
 					if(coilType == 1)
 					{
-						///SINGLE coil
-						Vector center(0, 0, 0);
-						GenPointsSpiral(coilPoints, center);
-						GenSegmentEdges(coilPoints, coilIndices);
-						GenSegmentValues(coilPoints, coilValues, current);
+						Vector origin(0, 0, -0.5*(1.0/coilLayers));
+						Vector step(0,0,-1.0/coilLayers);
 
-						//basic topoly assumptions needs to be correct
-						assert(coilPoints.size() > 0);
-						assert(coilPoints.size() - 1 == coilValues.size());
-						assert(coilPoints.size()*2 - 2 == coilIndices.size());
+						for(size_t l = 0; l < coilLayers; l++)
+						{
+							///SINGLE coil
+							GenPointsSpiral(coilPoints, origin);
+							GenSegmentEdges(coilPoints, coilIndices, l);
+							GenSegmentValues(coilPoints, coilValues, current);
+							origin += step;
+
+
+						}
+
+
+					//basic topoly assumptions needs to be correct
+					assert(coilPoints.size() > 0);
+					assert(coilPoints.size() - coilLayers + 1 == coilValues.size());
+					assert(coilPoints.size()*2 - 2*coilLayers == coilIndices.size());
+						
+
+					//std::cout << "COIL Poins Indices Values: " <<  coilPoints.size() << " " << coilIndices.size() << " " << coilValues.size() << std::endl;
+					//3-layers
+					//COIL Poins Indices Values: 2595 5184 2593
+
 					}
 					else if(coilType == 2)
 					{
-						//LEFT coil
-						Vector leftCenter(-outerR - (outerD/2),0,0);
-						GenPointsSpiral(coilPoints, leftCenter);
-						GenSegmentEdges(coilPoints, coilIndices);
-						GenSegmentValues(coilPoints, coilValues, current);
-						
-						//RIGHT coil
-						Vector rightCenter(outerR + (outerD/2),0,0);
-						GenPointsSpiral(coilPoints, rightCenter);
-						GenSegmentEdges(coilPoints, coilIndices);
-						GenSegmentValues(coilPoints, coilValues, -current);
+						Vector originLeft(-outerR - (outerD/2), 0.0, -0.5*(1.0/coilLayers));
+						Vector originRight(outerR + (outerD/2), 0.0, -0.5*(1.0/coilLayers));
+						Vector step(0,0,-1.0/coilLayers);
 
-						FlipX(coilPoints,rightCenter);
+						for(size_t l = 0; l < coilLayers; l++)
+						{
+							//LEFT coil
+							GenPointsSpiral(coilPoints, originLeft);
+							GenSegmentEdges(coilPoints, coilIndices, l);
+							GenSegmentValues(coilPoints, coilValues, current);
+							originLeft += step;
+						}
+
+						for(size_t l = coilLayers; l < 2*coilLayers; l++)
+						{	
+							//RIGHT coil
+							GenPointsSpiral(coilPoints, originRight);
+							GenSegmentEdges(coilPoints, coilIndices, l);
+							GenSegmentValues(coilPoints, coilValues, -current);
+							
+							originRight += step;
+						}
+
+						FlipX( coilPoints, originRight );
 
 						//basic topoly assumptions needs to be correct
 						assert(coilPoints.size() > 0);
-						assert(coilPoints.size() - 2 == coilValues.size());
-						assert(coilPoints.size()*2 - 4 == coilIndices.size());
+						assert(coilPoints.size() - coilLayers + 1 == coilValues.size());
+						assert(coilPoints.size()*2 - 4*coilLayers == coilIndices.size());
+
+						//std::cout << "COIL Poins Indices Values: " <<  coilPoints.size() << " " << coilIndices.size() << " " << coilValues.size() << std::endl;
+						//3-layers
+						//COIL Poins Indices Values: 5190 10368 5188
 					}
 					else
 					{
 						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
 						return;
 					}
+
 					
 										
 					//SCIrun API creating a new mesh
@@ -425,9 +477,9 @@ using namespace SCIRun;
 
 				}
 				
-				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
+				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices, size_t layer = 1) const
 				{
-					size_t start = indices.size() > 0 ?  indices.size() / 2 + 1 : 0 ;
+					size_t start = indices.size() > 0 ?  indices.size() / 2 + layer : 0 ;
 					
 					for(size_t i = start; i < points.size() -1; i++)
 					{
@@ -471,6 +523,9 @@ using namespace SCIRun;
 				{
 					coilLOD = args.coilLevelDetails;
 					coilType = args.type;
+					coilLayers = args.coilLayers;
+
+					coilLayers = coilLayers == 0 ? 1 : coilLayers;
 				}
 				
 				~DipolesCoilgen()
