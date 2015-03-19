@@ -68,6 +68,7 @@ using namespace SCIRun;
             double coilRadiusOuter;
             double coilDistanceOuter;
             size_t coilLayers;
+            double coilLayersStep;
             size_t coilLevelDetails;
             int type;
             
@@ -79,6 +80,7 @@ using namespace SCIRun;
                 coilRadiusOuter == rhs.coilRadiusOuter && 
                 coilLevelDetails == rhs.coilLevelDetails &&
                 coilLayers == rhs.coilLayers &&
+                coilLayersStep == rhs.coilLayersStep &&
                 coilDistanceOuter == rhs.coilDistanceOuter &&
                 type == rhs.type;
             }
