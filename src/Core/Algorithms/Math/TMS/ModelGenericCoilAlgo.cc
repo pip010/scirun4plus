@@ -209,6 +209,8 @@ using namespace SCIRun;
 					coilLayers = args.coilLayers;
 
 					coilLayers = coilLayers == 0 ? 1 : coilLayers;
+
+					coilLayersStep = args.coilLayersStep;
 				}
 				
 				~SingleloopCoilgen()
@@ -221,12 +223,13 @@ using namespace SCIRun;
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
+
+					Vector step(0,0,-coilLayersStep);
 	  
 					if(coilType == 1)
 					{
 						///SINGLE
 						Vector origin(0, 0, -0.5*(1.0/coilLayers));
-						Vector step(0,0,-1.0/coilLayers);
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
@@ -240,7 +243,6 @@ using namespace SCIRun;
 					{
 						Vector originLeft( -radius - (outerD/2), 0, 0);
 						Vector originRight( radius + (outerD/2), 0, 0);
-						Vector step(0,0,-1.0/coilLayers);
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
@@ -410,16 +412,21 @@ using namespace SCIRun;
 						FlipX( coilPoints, originRight );
 
 
+						std::cout << step << std::endl;
+						std::cout << "COIL Points Indices Values: " <<  coilPoints.size() << " " << coilIndices.size() << " " << coilValues.size() << std::endl;
+
 						//basic topoly assumptions needs to be correct
 						assert(coilPoints.size() > 0);
-						assert(coilPoints.size() - coilLayers*2 == coilValues.size());
+						assert(coilPoints.size() - 2 == coilValues.size());
 						assert(coilPoints.size()*2 - 4*coilLayers == coilIndices.size());
 						
-						std::cout << step << std::endl;
-						std::cout << "COIL Poins Indices Values: " <<  coilPoints.size() << " " << coilIndices.size() << " " << coilValues.size() << std::endl;
+
 						//3-layers
 						//COIL Poins Indices Values: 5190 10368 5188
 						//COIL Poins Indices Values: 12110 24192 12108
+
+						//7layers
+						//COIL Points Indices Values: 12110 24192 12108
 
 					}
 					else

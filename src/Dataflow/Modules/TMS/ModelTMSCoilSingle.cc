@@ -1,6 +1,6 @@
 
 /*
- *  ModelTMSCoilSingle.cc:  TODO DEscription
+ *  ModelTMSCoilSingle.cc:  TODO Description
  *
  *  Author:
  *   Petar Petrov, MSc
@@ -44,6 +44,7 @@ namespace SCIRun {
 		GuiDouble outerDistanceTCL;
 		GuiInt coilDetailsTCL;
 		GuiInt coilLayersTCL;
+		GuiDouble coilLayersStepTCL;
     	GuiString typeTCL;
 		 
 		SCIRunAlgo::ModelTMSCoilSingleAlgo algo;
@@ -60,6 +61,7 @@ namespace SCIRun {
 		coilDetailsTCL(ctx->subVar("levelDetailTCL")),
 		outerDistanceTCL(ctx->subVar("outerDistanceTCL")),
 		coilLayersTCL(ctx->subVar("coilLayersTCL")),
+		coilLayersStepTCL(ctx->subVar("coilLayersStepTCL")),
 		typeTCL(ctx->subVar("typeTCL")) 
 	{
 		algo.set_progress_reporter(this);
@@ -78,6 +80,7 @@ namespace SCIRun {
 		algoArgs.coilDistanceOuter = static_cast<double>(outerDistanceTCL.get());
 		algoArgs.coilLayers = static_cast<size_t>(coilLayersTCL.get());
 		algoArgs.coilLevelDetails = static_cast<size_t>(coilDetailsTCL.get());
+		algoArgs.coilLayersStep = static_cast<double>(coilLayersStepTCL.get());
 		
 		bool need_mesh_data = oport_connected("Mesh");
 

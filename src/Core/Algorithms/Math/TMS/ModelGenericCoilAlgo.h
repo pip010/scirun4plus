@@ -35,6 +35,7 @@ using namespace SCIRun;
             double coilDistanceOuter;
         	size_t coilLevelDetails;
             size_t coilLayers;
+            double coilLayersStep;
         	int type;
         	
         	inline bool operator==(const Args& rhs)
@@ -44,6 +45,7 @@ using namespace SCIRun;
     			coilLevelDetails == rhs.coilLevelDetails &&
                 coilDistanceOuter == rhs.coilDistanceOuter &&
                 coilLayers == rhs.coilLayers &&
+                coilLayersStep == rhs.coilLayersStep &&
     			type == rhs.type;
         	}
     		inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}

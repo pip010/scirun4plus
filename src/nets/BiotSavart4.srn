@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="2" name="{Main}" bbox="{39 58 855 910}" creationDate="{Mon Mar 16 2015}" creationTime="{19:58:05}" geometry="{1305x865+654+52}">
+<network version="v4.7" netversion="4" name="{Main}" bbox="{39 58 855 910}" creationDate="{Tue Mar 24 2015}" creationTime="{13:11:35}" geometry="{1305x865+654+52}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="TMS" name="ModelTMSCoilDipole" version="1.0">
@@ -22,7 +22,7 @@
       <var name="levelDetailTCL" val="{6}" substitute="no"/>
       <var name="coilLayersTCL" val="{7}" substitute="no"/>
       <var name="typeTCL" val="{8-shape}" substitute="no"/>
-      <var name="ui_geometry" val="{288x159+600+153}" substitute="no"/>
+      <var name="ui_geometry" val="{288x159+600+181}" substitute="no"/>
     </module>
     <module id="m3" package="SCIRun" category="TMS" name="ModelTMSCoilSpiral" version="1.0" gui_visible="yes">
       <position x="478" y="142"/>
@@ -33,15 +33,16 @@
       <var name="outerDistanceTCL" val="{0.002}" substitute="no"/>
       <var name="levelDetailTCL" val="{6}" substitute="no"/>
       <var name="coilLayersTCL" val="{3}" substitute="no"/>
+      <var name="coilLayersStepTCL" val="{0.001}" substitute="no"/>
       <var name="typeTCL" val="{8-shape}" substitute="no"/>
-      <var name="ui_geometry" val="{288x188+1389+266}" substitute="no"/>
+      <var name="ui_geometry" val="{293x221+1389+294}" substitute="no"/>
     </module>
     <module id="m4" package="SCIRun" category="MiscField" name="ChooseField" version="1.0" gui_visible="yes">
       <position x="425" y="267"/>
       <var name="use-first-valid" val="{0}" substitute="no"/>
       <var name="port-valid-index" val="{0}" substitute="no"/>
       <var name="port-selected-index" val="{1}" substitute="no"/>
-      <var name="ui_geometry" val="{200x169+65+192}" substitute="no"/>
+      <var name="ui_geometry" val="{200x169+65+220}" substitute="no"/>
     </module>
     <module id="m5" package="SCIRun" category="NewField" name="CreateLatVol" version="1.0">
       <position x="39" y="58"/>
@@ -111,16 +112,16 @@
       <gui_callback>
         <callback>addViewer</callback>
       </gui_callback>
-      <var name="ViewWindow_0-geometry" val="700x724+1199+209" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{-0.39829984830480103}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{-2.647268054232231}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{-0.433811104655785}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-x" val="{0.0873735371061943}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-y" val="{0.019612108086673907}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-z" val="{-0.6064719198625403}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{0.17558709899817138}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{0.031726983941816056}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{0.9839525238319998}" substitute="no"/>
+      <var name="ViewWindow_0-geometry" val="700x727+1199+237" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{0.0}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{-0.0005000010132789612}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{-0.690773815138666}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-x" val="{0.0}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-y" val="{-0.0005000010132789612}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-z" val="{-0.0015000000421423465}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{-1.0}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{0.0}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{0.0}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -160,12 +161,12 @@
       <var name="ViewWindow_0-fog-end" val="{0.714265}" substitute="no"/>
       <var name="ViewWindow_0-fog-visibleonly" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-inertia_loop_count" val="{360}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_x" val="{0.0}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_y" val="{-0.0}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_x" val="{0.9035940466077031}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_y" val="{0.38657135790757774}" substitute="no"/>
       <var name="ViewWindow_0-currentvisual" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-autoav" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-caxes" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-pos" val="{y0_z1}" substitute="no"/>
+      <var name="ViewWindow_0-pos" val="{z0_x0}" substitute="no"/>
       <var name="ViewWindow_0-scalebar" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-scalebar-unit" val="{mm}" substitute="no"/>
       <var name="ViewWindow_0-scalebar-length" val="{1.0}" substitute="no"/>
@@ -257,6 +258,24 @@
       <var name="ViewWindow_0-1-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-1-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-1-light" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-DOMAIN Transparent Nodes (1)&quot;" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-useglobal" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-type" val="{Gouraud}" substitute="no"/>
+      <var name="ViewWindow_0-2-debug" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-clip" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-cull" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-dl" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-fog" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-light" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-ShowColorMap Sticky (3)&quot;" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-3-useglobal" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-3-type" val="{Gouraud}" substitute="no"/>
+      <var name="ViewWindow_0-3-debug" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-3-clip" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-3-cull" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-3-dl" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-3-fog" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-3-light" val="{1}" substitute="no"/>
     </module>
     <module id="m9" package="SCIRun" category="ChangeMesh" name="TransformMeshWithTransform" version="1.0">
       <position x="57" y="191"/>
@@ -359,8 +378,8 @@
       <position x="143" y="620"/>
       <var name="main_frame" val="{.uiSCIRun_Visualization_RescaleColorMap_0}" substitute="no"/>
       <var name="isFixed" val="{0}" substitute="no"/>
-      <var name="min" val="{3.6723632311583755e-9}" substitute="no"/>
-      <var name="max" val="{5.334107240370553e-5}" substitute="no"/>
+      <var name="min" val="{6.689089589333262e-7}" substitute="no"/>
+      <var name="max" val="{0.0004589549727874911}" substitute="no"/>
       <var name="makeSymmetric" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{288x200+65+822}" substitute="no"/>
     </module>
@@ -371,6 +390,21 @@
       <var name="min" val="{-1.0}" substitute="no"/>
       <var name="max" val="{1.0}" substitute="no"/>
       <var name="makeSymmetric" val="{0}" substitute="no"/>
+    </module>
+    <module id="m19" package="SCIRun" category="Visualization" name="ShowColorMap" version="1.0">
+      <position x="139" y="724"/>
+      <var name="length" val="{half2}" substitute="no"/>
+      <var name="side" val="{left}" substitute="no"/>
+      <var name="numlabels" val="{5}" substitute="no"/>
+      <var name="scale" val="{1.0}" substitute="no"/>
+      <var name="numsigdigits" val="{2}" substitute="no"/>
+      <var name="units" val="{}" substitute="no"/>
+      <var name="color-r" val="{1.0}" substitute="no"/>
+      <var name="color-g" val="{1.0}" substitute="no"/>
+      <var name="color-b" val="{1.0}" substitute="no"/>
+      <var name="text-fontsize" val="{2}" substitute="no"/>
+      <var name="extra-padding" val="{0}" substitute="no"/>
+      <var name="ui_geometry" val="{288x316+65+361}" substitute="no"/>
     </module>
   </modules>
   <connections>
@@ -386,24 +420,26 @@
     <connection id="c8" from="m2" fromport="0" to="m4" toport="0"/>
     <connection id="c9" from="m15" fromport="0" to="m18" toport="0"/>
     <connection id="c10" from="m16" fromport="0" to="m17" toport="0"/>
-    <connection id="c11" from="m7" fromport="0" to="m8" toport="0">
+    <connection id="c11" from="m17" fromport="0" to="m19" toport="0"/>
+    <connection id="c12" from="m7" fromport="0" to="m8" toport="0">
       <route>{319 746 319 829.0 409 829.0 409 859}</route>
     </connection>
-    <connection id="c12" from="m13" fromport="0" to="m17" toport="1"/>
-    <connection id="c13" from="m10" fromport="0" to="m9" toport="1"/>
-    <connection id="c14" from="m12" fromport="0" to="m13" toport="1"/>
-    <connection id="c15" from="m4" fromport="0" to="m12" toport="1"/>
-    <connection id="c16" from="m4" fromport="0" to="m18" toport="1">
+    <connection id="c13" from="m13" fromport="0" to="m17" toport="1"/>
+    <connection id="c14" from="m10" fromport="0" to="m9" toport="1"/>
+    <connection id="c15" from="m12" fromport="0" to="m13" toport="1"/>
+    <connection id="c16" from="m4" fromport="0" to="m12" toport="1"/>
+    <connection id="c17" from="m4" fromport="0" to="m18" toport="1">
       <route>{436 318 436 539.0 626 539.0 626 572}</route>
     </connection>
-    <connection id="c17" from="m3" fromport="0" to="m4" toport="1"/>
-    <connection id="c18" from="m17" fromport="0" to="m7" toport="1"/>
-    <connection id="c19" from="m18" fromport="0" to="m14" toport="1"/>
-    <connection id="c20" from="m14" fromport="0" to="m8" toport="1">
+    <connection id="c18" from="m3" fromport="0" to="m4" toport="1"/>
+    <connection id="c19" from="m17" fromport="0" to="m7" toport="1"/>
+    <connection id="c20" from="m18" fromport="0" to="m14" toport="1"/>
+    <connection id="c21" from="m14" fromport="0" to="m8" toport="1">
       <route>{567 698 567 833.0 423 833.0 423 859}</route>
     </connection>
-    <connection id="c21" from="m1" fromport="0" to="m4" toport="2">
+    <connection id="c22" from="m1" fromport="0" to="m4" toport="2">
       <route>{649 193 649 250.0 464 250.0 464 267}</route>
     </connection>
+    <connection id="c23" from="m19" fromport="0" to="m8" toport="2"/>
   </connections>
 </network>

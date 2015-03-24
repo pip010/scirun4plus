@@ -41,6 +41,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilSingle {
       global $this-levelDetailTCL
       global $this-outerDistanceTCL
       global $this-coilLayersTCL
+      global $this-coilLayersStepTCL
       global $this-typeTCL
       
       set $this-wireCurrentTCL 1
@@ -48,6 +49,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilSingle {
 	    set $this-levelDetailTCL 6
       set $this-outerDistanceTCL 0.002
       set $this-coilLayersTCL 1
+          set $this-coilLayersStepTCL 0.001
       set $this-typeTCL "8-shape"
     }
  
@@ -65,6 +67,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilSingle {
       global $this-levelDetailTCL
       global $this-outerDistanceTCL
       global $this-coilLayersTCL
+      global $this-coilLayersStepTCL
       global $this-typeTCL
 
       set w .ui[modname]
@@ -79,6 +82,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilSingle {
       make_entry $w.radius "Radius :" $this-coilRadiusTCL "$this-c needexecute"
       make_entry $w.distance "Distance:" $this-outerDistanceTCL "$this-c needexecute"
       make_entry $w.layers "Layers:" $this-coilLayersTCL "$this-c needexecute"
+      make_entry $w.layersstep "Layers Step:" $this-coilLayersStepTCL "$this-c needexecute"
       make_entry $w.lod "LOD:" $this-levelDetailTCL "$this-c needexecute"
       
       bind $w.current <Return> "$this-c needexecute"
@@ -87,7 +91,7 @@ itcl::class SCIRun_TMS_ModelTMSCoilSingle {
       bind $w.layers <Return> "$this-c needexecute"
       bind $w.lod <Return> "$this-c needexecute"
       
-      pack $w.type $w.current $w.radius $w.distance $w.layers $w.lod -side top -fill x
+      pack $w.type $w.current $w.radius $w.distance $w.layers $w.layersstep $w.lod -side top -fill x
 
       makeSciButtonPanel $w $w $this
       moveToCursor $w
