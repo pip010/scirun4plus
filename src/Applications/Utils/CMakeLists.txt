@@ -104,6 +104,7 @@ SET(Utils_SRCS
   UnorientNrrdAndGetTransform
   TransformFieldWithTransform
   CoilModelCalibration
+  ShowNiftiHeader
 )
 
 IF(WITH_TETGEN)
