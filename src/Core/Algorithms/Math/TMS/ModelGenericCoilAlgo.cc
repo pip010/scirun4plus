@@ -49,6 +49,121 @@ using namespace SCIRun;
 	//! Namespace used for concrete coil implementations
 	namespace details
 	{
+		class BaseSegments
+		{
+			public:
+				BaseSegments(				
+					std::vector<Vector>& p,
+					std::vector<size_t>& i,
+					std::vector<double>& v,
+					double constval):
+					points(p),
+					indices(i),
+					values(v),
+					val(constval),
+					pc(0)
+				{
+				}
+				virtual ~BaseSegments()
+				{
+					this->Terminate();
+				}
+				virtual void AddPoint(Vector point)
+				{
+					points.push_back(point);
+
+					size_t psize = points.size();
+
+					//std::cout << "AddPoint-> psize:" << psize << " pc:" << pc << "    " << point << std::endl; 
+
+					if( pc > 0)
+					{
+						indices.push_back(psize-2);
+						indices.push_back(psize-1);
+						values.push_back(val);
+					}					
+
+					pc++;
+				}
+
+				virtual void Terminate()
+				{
+					pc = 0;
+				}
+
+				std::vector<Vector>& points;
+				std::vector<size_t>& indices;
+				std::vector<double>& values;
+
+    			const double val;
+				size_t pc;
+
+			private:
+
+				//! Prevent copying
+    			BaseSegments & operator = (const BaseSegments & other);
+    			BaseSegments(const BaseSegments & other);
+		};
+
+		class ClosedSegments : public BaseSegments
+		{
+			public:
+				ClosedSegments(
+					std::vector<Vector>& p,
+					std::vector<size_t>& i,
+					std::vector<double>& v,
+					double cvs):BaseSegments(p,i,v, cvs)
+				{
+
+				}
+				virtual ~ClosedSegments()
+				{
+					if(pc)
+					{
+						this->Terminate();
+					}
+
+					//std::cout << "~ClosedSegments() Points Indices Values: " <<  points.size() << " " << indices.size() << " " << values.size() << std::endl;
+					assert(points.size() > 0);
+					assert(points.size() == values.size());
+					assert(points.size()*2 == indices.size());
+				}
+				
+				void Terminate()
+				{
+					size_t psize = points.size();
+
+					//close the segments and make a circle
+					indices.push_back(psize-1);
+					indices.push_back(psize-pc);
+
+					values.push_back(val);
+
+					//std::cout << "ClosedSegment-Teminate-> psize:" << psize << " pc:" << pc << "    " << std::endl; 
+
+					pc = 0;
+				}
+		};
+
+		class OpenSegments : public BaseSegments
+		{
+			public:
+				OpenSegments(
+					std::vector<Vector>& p,
+					std::vector<size_t>& i,
+					std::vector<double>& v,
+					double cvs):BaseSegments(p,i,v, cvs)
+				{}
+				~OpenSegments()
+				{
+					assert(points.size() > 0);
+					assert(indices.size() == values.size()*2);
+					//assert(coilPoints.size()*2 - 2*coilLayers == coilIndices.size());
+				}
+		};
+
+
+
 		class BaseCoilgen
 		{
 			public:
@@ -81,17 +196,17 @@ using namespace SCIRun;
 				size_t coilType;
 				size_t coilLayers;
 				double coilLayersStep;
-				
+
 				void GenPointsCircular(
-					std::vector<Vector>& points,
+					BaseSegments& segments,
 					Vector origin, 
 					double radius,
 					double fromPI, 
 					double toPI) const
 				{
 										
-					assert(fromPI < toPI);
-					double dPI = toPI - fromPI;
+					//assert(fromPI < toPI);
+					double dPI = abs(toPI - fromPI);
 					
 					//what will be the circumvence of a full 0-2*pi
 					//double C = 2*dPI*r;
@@ -114,16 +229,14 @@ using namespace SCIRun;
 						iPI = dPI / nsegments;
 					}
 
-					//algo->remark("LOD:  " + boost::lexical_cast<std::string>(this->coilLOD) );
-
-					algo->remark("Segments:  " +  boost::lexical_cast<std::string>(nsegments) );
+					algo->remark("#Segments(LOD):  " +  boost::lexical_cast<std::string>(nsegments) );
 					
-					GenPointsCircular(points, origin, radius, nsegments, fromPI, toPI);
+					GenPointsCircular(segments, origin, radius, nsegments, fromPI, toPI);
 
 				}
-				
+
 				void GenPointsCircular(
-					std::vector<Vector>& points,
+					BaseSegments& segments,
 					Vector origin, 
 					double radius,
 					double nsegments,
@@ -131,8 +244,10 @@ using namespace SCIRun;
 					double toPI) const
 				{
 										
-					assert(fromPI < toPI);
+					//assert(fromPI < toPI);
 
+					//if(fromPI < toPI)
+					//{
 					double dPI = toPI - fromPI;
 					
 					double iPI = dPI / nsegments;
@@ -142,13 +257,12 @@ using namespace SCIRun;
 					for(size_t i = 0; i < nsegments; i++)
 					{
 						Vector p(origin.x() + radius * cos(fromPI + iPI*i), origin.y() + radius * sin(fromPI + iPI*i), origin.z());
-						points.push_back(p);
+						segments.AddPoint(p);
 					}
 				}
 				
-
-				
-				void BuildScirunMesh(const std::vector<Vector>& points, 
+				void BuildScirunMesh(
+						const std::vector<Vector>& points, 
 						const std::vector<size_t>& indices, 
 						const std::vector<double>& values,
 						FieldHandle& meshHandle) const
@@ -185,7 +299,7 @@ using namespace SCIRun;
 
 					field->resize_values();
 					field->set_values(values);
-				}				
+				}			
 				
 		};
 
@@ -219,45 +333,57 @@ using namespace SCIRun;
 				
 				virtual void Generate(FieldHandle& meshHandle) const
 				{
+					Vector vec;
 					
+
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
 
-					Vector step(0,0,-coilLayersStep);
+					Vector step(0,0,coilLayersStep);
 	  
 					if(coilType == 1)
 					{
 						///SINGLE
-						Vector origin(0, 0, -0.5*(1.0/coilLayers));
-
+						//Vector origin(0, 0, -0.5*(1.0/coilLayers));
+						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) );
+						
 						for(size_t l = 0; l < coilLayers; l++)
 						{
-							GenPointsCircular(coilPoints, origin, radius, 0.0, 2.0*M_PI);
-							GenSegmentEdges(coilPoints, coilIndices);
-							GenSegmentValues(coilPoints, coilValues, current);
+							ClosedSegments segments(coilPoints,coilIndices,coilValues, current/coilLayers );
+
+							GenPointsCircular(segments, origin, radius, 0.0, 2.0*M_PI);
+
 							origin += step;
 						}
+
+						
 					}
 					else if(coilType == 2)
 					{
-						Vector originLeft( -radius - (outerD/2), 0, 0);
-						Vector originRight( radius + (outerD/2), 0, 0);
+						Vector originLeft( -radius - (outerD/2), 0, -coilLayersStep*(coilLayers/2));
+						Vector originRight( radius + (outerD/2), 0, -coilLayersStep*(coilLayers/2));
+						
+						for(size_t l = 0; l < coilLayers; l++)
+						{
+							ClosedSegments segments(coilPoints,coilIndices,coilValues, current/coilLayers);
+
+							///LEFT
+							GenPointsCircular(segments, originLeft, radius, 0.0, 2.0*M_PI);
+							
+							originLeft += step;
+						}
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
-							///LEFT
-							GenPointsCircular(coilPoints, originLeft, radius, 0.0, 2.0*M_PI);
-							GenSegmentEdges(coilPoints, coilIndices);
-							GenSegmentValues(coilPoints, coilValues, current);
-							originLeft += step;
-							
+							ClosedSegments segments(coilPoints,coilIndices,coilValues, -current/coilLayers);
+
 							///RIGHT
-							GenPointsCircular(coilPoints, originRight, radius, 0.0, 2.0*M_PI);
-							GenSegmentEdges(coilPoints, coilIndices);
-							GenSegmentValues(coilPoints, coilValues, -current);
+							GenPointsCircular(segments, originRight, radius, 0.0, 2.0*M_PI);
+							
 							originRight += step;
 						}
+
 					}
 					else
 					{
@@ -265,10 +391,6 @@ using namespace SCIRun;
 						return;
 					}
 					
-					///basic topoly assumptions needs to be correct
-					assert(coilPoints.size() > 0);
-					assert(coilPoints.size() == coilValues.size());
-					assert(coilPoints.size()*2 == coilIndices.size());
 					
 					///SCIrun API creating a new mesh
 					///0 data on elements; 1 data on nodes
@@ -287,36 +409,6 @@ using namespace SCIRun;
 				const double radius;
 				const double current;
 				const double outerD;
-					
-
-				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices) const
-				{
-					size_t firstIDX = indices.size();
-					
-					size_t start = firstIDX > 0 ?  firstIDX / 2 : 0 ;
-					
-					for(size_t i = start; i < points.size() -1; i++)
-					{
-						indices.push_back(i);
-						indices.push_back(i + 1);
-					}
-					
-					size_t lastIDX = indices.size() -1;
-					
-					indices.push_back(indices[lastIDX]);
-					indices.push_back(indices[firstIDX]);
-					
-				}
-				
-				void GenSegmentValues(const std::vector<Vector>& points, std::vector<double>& values, double value) const
-				{
-					assert(points.size() > 0);
-					
-					for(size_t i = values.size(); i < points.size(); i++)
-					{
-						values.push_back(value);
-					}
-				}
 
 		};
 
@@ -355,78 +447,47 @@ using namespace SCIRun;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
 
-					Vector step(0,0,-coilLayersStep);
+					Vector step(0,0,coilLayersStep);
 
 					if(coilType == 1)
 					{
-						Vector origin(0, 0, -0.5*(1.0/coilLayers));
-						//Vector step(0,0,-1.0/coilLayers);
+						//Vector origin(0, 0, -0.5*(1.0/coilLayers));
+						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) );
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
+							OpenSegments segments(coilPoints,coilIndices,coilValues, current);
+
 							///SINGLE coil
-							GenPointsSpiral(coilPoints, origin);
-							GenSegmentEdges(coilPoints, coilIndices, l);
-							GenSegmentValues(coilPoints, coilValues, current);
+							GenPointsSpiralLeft(segments, origin);
 							origin += step;
-
-
 						}
-
-					//basic topoly assumptions needs to be correct
-					assert(coilPoints.size() > 0);
-					assert(coilPoints.size() - coilLayers == coilValues.size());
-					assert(coilPoints.size()*2 - 2*coilLayers == coilIndices.size());
-						
-
-					std::cout << "COIL Poins Indices Values: " <<  coilPoints.size() << " " << coilIndices.size() << " " << coilValues.size() << std::endl;
-					//3-layers
-					//COIL Poins Indices Values: 2595 5184 2593
 
 					}
 					else if(coilType == 2)
 					{
-						Vector originLeft ( -outerR - (outerD/2), 0.0, -0.5 * coilLayersStep);
-						Vector originRight(  outerR + (outerD/2), 0.0, -0.5 * coilLayersStep);
-						//Vector step(0,0,-1.0/coilLayers);
+						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
+							OpenSegments segments( coilPoints, coilIndices, coilValues, current/coilLayers );
+
 							//LEFT coil
-							GenPointsSpiral(coilPoints, originLeft);
-							GenSegmentEdges(coilPoints, coilIndices, l);
-							GenSegmentValues(coilPoints, coilValues, current);
+							GenPointsSpiralLeft(segments, originLeft);
+
 							originLeft += step;
 						}
 
 						for(size_t l = coilLayers; l < 2*coilLayers; l++)
 						{	
+							OpenSegments segments( coilPoints, coilIndices, coilValues, -current/coilLayers );
+
 							//RIGHT coil
-							GenPointsSpiral(coilPoints, originRight);
-							GenSegmentEdges(coilPoints, coilIndices, l);
-							GenSegmentValues(coilPoints, coilValues, -current);
+							GenPointsSpiralRight(segments, originRight);
 							
 							originRight += step;
 						}
-
-						FlipX( coilPoints, originRight );
-
-
-						std::cout << step << std::endl;
-						std::cout << "COIL Points Indices Values: " <<  coilPoints.size() << " " << coilIndices.size() << " " << coilValues.size() << std::endl;
-
-						//basic topoly assumptions needs to be correct
-						assert(coilPoints.size() > 0);
-						assert(coilPoints.size() - 2 == coilValues.size());
-						assert(coilPoints.size()*2 - 4*coilLayers == coilIndices.size());
-						
-
-						//3-layers
-						//COIL Poins Indices Values: 5190 10368 5188
-						//COIL Poins Indices Values: 12110 24192 12108
-
-						//7layers
-						//COIL Points Indices Values: 12110 24192 12108
 
 					}
 					else
@@ -457,61 +518,41 @@ using namespace SCIRun;
 				const double outerD;
 				const size_t windings;
 				
-
-				void FlipX(std::vector<Vector>& points, Vector origin) const
-				{
-					for(size_t i = points.size()/2; i < points.size(); i++)
-					{
-						Vector* v = &points[i];
-
-						//std::cout << "flipping : " << *v ;
-
-						v->x( origin.x() - ( v->x() - origin.x() ) );
-
-						//std::cout << " to " << *v << std::endl;
-					}
-				}
-				
-				void GenPointsSpiral(std::vector<Vector>& points, Vector center) const
+				void GenPointsSpiralLeft(OpenSegments& segments, Vector center) const
 
 				{
 					double dr = (outerR - innerR) / windings;		
 					
-					Vector center_offset(center.x()+ dr/2,center.y(),center.z());
+					Vector center_offset (center.x() + dr/2, center.y(), center.z() );
 					
 					for (size_t i = 0; i < windings; i++)
 					{
-						GenPointsCircular(points, center, innerR + i*dr, 0   , M_PI);
-						GenPointsCircular(points, center_offset, innerR + i*dr + dr/2, M_PI, 2*M_PI);	
+						GenPointsCircular(segments, center, innerR + i*dr, 0   , M_PI);
+
+						GenPointsCircular(segments, center_offset, innerR + i*dr + dr/2, M_PI, 2*M_PI);	
 					}
 				
 					//TODO refactor to avoid this
 					Vector endp(center.x() + outerR * cos(2*M_PI), center.y() + outerR * sin(2*M_PI), center.z());
-					points.push_back(endp);
+					segments.AddPoint(endp);
+				}
 
-				}
-				
-				void GenSegmentEdges(const std::vector<Vector>& points, std::vector<size_t>& indices, size_t layer = 1) const
+				void GenPointsSpiralRight(OpenSegments& segments, Vector center) const
 				{
-					size_t start = indices.size() > 0 ?  indices.size() / 2 + layer : 0 ;
+					double dr = (outerR - innerR) / windings;		
 					
-					for(size_t i = start; i < points.size() -1; i++)
+					Vector center_offset( center.x() + dr/2, center.y(), center.z() );
+					
+					for (size_t i = windings; i > 0; i--)
 					{
-						indices.push_back(i);
-						indices.push_back(i + 1);
+						GenPointsCircular(segments, center, innerR + i*dr, M_PI, 2*M_PI);
+
+						GenPointsCircular(segments, center_offset, innerR + i*dr - dr/2, 0, M_PI);	
 					}
-				}
 				
-				void GenSegmentValues(const std::vector<Vector>& points, std::vector<double>& values, double value) const
-				{
-					assert(points.size() > 0);
-					
-					size_t start = values.size() > 0 ?  values.size() + 1 : 0 ;
-					
-					for(size_t i = start; i < points.size() - 1; i++)
-					{
-						values.push_back(value);
-					}
+					//TODO refactor to avoid this
+					Vector endp(center.x() + innerR * cos(M_PI), center.y() + innerR * sin(M_PI), center.z());
+					segments.AddPoint(endp);
 				}
 				
 		};
@@ -555,7 +596,7 @@ using namespace SCIRun;
 					std::vector<double> numElements = preNumElem();
 					std::vector<double> numCoupling = preNumAdjElem();
 
-
+					/*
 					if(coilType == 1)
 					{
 						Vector center(0, 0, 0);
@@ -602,7 +643,7 @@ using namespace SCIRun;
 						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
 						return;
 					}
-					
+					*/
 					
 					///basic topoly assumptions needs to be correct
 					assert(dipolePoints.size() > 0);
@@ -693,6 +734,9 @@ using namespace SCIRun;
 	}// end namespace details
 
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	bool 
 	ModelTMSCoilSingleAlgo::
