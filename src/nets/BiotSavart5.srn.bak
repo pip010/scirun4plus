@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="2" name="{Main}" bbox="{39 58 877 910}" creationDate="{Mon May 04 2015}" creationTime="{22:49:02}" geometry="{1305x865+123+78}">
+<network version="v4.7" netversion="4" name="{Main}" bbox="{39 58 877 910}" creationDate="{Mon May 04 2015}" creationTime="{22:49:02}" geometry="{1305x865+123+78}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="TMS" name="ModelTMSCoilSingle" version="1.0" gui_visible="yes">
@@ -99,15 +99,15 @@
         <callback>addViewer</callback>
       </gui_callback>
       <var name="ViewWindow_0-geometry" val="821x763+810+320" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{-0.049390660532865886}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{-0.5333686037569212}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{0.17075952802632077}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{0.00771859392329965}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{-0.8481913297984727}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{0.09928155402349162}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-x" val="{0.0010000020265579224}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-y" val="{-0.09950000047683716}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-z" val="{-0.0004993584007024765}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{-0.04655478972631469}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{0.3714325615184284}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{0.9272920272478341}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{-0.0326626270159888}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{0.13174722051418125}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{0.9907450846121834}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -244,6 +244,24 @@
       <var name="ViewWindow_0-1-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-1-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-1-light" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-ShowColorMap Sticky (3)&quot;" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-useglobal" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-type" val="{Gouraud}" substitute="no"/>
+      <var name="ViewWindow_0-2-debug" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-clip" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-cull" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-dl" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-fog" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-light" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-DOMAIN Faces (1)&quot;" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-3-useglobal" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-3-type" val="{Gouraud}" substitute="no"/>
+      <var name="ViewWindow_0-3-debug" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-3-clip" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-3-cull" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-3-dl" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-3-fog" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-3-light" val="{1}" substitute="no"/>
     </module>
     <module id="m7" package="SCIRun" category="ChangeMesh" name="TransformMeshWithTransform" version="1.0">
       <position x="57" y="191"/>
@@ -343,8 +361,8 @@
       <position x="143" y="620"/>
       <var name="main_frame" val="{.uiSCIRun_Visualization_RescaleColorMap_0}" substitute="no"/>
       <var name="isFixed" val="{0}" substitute="no"/>
-      <var name="min" val="{-1.205877983443904e-5}" substitute="no"/>
-      <var name="max" val="{1.2058779834439166e-5}" substitute="no"/>
+      <var name="min" val="{-9.135643376544844e-5}" substitute="no"/>
+      <var name="max" val="{9.084512019848128e-5}" substitute="no"/>
       <var name="makeSymmetric" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{288x200+65+822}" substitute="no"/>
     </module>
