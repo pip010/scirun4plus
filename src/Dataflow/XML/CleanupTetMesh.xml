@@ -32,11 +32,10 @@
 <component name="CleanupTetMesh" category="ChangeMesh" optional="false">
   <overview>
     <authors>
-      <author>jeroen</author>
+      <author>Jeroen Stinstra</author>
     </authors>
     <summary>
-      a
-
+      Fixes node orientation and removes degenerate tetrahedral elements on a given tetrahedral mesh.
     </summary>
   </overview>
   <io>

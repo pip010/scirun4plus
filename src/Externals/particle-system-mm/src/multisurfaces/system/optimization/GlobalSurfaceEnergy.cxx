@@ -43,6 +43,8 @@ GlobalSurfaceEnergy::~GlobalSurfaceEnergy()
 //------------------------------------------------------------------------
 void GlobalSurfaceEnergy::optimize( svector<DynamicSurfacePoint*> &points )
 {
+  cout << "GlobalSurfaceEnergyNA optmize" << endl;
+	
   if ( _biased_splitting_dying )
     biasedOptimize( points );
   else
@@ -303,6 +305,7 @@ void GlobalSurfaceEnergyNA::randomOptimize( svector<DynamicSurfacePoint*>
   if ( fabs(energy_diff) < 0.025 )
   {
     _optimized = true;
+    cout << "Global Surf Energy OPTIMIZED" << endl;
     return;
   }
   
@@ -318,7 +321,7 @@ void GlobalSurfaceEnergyNA::randomOptimize( svector<DynamicSurfacePoint*>
       (int)(energy_diff * (float)points.size());
 
     // make sure we stay above the min number needed 
-    //
+    //    
     // TODO : for now i have hardcoded the "minimum num points" to
     //        be 10!
     //

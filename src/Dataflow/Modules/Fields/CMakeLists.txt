@@ -142,6 +142,7 @@ SET(Dataflow_Modules_Fields_SRCS
   CollectFields.cc
   ScaleFieldMeshAndData.cc
   CalculateProfile.cc
+  TriSurfConsistencyCorrection.cc
 )
 
 IF(WITH_TETGEN)

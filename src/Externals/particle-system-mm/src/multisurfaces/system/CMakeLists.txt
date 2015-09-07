@@ -23,7 +23,7 @@ SET(system_SRCS
  domain/Surface.cxx
  domain/SurfaceParameters.cxx
 )
-
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}  ${PARTICLEUTIL_INCLUDES})
 
 ADD_LIBRARY(system ${system_SRCS})

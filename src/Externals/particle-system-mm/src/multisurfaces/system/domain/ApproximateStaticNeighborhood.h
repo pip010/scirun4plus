@@ -18,8 +18,11 @@
 #include <system/domain/Neighborhood.h>
 #include <features/Bin.h>
 
+#include <mutex>
+
 namespace particle_sys 
 { 
+	
   template <class T>
   class ApproximateStaticNeighborhood : public Neighborhood<T>
   {
@@ -75,7 +78,7 @@ namespace particle_sys
 
     T* nextNeighborForList(const T *point);
 
-
+	std::mutex lock;
   };  
 
 } // namespace particle_sys 

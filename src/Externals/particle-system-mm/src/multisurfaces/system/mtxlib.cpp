@@ -60,6 +60,18 @@ vec<3> CrossProduct( const vec<3> &a, const vec<3> &b )
                  a[0]*b[1] - a[1]*b[0] );
 }
 
+template<>
+float DotProduct(const vec<4> &a, const vec<4> &b)
+{
+  return a(0)*b(0) + a(1)*b(1) + a(2)*b(2) + a(3)*b(3);
+}
+
+template<>
+float DotProduct(const vec<3> &a, const vec<3> &b)
+{
+return a(0)*b(0) + a(1)*b(1) + a(2)*b(2);
+}
+
 /************************************************************************/
 
 
@@ -208,6 +220,56 @@ operator*( const matrix<3,3> &a, const matrix<3,3> &b )
 {
   matrix<3,3> ret(a);
   ret *= b;
+  return ret;
+}
+
+template <>
+vec<4> operator * ( const matrix<4,4> &m, const vec<4> &v )
+{
+	float v0 = v(0);
+	float v1 = v(1);
+	float v2 = v(2);
+	float v3 = v(3);
+	
+  vec<4> ret(
+  m(0,0)*v0 + m(0,1)*v1 + m(0,2)*v2 + m(0,3)*v3,
+  m(1,0)*v0 + m(1,1)*v1 + m(1,2)*v2 + m(1,3)*v3,
+  m(2,0)*v0 + m(2,1)*v1 + m(2,2)*v2 + m(2,3)*v3,
+  m(3,0)*v0 + m(3,1)*v1 + m(3,2)*v2 + m(3,3)*v3
+  );
+  return ret;
+}
+
+template <>
+vec<4> operator * ( const vec<4> &v, const matrix<4,4> &m )
+{
+	float v0 = v(0);
+	float v1 = v(1);
+	float v2 = v(2);
+	float v3 = v(3);
+	
+  vec<4> ret(
+  m(0,0)*v0 + m(0,1)*v1 + m(0,2)*v2 + m(0,3)*v3,
+  m(1,0)*v0 + m(1,1)*v1 + m(1,2)*v2 + m(1,3)*v3,
+  m(2,0)*v0 + m(2,1)*v1 + m(2,2)*v2 + m(2,3)*v3,
+  m(3,0)*v0 + m(3,1)*v1 + m(3,2)*v2 + m(3,3)*v3
+  );
+  return ret;
+}
+
+template <>
+vec<3> operator * ( const vec<4> &v, const matrix<4,3> &m )
+{
+	float v0 = v(0);
+	float v1 = v(1);
+	float v2 = v(2);
+	float v3 = v(3);
+	
+  vec<3> ret(
+  m(0,0)*v0 + m(0,1)*v1 + m(0,2)*v2 + m(0,3)*v3,
+  m(1,0)*v0 + m(1,1)*v1 + m(1,2)*v2 + m(1,3)*v3,
+  m(2,0)*v0 + m(2,1)*v1 + m(2,2)*v2 + m(2,3)*v3
+  );
   return ret;
 }
 

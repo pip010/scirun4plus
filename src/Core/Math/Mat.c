@@ -40,6 +40,9 @@
  *
  */
 
+// TODO: move to algorithm class specific to SolveMinNormLeastSqSystem, CalculateMisfitField (move out of core library!!!)
+// TODO: same recipe used in Tikhonov module(s)???
+
 #include <Core/Math/Mat.h>
 #include <stdio.h>
 
@@ -108,6 +111,7 @@ void matsolve3by3(double mat[3][3], double rhs[3])
     rhs[2]=B[2];
 }
 
+// Note: not used
 void matsolve3by3_cond(double mat[3][3], double rhs[3], double* rcond)
 {
     double imat[3][3];

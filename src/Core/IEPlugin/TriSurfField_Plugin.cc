@@ -32,6 +32,10 @@
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Util/StringUtil.h>
 
+#include <boost/foreach.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -40,6 +44,7 @@ namespace SCIRun {
 
 FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename);
 FieldHandle MToTriSurfField_reader(ProgressReporter *pr, const char *filename);
+FieldHandle VtkToTriSurfField_reader(ProgressReporter *pr, const char *filename);
 
 bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
 bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
@@ -47,6 +52,323 @@ bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *fi
 bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
 bool TriSurfFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
 bool TriSurfFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
+
+void VtkToTriSurfField_points(std::ifstream &stream, FieldHandle &field, int numPoints)
+{
+  std::string line;
+  std::vector<double> values;
+  std::ifstream::streampos pos = stream.tellg();
+
+  VMesh *vmesh = field->vmesh();
+  vmesh->node_reserve(numPoints);
+  
+  while ( std::getline(stream, line, '\n') )
+  {
+    if (line.size() > 0)
+    {
+      // block out comments after the first line
+      if ( line[0] == '#' ) continue;
+    }
+    
+    // replace comma's and tabs with white spaces
+    for (size_t p = 0; p < line.size(); p++)
+    {
+      if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
+    }
+    
+    if (! multiple_from_string(line, values) )
+    {
+      stream.seekg(pos);
+      return;
+    }
+
+    // points should be one continous block
+    if (values.size() == 3)
+    {
+      vmesh->add_point(Point(values[0],values[1],values[2]));
+    }
+    else
+    {
+      stream.seekg(pos);
+      return;
+    }
+    pos = stream.tellg();
+  }
+}
+
+void VtkToTriSurfField_elems(std::ifstream &stream, FieldHandle &field, int numElems)
+{
+  std::string line;
+  std::vector<VMesh::index_type> ivalues;
+  std::ifstream::streampos pos = stream.tellg();
+  
+  VMesh *vmesh = field->vmesh();
+  vmesh->elem_reserve(numElems);
+  VMesh::Node::array_type vdata;
+  vdata.resize(3);
+  
+  while ( std::getline(stream, line, '\n') )
+  {
+    if (line.size() > 0)
+    {
+      // block out comments after the first line
+      if ( line[0] == '#' ) continue;
+    }
+    
+    // replace comma's and tabs with white spaces
+    for (size_t p = 0; p < line.size(); p++)
+    {
+      if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
+    }
+    
+    multiple_from_string(line, ivalues);     
+
+    // polygons should be one continous block, each line starting with 3
+    if (ivalues.size() == 4)
+    {
+      if (ivalues[0] != 3)
+      {
+        stream.seekg(pos);
+        return;
+      }
+      for (size_t i = 0; i < 3; ++i)
+      {
+        vdata[i] = ivalues[i+1];
+      }
+      vmesh->add_elem(vdata);
+    }
+    else
+    {
+      stream.seekg(pos);
+      return;
+    }
+  }
+}
+
+
+// written specifically for isosurfaces exported from Seg3D
+// following VTK legacy format, version 4.2
+FieldHandle VtkToTriSurfField_reader(ProgressReporter *pr, const char *filename)
+{
+  FieldHandle result = 0;
+  std::string vtk_filename(filename);
+  // Try to open file
+  std::string::size_type pos = vtk_filename.find_last_of(".");
+  if (pos == std::string::npos)
+  {
+    vtk_filename = vtk_filename + ".vtk";
+  }
+
+  bool valid_vtk_file = false, processed_points = false, processed_elems = false;
+  std::string line;
+
+  try
+  {
+    std::ifstream inputfile;
+    inputfile.exceptions( std::ifstream::badbit );
+    inputfile.open(vtk_filename.c_str());
+    
+    // process header
+
+    // part 1
+    std::getline(inputfile, line, '\n');
+    boost::char_separator<char> sep(" \t");
+    boost::tokenizer< boost::char_separator<char> > tokens(line, sep);
+    BOOST_FOREACH(std::string t, tokens)
+    {
+      if ( boost::iequals(t, "vtk") )
+      {
+        valid_vtk_file = true;
+        break;
+      }
+    }
+    if (! valid_vtk_file )
+    {
+      if (pr) pr->error(vtk_filename + " is not a valid VTK file. Line 1 should contain 'vtk'.");
+      return result;
+    }
+    
+    // discard title (part 2)
+    std::getline(inputfile, line, '\n');
+    while ( (line.size() < 1) || (line[0] == '#') )
+      std::getline(inputfile, line, '\n');
+
+    // part 3
+    std::getline(inputfile, line, '\n');
+    while ( (line.size() < 1) || (line[0] == '#') )
+      std::getline(inputfile, line, '\n');
+
+    if ( line.find("ASCII") == std::string::npos )
+    {
+      if (pr) pr->error(vtk_filename + " is not a valid VTK file. Line 3 should be ASCII | BINARY.");
+      return result;
+    }
+
+    // part 4
+    std::getline(inputfile, line, '\n');
+    while ( (line.size() < 1) || (line[0] == '#') )
+      std::getline(inputfile, line, '\n');
+
+    if ( line.find("DATASET") == std::string::npos )
+    {
+      if (pr) pr->error(vtk_filename + " is not a valid VTK file. Line 4 should be DATASET type.");
+      return result;
+    }
+
+    FieldInformation fi("TriSurfMesh", 1, "double");
+    result = CreateField(fi);
+    VMesh *vmesh = result->vmesh();
+
+    std::getline(inputfile, line, '\n');
+    while ( (line.size() < 1) || (line[0] == '#') )
+      std::getline(inputfile, line, '\n');
+
+    if ( line.find("POINTS") != std::string::npos )
+    {
+      std::vector<std::string> strings;
+      boost::split( strings, line, boost::is_any_of(" \t") );
+      if (strings.size() < 3)
+      {
+        if (pr) pr->error(vtk_filename + " is not a valid VTK file. POINTS attributes are number of points and data type.");
+        return result;
+      }
+      std::istringstream iss(strings[1]);
+      int numPoints = 0;
+      iss.exceptions( std::ifstream::badbit );
+      try
+      {
+        iss >> numPoints;
+      }
+      catch (...)
+      {
+        if (pr) pr->error(vtk_filename + " is not a valid VTK file. Parsing POINTS attribute number of points failed.");
+        return result;
+      }
+      
+      VtkToTriSurfField_points(inputfile, result, numPoints);
+      
+      if (vmesh->num_nodes() == numPoints) processed_points = true;
+      else
+      {
+        if (pr) pr->error("Could not read points from " + vtk_filename);
+        return result;
+      }
+    }
+    else if ( line.find("POLYGONS") != std::string::npos )
+    {
+      std::vector<std::string> strings;
+      boost::split( strings, line, boost::is_any_of(" \t") );
+      if (strings.size() < 3)
+      {
+        if (pr) pr->error(vtk_filename + " is not a valid VTK file. POLYGONS attributes are number of cells and size of cell list.");
+        return result;
+      }
+      std::istringstream iss(strings[1]);
+      int numElems = 0;
+      iss.exceptions( std::ifstream::badbit );
+      try
+      {
+        iss >> numElems;
+      }
+      catch (...)
+      {
+        if (pr) pr->error(vtk_filename + " is not a valid VTK file. Parsing POINTS attribute number of cells failed.");
+        return result;
+      }
+
+      VtkToTriSurfField_elems(inputfile, result, numElems);
+      if (vmesh->num_faces() == numElems) processed_elems = true;
+      else
+      {
+        if (pr) pr->error("Could not read polygons from " + vtk_filename);
+        return result;
+      }
+    }
+    
+    std::getline(inputfile, line, '\n');
+    while ( (line.size() < 1) || (line[0] == '#') )
+      std::getline(inputfile, line, '\n');
+
+    if ( ( line.find("POINTS") != std::string::npos ) &&
+         (! processed_points ) &&
+         processed_elems )
+    {
+      std::vector<std::string> strings;
+      boost::split( strings, line, boost::is_any_of(" \t") );
+      if (strings.size() < 3)
+      {
+        if (pr) pr->error(vtk_filename + " is not a valid VTK file. POINTS attributes are number of points and data type.");
+        return result;
+      }
+      std::istringstream iss(strings[1]);
+      int numPoints = 0;
+      iss.exceptions( std::ifstream::badbit );
+      try
+      {
+        iss >> numPoints;
+      }
+      catch (...)
+      {
+        if (pr) pr->error(vtk_filename + " is not a valid VTK file. Parsing POINTS attribute number of points failed.");
+        return result;
+      }
+      
+      VtkToTriSurfField_points(inputfile, result, numPoints);
+      
+      if (vmesh->num_nodes() == numPoints) processed_points = true;
+      else
+      {
+        if (pr) pr->error("Could not read points from " + vtk_filename);
+        return result;
+      }
+    }
+    else if ( ( line.find("POLYGONS") != std::string::npos ) &&
+              (! processed_elems ) &&
+              processed_points )
+    {
+      std::vector<std::string> strings;
+      boost::split( strings, line, boost::is_any_of(" \t") );
+      if (strings.size() < 3)
+      {
+        if (pr) pr->error(vtk_filename + " is not a valid VTK file. POLYGONS attributes are number of cells and size of cell list.");
+        return result;
+      }
+      std::istringstream iss(strings[1]);
+      int numElems = 0;
+      iss.exceptions( std::ifstream::badbit );
+      try
+      {
+        iss >> numElems;
+      }
+      catch (...)
+      {
+        if (pr) pr->error(vtk_filename + " is not a valid VTK file. Parsing POINTS attribute number of cells failed.");
+        return result;
+      }
+      
+      VtkToTriSurfField_elems(inputfile, result, numElems);
+      if (vmesh->num_faces() == numElems) processed_elems = true;
+      else
+      {
+        if (pr) pr->error("Could not read polygons from " + vtk_filename);
+        return result;
+      }
+    }
+    else
+    {
+      if (pr) pr->error(vtk_filename + " is not compatible with this importer. The file should contain POLYDATA with POINTS and POLYGONS.");
+      return result;
+    }
+    
+    inputfile.close();
+  }
+  catch (...)
+  {
+    if (pr) pr->error("Could not open file: " + vtk_filename);
+  }
+  
+  return result;
+}
 
 FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename)
 {
@@ -211,7 +533,7 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
     {
       inputfile.open(pts_fn.c_str());
 
-      while( getline(inputfile,line,'\n'))
+      while ( getline(inputfile,line,'\n') )
       {
         if (line.size() > 0)
         {
@@ -1106,6 +1428,7 @@ static FieldIEPlugin TriSurfFieldBaseIndexOne_plugin("TriSurfField[BaseIndex 1]"
 static FieldIEPlugin CVRTI_FacPtsFileToTriSurf_plugin("CVRTI_FacPtsFileToTriSurf", "{.fac} {.tri} {.pts} {.pos}", "", TextToTriSurfField_reader, TriSurfFieldToTextBaseIndexZero_writer);
 static FieldIEPlugin TriSurfFieldToM_plugin("TriSurfFieldToM", "{.m}", "", MToTriSurfField_reader, TriSurfFieldToM_writer);
 static FieldIEPlugin TriSurfFieldVtk_plugin("TriSurfFieldToVtk", "{.vtk}", "", 0, TriSurfFieldToVtk_writer);
+static FieldIEPlugin VtkFromTriSurfField_plugin("VtkFromTriSurfField[Seg3D export]", "{.vtk}", "", VtkToTriSurfField_reader, 0);
 static FieldIEPlugin TriSurfFieldToExotxt_plugin("TriSurfFieldToExotxt", "{.ex2}", "", 0, TriSurfFieldToExotxt_writer);
 static FieldIEPlugin TriSurfFieldToExotxtBaseIndexOne_plugin("TriSurfFieldToExotxt[BaseIndex 1]", "{.ex2}", "", 0, TriSurfFieldToExotxtBaseIndexOne_writer);
 

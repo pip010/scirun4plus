@@ -19,7 +19,7 @@
 
 \section{Getting Started}
 
-SCIRun version \SCIRunVersion is currently available as a binary download for Windows XP/Vista and for Mac OS X 10.5 and better.
+SCIRun version \SCIRunVersion is currently available as a binary download for Windows and for Mac OS X 10.6 and newer.
 For all other platforms one currently needs to build SCIRun from source.
 We recommend to only use the source distribution for building SCIRun on Linux or for those users who want to contribute to the code.
 This installation guide deals with both installing the binary distribution and the source distribution.
@@ -28,14 +28,8 @@ This installation guide deals with both installing the binary distribution and t
 
 SCIRun is currently being distributed through two channels:
 \begin{itemize}
-\item code and binaries can be downloaded from our \href{http://software.sci.utah.edu}{website}
-\item the SCIRun code can be checked out through our subversion repository (see section \hyperref[dev]{\ref{dev} downloading for development})
-\end{itemize}
-
-At all times two versions of SCIRun are available:
-\begin{itemize}
-\item the release version of SCIRun, which is currently version \SCIRunVersion.
-\item the development version of SCIRun, which is currently version 4.4.
+\item code and binaries can be downloaded from our \href{http://www.scirun.org}{website}
+\item the SCIRun code can be checked out through our subversion repository (see \autoref{sec:dev})
 \end{itemize}
 
 The release version is intended to be the most stable version in which will only be updated with bug fixes.
@@ -51,6 +45,8 @@ it will list the SCIRun version and build revision number of that specific build
 
 \section{System Requirements}
 
+Please check the \href{http://www.scirun.org}{SCIRun website} under the \textbf{Specifications} tab for up-to-date platform information.
+
 \subsection{Windows}
 
 For Windows we highly recommended using the binary downloads as building SCIRun from source on these platforms is more complicated.
@@ -61,9 +57,8 @@ The latest graphics card drivers can generally be downloaded from the card manuf
 
 \subsection{OS X}
 
-For OS X binary downloads are available for OS X 10.5 and up.
+For OS X binary downloads are available for OS X 10.6 and newer.
 We do not support any older version of OS X, and the current version of SCIRun fails to build on these older operating systems.
-Currently both PowerPC and Intel-based workstations are supported for OS X 10.5 and the binary downloads are built as universals that should work on any Macintosh machine that supports OS X 10.5 or 10.6.
 
 One needs to have an NVIDIA or ATI graphics card to make use of the volume rendering capabilities in SCIRun.
 Laptops that rely on an Intel graphics card generally do not support the functionality that is needed for volume
@@ -74,7 +69,7 @@ SCIRun will work on these laptops but certain functionality in its kernel will b
 
 We currently test our SCIRun distribution on Fedora, SuSE and Ubuntu.
 However SCIRun will probably work fine on other Linux distribution as well.
-Currently SCIRun has to be build from source and it is recommended to have a GCC version of 3.4 or higher.
+Currently SCIRun has to be build from source and it is recommended to have GCC 4.
 
 For Linux platforms we recommend against the use of ATI graphics cards as the graphics drivers are not compatible with SCIRun 4.x.
 For doing any volume rendering on Linux we recommend the use of a NVIDIA graphics card.
@@ -88,7 +83,7 @@ becomes available.
 Visual Studio 2008 or the Visual Studio 2008 Express Edition are required to compile SCIRun on Windows.
 We no longer support older compilers such as Visual Studio 2003 and Visual Studio 2005.
 
-To compile SCIRun on OS X or Linux, we require the GCC/G++ compiler version 3.4 or newer.
+To compile SCIRun on OS X or Linux, we require the GCC/G++ compiler version 4.x.
 As we cannot test any older versions, we cannot guarantee that the code base will compile on those compilers.
 The SCIRun version 4.0 will compile on older versions, however more recent versions will require newer compilers.
 
@@ -129,17 +124,17 @@ CMake GUI is strongly recommended) to generate Visual Studio 2008 project files.
 Both 32 and 64 bit architectures are supported.
 More detailed information about how to build SCIRun on Windows can be found in the Developer Guide.
 
-\section{Downloading source from Subversion for development}\label{dev}
+\section{Downloading source from Subversion for development}\label{sec:dev}
 
 Anonymous checkout is supported for read-only access to the SCIRun Subversion repository.
 Developers with a SCI account can use their SCI account to authenticate with the Subversion server.
 Full access information is available from the project
-\href{https://code.sci.utah.edu/gf/project/cibc/scmsvn/?action=AccessInfo}{Subversion portal}.
+\href{https://gforge.sci.utah.edu/gf/project/cibc/scmsvn/?action=AccessInfo}{Subversion portal}.
 Anonymous checkout is also supported in Windows Subversion clients such as TortoiseSVN.
 
 \begin{verbatim}
 svn checkout --username anonymous \
-  https://code.sci.utah.edu/svn/cibc/cibc/trunk SCIRun
+  https://gforge.sci.utah.edu/svn/cibc/cibc/trunk SCIRun
 \end{verbatim}
 
 \noindent This will include SCIRun data from Subversion as well as the source code.
@@ -147,16 +142,16 @@ To only download SCIRun source code:
 
 \begin{verbatim}
 svn checkout --username anonymous \
-  https://code.sci.utah.edu/svn/cibc/cibc/trunk/SCIRun SCIRun_source
+  https://gforge.sci.utah.edu/svn/cibc/cibc/trunk/SCIRun SCIRun_source
 \end{verbatim}
 
 SCIRun data can be obtained separately from Subversion.
 Full access information is available from the project
-\href{https://code.sci.utah.edu/gf/project/CIBCData/scmsvn/?action=AccessInfo}{Subversion portal}.
+\href{https://gforge.sci.utah.edu/gf/project/CIBCData/scmsvn/?action=AccessInfo}{Subversion portal}.
 
 \begin{verbatim}
 svn checkout --username anonymous \
-  https://code.sci.utah.edu/svn/CIBCData/SCIRunData
+  https://gforge.sci.utah.edu/svn/CIBCData/SCIRunData
 \end{verbatim}
 
 \end{document}

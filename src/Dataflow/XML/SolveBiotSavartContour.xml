@@ -34,22 +34,26 @@
     <authors>
       <author>Petar Petrov</author>
     </authors>
-    <summary>My FIRST MODULE :)</summary>
+    <summary>Magnetic B-field via Biot-Savart Contour Integration</summary>
   </overview>
   <io>
     <inputs lastportdynamic="no">
 	  <port>
         <name>Mesh</name>
         <datatype>SCIRun::Field</datatype>
-      </port>
+    </port>
 	  <port>
         <name>Coil</name>
         <datatype>SCIRun::Field</datatype>
-      </port>
+    </port>
     </inputs>
     <outputs>
       <port>
-        <name>BField</name>
+        <name>VectorBField</name>
+        <datatype>SCIRun::Matrix</datatype>
+      </port>
+      <port>
+        <name>VectorAField</name>
         <datatype>SCIRun::Matrix</datatype>
       </port>
     </outputs>

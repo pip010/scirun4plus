@@ -18,8 +18,8 @@ template <class T>
 class Bin   
 { 
 public:
-  Bin() {};
-  ~Bin() {};
+  Bin();
+ ~Bin();
 
   inline bool empty() const { return _elements.empty(); };
   inline void clear() { _elements.clear(); };
@@ -34,9 +34,12 @@ public:
   inline int getNeighborAt(int index) const 
   { return _neighbors[index]; };
   inline int numNeighbors() const { return _neighbors.size(); };
+  
+  
     
 private:
-  custom_class::svector<int> _neighbors;
+  //custom_class::svector<int> _neighbors;
+  std::vector<int> _neighbors;
   custom_class::svector<T> _elements;
 };
 

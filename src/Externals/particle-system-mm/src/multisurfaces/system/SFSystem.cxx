@@ -25,6 +25,7 @@
 #include <system/optimization/ApproximateNeighborhoods.h>
 #include <system/optimization/LODController.h>
 #include <system/SFSystem.h>
+#include <limits>
 
 #ifdef _WIN32
 #pragma warning ( disable: 4305 4018 )
@@ -35,6 +36,7 @@ using namespace custom_class;
 using namespace std;
 
 enum { COTAN, RADIAL };
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -62,10 +64,14 @@ SFSystem::SFSystem( const char *param_file )
   // now, pass all the variables in by reference to the file reader
   int energy;
   char i_file[350];
+  float ROI[] = {0.0f,0.0f,0.0f};
   readParamFile( param_file, _file_name, energy, max_allowed_sf,
                  _initial_sf,
                  _init_num_points, _num_materials, _num_intersections, 
-                 i_file );
+                 i_file,
+                 ROI[0],
+                 ROI[1],
+                 ROI[2] );
 
   // create the IO function
   _io_field = new IOScalarField( _file_name, IOScalarField::INTERPOLATING );
@@ -173,22 +179,23 @@ SFSystem::SFSystem( const char *param_file )
                            _start, _end, 0,
                            NORMALIZED_IDEAL_DISTANCE_2 );
     }
-
+//PIP
+// decreased the precision by 1 to all, try relaxing the algo
     // optimizer variables
-    float threshold = 10.0e-6;
+    float threshold = 10.0e-5;
     int modulo = 4;
     if ( _intersection[i].num_materials == 1 )
-      threshold = 1.0e-6;
+      threshold = 1.0e-5;
     else if ( _intersection[i].num_materials == 2 )
     {
-      threshold = 1.0e-5;
+      threshold = 1.0e-4;
       //modulo = 2;
-    }
+    }	
     else if ( _intersection[i].num_materials == 3 )
-      threshold = 1.0e-5;
+      threshold = 1.0e-4;
     else if ( _intersection[i].num_materials == 4 )
     {
-      threshold = 1.0e-4;
+      threshold = 1.0e-3;
       modulo = 2;
     }
     
@@ -210,27 +217,33 @@ SFSystem::SFSystem( const char *param_file )
     //******************************
     // create the neighborhood
     //******************************
+    float pointsBB[6];
     
     // find number of bins
     // if past memory threshold, multiply binning radius by appropriate factor to reduce # of bins
     // TODO: find a more versatile fix for this problem
     radius = radius*4;
+    cout << "creating Neighborhood " << endl;
     Neighborhood<DynamicSurfacePoint>* n = 
       new neighborhood_type( radius, d_start, d_end );
-    cerr << "created Neighborhood " << endl;
+    cout << "created Neighborhood " << endl;
     domain->neighborhood( n, radius );
 
     initializePointsWithMesh( _intersection[i].mesh_filename, points, 
                               _intersection[i].ps, domain, 
                               _intersection[i].max_sf,
                               _intersection[i].init_with_ptcl,
+                              pointsBB,
                               modulo );
-    cerr << "done initializePointsWithMesh" << endl;
+    cout << "done initializePointsWithMesh" << endl;
+    
+    cout << "bounding box : " << " min-x:" <<  pointsBB[0] << " max-x:" <<  pointsBB[1] << " min-y:" <<  pointsBB[2] << " max-y:" <<  pointsBB[3] << " min-z:" <<  pointsBB[4] << " max-z:" <<  pointsBB[5] << endl;
+    
     //******************************
     // populate the domain
     //******************************
     domain->populateDomain( points );
-    cerr << "done populateDomain" << endl;
+    cout << "done populateDomain" << endl;
     // optimizations
     Optimization **ops=NULL;
     ops = new Optimization*[4]; 
@@ -239,24 +252,33 @@ SFSystem::SFSystem( const char *param_file )
     if ( _intersection[i].optimize_ptcl )
     {
       ops[num_ops++] = new ApproximateNeighborhoods( 6 );
+      
       if ( _intersection[i].num_materials == 4 )
         ops[num_ops++] = new SurfaceConstraint(threshold);
       else
         ops[num_ops++] = new AdaptiveDtSurfaceDistribution(threshold);
+        
       ops[num_ops++] = new GlobalSurfaceEnergyNA();
     }
 
+	//cout << "DEBUG num_materials: " << _intersection[i].num_materials << endl;
     
     // create the optimizer
+    cout << "creating optimizer ..." << endl;
     Optimize *optimizer = new Optimize( ops, num_ops );
-    cerr << "created optimizer" << endl;
+    cout << "created optimizer." << endl;
+    
     // and initialize the system
+	cout << "init optimizer ..." << endl;
     _intersection[i].ps->init( domain, optimizer, points );
-    cerr << "intersection init" << endl;
+    cout << "inited optimizer." << endl;
+
   }
 
   _current_intersection = -1;
   freezeIntersection();
+  
+  cout << "DEBUG point size: " <<  _intersection[_current_intersection].ps->points().size()<< endl;
 }
 
 SFSystem::~SFSystem()
@@ -285,10 +307,18 @@ void SFSystem::initializePointsWithMesh( const char *basename,
                                          Domain *domain,
                                          float max_surface_sf,
                                          bool init_with_ptcl,
+                                         float bb[6],
                                          int modulo )
 {
-  cout << "Initializing with a mesh..." << endl;
-  cout << "\t\t" << basename << endl;
+  cout << "Initializing with a mesh..." << basename << "   (point cloud init):" << init_with_ptcl << endl;
+  //cout << "\t\t" << basename << endl;
+  
+  float BB[] = {numeric_limits<float>::max(),-numeric_limits<float>::max()
+				,numeric_limits<float>::max(),-numeric_limits<float>::max()
+				,numeric_limits<float>::max(),-numeric_limits<float>::max()};
+				
+
+  
   if ( !init_with_ptcl )
   {
     char filename[300]; sprintf( filename, "%s.m", basename );
@@ -300,6 +330,7 @@ void SFSystem::initializePointsWithMesh( const char *basename,
       cout << "Error reading mesh file " << filename << endl;
       exit( 1 );
     }
+    
 
     // read the mesh data into the temp arrays
     string buffer;
@@ -333,6 +364,16 @@ void SFSystem::initializePointsWithMesh( const char *basename,
           point->updateSurfaceParameters();
 
           points.push_back( point );
+          
+			//calcuate bunding box
+		  BB[0] = std::min(BB[0],pos[0]);
+		  BB[1] = std::max(BB[1],pos[0]);
+		  
+		  BB[2] = std::min(BB[2],pos[1]);
+		  BB[3] = std::max(BB[3],pos[1]);
+		  
+		  BB[4] = std::min(BB[4],pos[2]);
+		  BB[5] = std::max(BB[5],pos[2]);
         }
 
         ++counter;
@@ -389,9 +430,28 @@ void SFSystem::initializePointsWithMesh( const char *basename,
       point->updateSurfaceParameters();
 
       points[i] = point;
+      
+      //calcuate bounding box	  
+      BB[0] = std::min(BB[0],pos[0]);
+      BB[1] = std::max(BB[1],pos[0]);
+      
+	  BB[2] = std::min(BB[2],pos[1]);
+      BB[3] = std::max(BB[3],pos[1]);
+      
+      BB[4] = std::min(BB[4],pos[2]);
+      BB[5] = std::max(BB[5],pos[2]);
+      
+
     }
     in.close();
   }
+  
+  bb[0] = BB[0];
+  bb[1] = BB[1];
+  bb[2] = BB[2];
+  bb[3] = BB[3];
+  bb[4] = BB[4];
+  bb[5] = BB[5];
 }
 
 //------------------------------------------------------------------------
@@ -612,7 +672,11 @@ void SFSystem::readParamFile( const char *param_file, char *s,
                               float &initial_sf,
                               int &init_num_pts, int &num_surfaces,
                               int &num_intersections,
-                              char *i_file )
+                              char *i_file,
+                              float& roi_x,
+                              float& roi_y,
+                              float& roi_z
+                               )
 {
   // read in the file
   FILE *file = fopen( param_file, "r" );
@@ -661,6 +725,8 @@ void SFSystem::readParamFile( const char *param_file, char *s,
 	value_str = trim(value_str);
   sprintf( s, "%s", value_str.c_str() );
   
+  float sizing_scale;
+  
   // SFSystem INITIALIZATION
   fscanf( file, "%s%i", v, &init_num_pts );
   cout << "     INITIAL NUMBER OF POINTS : " << init_num_pts << endl;
@@ -670,6 +736,18 @@ void SFSystem::readParamFile( const char *param_file, char *s,
 
   fscanf( file, "%s%f", v, &initial_sf );
   cout << "     INITIAL SF : " << initial_sf << endl;
+  
+  fscanf( file, "%s%f", v, &sizing_scale );
+  cout << "     SIZING  SCALE : " << sizing_scale << endl;
+  
+  fscanf( file, "%s%f", v, &roi_x );
+  cout << "     ROI X : " << roi_x << endl;
+  
+  fscanf( file, "%s%f", v, &roi_y );
+  cout << "     ROI Y : " << roi_y << endl;
+  
+  fscanf( file, "%s%f", v, &roi_z );
+  cout << "     ROI Z : " << roi_z << endl;
 
   fclose( file );
 }

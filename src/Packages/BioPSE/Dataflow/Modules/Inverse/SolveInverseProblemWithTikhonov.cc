@@ -246,7 +246,6 @@ TikhonovAlgorithmImpl::LambdaLookup(const LCurveInput& input, double lambda, int
 void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 {
   // TODO: use DimensionMismatch exception where appropriate
-
   // DIMENSION CHECK!!
   const int M = forwardMatrix_->nrows();
   const int N = forwardMatrix_->ncols();
@@ -254,12 +253,10 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
   {
     throw InvalidState("Input matrix dimensions must agree.");
   }
-  
   if (1 != measuredData_->ncols())
   {
     throw InvalidState("Measured data must be a vector");
   }
-  
   //decide used Tikhonov regularization formulation (underdetermined or overdetermined)
   //based purely on relationship of number of sensors compared to number of source reconstruction points
   //UNDERDETERMINED CASE
@@ -431,25 +428,25 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           throw;
         }
         
-	RRtrAtr_.multiply(solution, RRtrAtrsolution_handle); 
+        RRtrAtr_.multiply(solution, RRtrAtrsolution_handle);
         
         if (sourceWeighting_.get_rep())
-	{
-	  if  (RRtrAtrsolution->nrows()== sourceWeighting_sparse->ncols()) Rx = sourceWeighting_sparse * RRtrAtrsolution; else
-	  if  (RRtrAtrsolution->nrows()== sourceWeighting_sparse->nrows()) Rx = (sourceWeighting_sparse->make_transpose()) * RRtrAtrsolution; else
-	        {
-		 const std::string errorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. "); 
-		 if (pr_)
-                 {
-                  pr_->error(errorMessage);
-                 }
-                  else
-                 {
-                  std::cerr << errorMessage << std::endl;
-                 }
-		}
+        {
+          if  (RRtrAtrsolution->nrows()== sourceWeighting_sparse->ncols()) Rx = sourceWeighting_sparse * RRtrAtrsolution; else
+          if  (RRtrAtrsolution->nrows()== sourceWeighting_sparse->nrows()) Rx = (sourceWeighting_sparse->make_transpose()) * RRtrAtrsolution; else
+          {
+            const std::string errorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. ");
+            if (pr_)
+            {
+              pr_->error(errorMessage);
+            }
+            else
+            {
+              std::cerr << errorMessage << std::endl;
+            }
+          }
         }
-	else Rx = RRtrAtrsolution;
+        else Rx = RRtrAtrsolution;
         
         // Calculate the norm of Ax-b and Rx for L curve
         forwardMatrixRef.multiply(RRtrAtrsolution_handle, *Ax);
@@ -548,7 +545,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     //OVERDETERMINED CASE,
     //similar procedure as underdetermined case (documentation comments similar, see above)
     if ( ((regularizationChoice_ == automatic) && (M>=N)) || (regularizationChoice_==overdetermined) )
-    {
+    { 
       //.........................................................................
       // OPERATE ON DATA:
       // Computes X = (A^T * C^T * C * A + LAMBDA * LAMBDA * R^T * R) * A^T * C^T * C *Y
@@ -558,10 +555,17 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       MatrixHandle mat_AtrA;
       MatrixHandle CCtr;
       MatrixHandle hMatrixNoiseCov_transpose;
+      
       if (!sensorWeighting_.get_rep())
-        //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
+      //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
       {
-        CCtr = DenseMatrix::identity(M);
+        // For large problems, allocating this matrix causes the module to hang.
+        // The CCtr matrix is only used if sensorWeighting is available.
+        //
+        // In general, this code really should be rewritten to use sparse matrices (SCIRun 5)
+        // or have replaced with more efficient calculations
+        // (Eigen may have algorithms we can use).
+        //CCtr = DenseMatrix::identity(M);
         mat_AtrA = (forward_transpose_h * forwardMatrix_)->dense();
       }
       else
@@ -574,6 +578,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         
         hMatrixNoiseCov_transpose = sensorWeighting_->make_transpose();
         
+        // regularizationResidualSubcase_ is either residual_constrained (default) or residual_constrained_squared
         if (regularizationResidualSubcase_ == residual_constrained)
           CCtr = sensorWeighting_->dense();
         else
@@ -582,7 +587,6 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         
         mat_AtrA = (forward_transpose_h * CCtr * forwardMatrix_)->dense();
       }
-     
       DenseMatrix &mat_AtrA_h = *(mat_AtrA->dense());
       // calculate R^T * R
       MatrixHandle mat_RtrR_handle;
@@ -610,19 +614,17 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
              mat_RtrR_handle=matrixRegMat_handle->dense();
 	     
       }
-      
       DenseMatrix &tmp_dense = *(mat_RtrR_handle->dense());
       DenseMatrix mat_RtrR=tmp_dense;
       DenseMatrix &matrixRegMatD = *(matrixRegMat_handle->dense());
       double lambda = 0, lambda_sq = 0;
       int lambda_index = 0;
-      
       // calculate A^T * Y
       MatrixHandle AtrYHandle = new ColumnMatrix(N);
       ColumnMatrix &tmp_columnMatrix = *(AtrYHandle->column());
       ColumnMatrix mat_AtrY= tmp_columnMatrix;
       ColumnMatrix &measuredDataRef=*(new ColumnMatrix(N));
-      if(sensorWeighting_.get_rep())
+      if (sensorWeighting_.get_rep())
       {
         measuredDataRef=*(CCtr*measuredData_)->column();
       }
@@ -630,7 +632,6 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       {
         measuredDataRef= *(measuredData_->column());
       }
-      
       forwardMatrix_->mult_transpose(measuredDataRef, mat_AtrY);
       MatrixHandle regForMatrix_handle = new DenseMatrix(N, N);
       DenseMatrix &regForMatrix = static_cast<DenseMatrix&>(*regForMatrix_handle);
@@ -640,7 +641,6 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       ColumnMatrix &solution = *solution_handle;
       ColumnMatrix &Ax = *Ax_handle;
       ColumnMatrix &Rx = *Rx_handle;
-      
       if ((input.regMethod_ == "single") || (input.regMethod_ == "slider"))
       {
         if (input.regMethod_ == "single")
@@ -725,9 +725,9 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           const DenseMatrix &forwardMatrixRef = *(forwardMatrix_->dense());
           
           forwardMatrixRef.multiply(solution, Ax);
-	  const ColumnMatrixHandle measuredData = measuredData_->column();
+          const ColumnMatrixHandle measuredData = measuredData_->column();
           matrixRegMatD.multiply(solution, Rx);   
-	  // Calculate the norm of Ax-b and Rx
+          // Calculate the norm of Ax-b and Rx
           rho[j]=0; eta[j]=0;
           for (int k = 0; k < M; k++)
           {
@@ -743,7 +743,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           
           rho[j] = sqrt(rho[j]);
           eta[j] = sqrt(eta[j]);
-        }
+        }  
         boost::shared_ptr<LCurveInput> lcurveInput(new LCurveInput(rho, eta, lambdaArray, nLambda));
         lcurveInput_handle_ = lcurveInput;
         lambda = FindCorner(*lcurveInput_handle_, lambda_index);
@@ -752,16 +752,13 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           input.updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
         
       } // END  else if (reg_method_.get() == "lcurve")
-      
       lambda_sq = lambda * lambda;
       
       regularizationParameter_ = new ColumnMatrix(1);
       regularizationParameter_->put(0, 0, lambda);
-      
       int nr_rows = regForMatrix_handle->nrows();
       int nr_cols = regForMatrix_handle->ncols();
       const int NR_BOUNDS_CHECK = nr_rows * nr_cols;
-      
       double* AtrA = mat_AtrA_h.get_data_pointer();
       double* RtrR = mat_RtrR.get_data_pointer();
       double* rm   = regForMatrix.get_data_pointer();
@@ -770,7 +767,6 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       {
         rm[i] = AtrA[i] + lambda_sq * RtrR[i];
       }
-      
       if (computeRegularizedInverse_)
       {
         regForMatrix.invert();
@@ -809,7 +805,6 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           }
           throw;
         }
-
         inverseSolution_ = solution.dense();
       }
       

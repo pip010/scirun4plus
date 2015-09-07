@@ -35,23 +35,18 @@ DEALINGS IN THE SOFTWARE.
 #include <Testing/Util/MatlabMatrixReader.h>
 #include <Packages/BioPSE/Dataflow/Modules/Inverse/SolveInverseProblemWithTikhonovSVD.h>
 
+#include <sci_defs/cmake_test_environment_testdefs.h>
+
 namespace SCIRun
 {
   namespace TestUtils
   {
     namespace 
     {
-      // Visual Studio's debugger use a different build output than bin\Debug, so one needs to hard code for debugging purposes.
-      // TODO: switch testing path root to variable (should be enabled in SCIRun 5)
-#if (DEBUG && _WIN32)
-      boost::filesystem::path testDataRoot = boost::filesystem::path("C:\\Dev\\trunk_ref\\SCIRunUnitTestData");
-#elif (_WIN32) // Windows Release builds?
-      boost::filesystem::path testDataRoot = boost::filesystem::path("..") / ".." / ".." / "SCIRunUnitTestData";
-#else // *nix platforms
-      boost::filesystem::path testDataRoot = boost::filesystem::path("..") / ".." / "SCIRunUnitTestData";
-#endif
-      boost::filesystem::path tikhonovRoot = testDataRoot / "Tikhonov";
-      boost::filesystem::path tikhonovSVDRoot = testDataRoot / "TikhonovSVD";
+      // Set path to unit test data when configuring in CMake project
+
+      boost::filesystem::path tikhonovRoot = boost::filesystem::path(SCIRUN_UNIT_TEST_DATA_DIR) / "Tikhonov";
+      boost::filesystem::path tikhonovSVDRoot = boost::filesystem::path(SCIRUN_UNIT_TEST_DATA_DIR) / "TikhonovSVD";
 
       boost::filesystem::path underDeterminedForwardMatrixFile = tikhonovRoot / "lead_eeg_fem.mat";
       boost::filesystem::path overDeterminedForwardMatrixFile = tikhonovRoot / "lead_eeg_fem_small.mat";

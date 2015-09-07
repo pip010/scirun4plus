@@ -27,15 +27,16 @@
 */
 
 //! Include the algorithm
-#include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Math/BiotSavartSolver/BiotSavartSolver.h>
 
-//! The module class
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/FieldInformation.h>
 
-//! We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
+#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
 
@@ -48,8 +49,7 @@ class SolveBiotSavartContour : public Module {
   
   private:
     //! Define algorithms needed
-    //SCIRunAlgo::GetFieldDataAlgo algo_;
-	SCIRunAlgo::BiotSavartSolverAlgo algo_;
+    SCIRunAlgo::BiotSavartSolverAlgo algo_;
 };
 
 
@@ -66,30 +66,49 @@ void SolveBiotSavartContour::execute()
   //! Define dataflow handles:
   FieldHandle meshField;
   FieldHandle coilField;
-  MatrixHandle matrixdata(0);
+  MatrixHandle dataOutB(0);//B-field
+  MatrixHandle dataOutA(0);//A-field
+
   
   //! Get data from port:
   if(!(get_input_handle("Mesh",meshField,true))) return;
   if(!(get_input_handle("Coil",coilField,true))) return;
 
   //! Data is only computed if the output port is connected:
-  bool need_matrix_data = oport_connected("BField");
+  bool need_matrix_dataB = oport_connected("VectorBField");
+  bool need_matrix_dataA = oport_connected("VectorAField");
+  bool need_matrix_data = need_matrix_dataA || need_matrix_dataB;
 
   //! Only do work if needed:
-  if (inputs_changed_ ||
-      (!oport_cached("BField") && need_matrix_data))
-  {    
+  if (inputs_changed_ || need_matrix_data )
+  {
     update_state(Executing);
     
-    if( need_matrix_data) 
+    if( need_matrix_dataB )
     {
-      //! Run algorithm
-      if(!(algo_.run(meshField,matrixdata))) return;
+		if(!(algo_.run(meshField,coilField,1,dataOutB)))
+		return;
+	}
+
+    if( need_matrix_dataA )
+    {
+		if(!(algo_.run(meshField,coilField,2,dataOutA)))
+		return;
+	}
+
+    if(need_matrix_dataB)
+    {
+        //! If port is not connected at time of execute, send down a null handle
+        //! send data downstream:
+        send_output_handle("VectorBField", dataOutB);
     }
 
-    //! If port is not connected at time of execute, send down a null handle
-    //! send data downstream:
-    send_output_handle("BField", matrixdata);
+    if(need_matrix_dataA)
+    {
+        //! If port is not connected at time of execute, send down a null handle
+        //! send data downstream:
+        send_output_handle("VectorAField", dataOutA);
+    }
 
   }
 }

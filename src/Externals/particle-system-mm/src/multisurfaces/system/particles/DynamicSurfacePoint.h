@@ -70,6 +70,7 @@ namespace particle_sys
     //   updating (the surface parameters and computation of the ideal
     //   energy at this new location)
     void move(const vector_type &new_pos);
+    void move();
 
     void offset(float offset_amt);
 
@@ -106,6 +107,16 @@ namespace particle_sys
     //   DynamicSurfacePoints for potential addition to the System
     inline void temporary(bool t) { _temporary = t; };
     inline bool temporary() { return _temporary; };
+    
+    
+	//--------------------------------------------------------------------
+    // access to the _removable variable, which is used for
+    //   DynamicSurfacePoints for potential removal to the System
+    inline void removable(bool t) { _removable = t; };
+    inline bool removable() { return _removable; };
+    
+	inline void movable(bool t, vector_type new_pos) { _movable = t; _new_pos = new_pos; };
+    inline bool movable() { return _movable; };
 
     //--------------------------------------------------------------------
     // storage variables that can be used 
@@ -153,6 +164,9 @@ namespace particle_sys
     matrix_type _yank;
 
     bool _temporary;  // is this a temp point? (for splitting)
+    bool _removable;
+    bool _movable;
+    vector_type _new_pos;
 
     float _storage_float;
     int _storage_int;

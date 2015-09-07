@@ -102,6 +102,9 @@ namespace particle_sys
     Surface **_material, **_IOmaterial;
     int _num_materials, _num_intersections, _current_intersection;
     float _initial_sf;
+    float _ROI_X;
+    float _ROI_Y;
+    float _ROI_Z;
 
     int _num_qj, _num_tj, _num_dj;
     int *_qj, *_tj, *_dj;
@@ -123,12 +126,16 @@ namespace particle_sys
                        float &max_sf, float &initial_sf,
                        int &init_num_pts,
                        int &num_surfaces, int &num_intersections,
-                       char *i_file); 
+                       char *i_file,
+                       float& roix,
+                       float& roiy,
+                       float& roiz
+                       ); 
 
     void initializePointsWithMesh(const char* basename, 
       custom_class::svector<DynamicSurfacePoint*> &points,
       ParticleSystem *ps, Domain *domain, float max_surface_sf,
-      bool init_with_ptcl, int modulo=1);
+      bool init_with_ptcl,float bb[6], int modulo=1);
 
     
   };

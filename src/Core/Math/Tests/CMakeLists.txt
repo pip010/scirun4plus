@@ -31,6 +31,7 @@
 SET(Core_Math_Tests_SRCS
   SinCosTableTests.cc
   FloatingPointAssertionTests.cc
+  MatMatrixMethodsTests.cc
 )
 
 IF(WITH_LAPACK)

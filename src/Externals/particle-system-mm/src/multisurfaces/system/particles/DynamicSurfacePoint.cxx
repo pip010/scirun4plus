@@ -4,6 +4,7 @@
 #include <system/defines.h>
 #include <system/particles/DynamicSurfacePoint.h>
 
+
 #ifdef _WIN32
 #pragma warning( disable : 4244 4305 4267 )
 #endif
@@ -40,6 +41,8 @@ DynamicSurfacePoint::DynamicSurfacePoint( Domain *d, ParticleSystem *sys,
   _storage_int = 0;
 
   _max_stretch = MAX_VALUE;
+  
+  //cout << "constructor" << endl;
 }
 
 DynamicSurfacePoint::DynamicSurfacePoint( const DynamicSurfacePoint &that )
@@ -66,6 +69,8 @@ DynamicSurfacePoint::DynamicSurfacePoint() : SurfacePoint()
   _storage_int = 0;
 
   _max_stretch = MAX_VALUE;
+  
+  //cout << "empty-constructor" << endl;
 }
 
 //------------------------------------------------------------------------
@@ -351,7 +356,9 @@ void DynamicSurfacePoint::move( const vector_type &new_pos )
   // notify the Domain that the Point will be moving to a new 
   //   location (if this isn't a temporary point!)
   if ( !_temporary )
+  {
     _domain->movingToNewPosition( this, new_pos );
+  }
 
   // set the new position
   _position = new_pos;
@@ -364,6 +371,11 @@ void DynamicSurfacePoint::move( const vector_type &new_pos )
   }
 
   computeRadius();
+}
+
+void DynamicSurfacePoint::move()
+{
+	move(_new_pos);
 }
 
 //------------------------------------------------------------------------

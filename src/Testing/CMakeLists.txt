@@ -58,11 +58,30 @@ SET(BASELINE_IMAGES_DIR "${SCIRUN_TESTING_BINARY_DIR}/../../testing/BaseLineImag
 SET(TEST_IMAGES_DIR "${SCIRUN_TESTING_BINARY_DIR}/../../testing/TestImages" CACHE PATH "Path to test images")
 SET(DIFF_IMAGES_DIR "${SCIRUN_TESTING_BINARY_DIR}/../../testing/DiffImages" CACHE PATH "Path to difference images")
 
-IF(EXISTS "${SCIRUN_TESTING_BINARY_DIR}/../../../SCIRunData")
-  SET(SCIRUN_DATADIR "${SCIRUN_TESTING_BINARY_DIR}/../../../SCIRunData" CACHE PATH "Where to find SCIRunData" FORCE)
-  SET(CTEST_CUSTOM_PRE_TEST "${SVNCOMMAND} update ${SCIRUN_TESTING_BINARY_DIR}/../../../SCIRunData" CACHE STRING "run svn update on data" FORCE)
-  MESSAGE(STATUS "Found SCIRunData for regression testing")
-ENDIF (EXISTS "${SCIRUN_TESTING_BINARY_DIR}/../../../SCIRunData")
+SET(SCIRUN_DATA_DIR "${SCIRUN_TESTING_BINARY_DIR}/../../../SCIRunData" CACHE PATH "Where to find SCIRunData")
+SET(SCIRUN_UNIT_TEST_DATA_DIR "${SCIRUN_TESTING_BINARY_DIR}/../../../SCIRunUnitTestData" CACHE PATH "Where to find SCIRunUnitTestData")
+
+IF(NOT IS_ABSOLUTE ${SCIRUN_DATA_DIR})
+  MESSAGE(WARNING "${SCIRUN_DATA_DIR} should be an absolute path")
+ENDIF()
+
+IF(NOT IS_ABSOLUTE ${SCIRUN_UNIT_TEST_DATA_DIR})
+  MESSAGE(WARNING "${SCIRUN_UNIT_TEST_DATA_DIR} should be an absolute path")
+ENDIF()
+
+IF(EXISTS ${SCIRUN_DATA_DIR})
+  MESSAGE(STATUS "Found ${SCIRUN_DATA_DIR} for regression testing.")
+ELSE(EXISTS ${SCIRUN_DATA_DIR})
+  MESSAGE(FATAL_ERROR "SCIRunData directory for regression testing was not found. This directory needs to be a local working copy of the CIBCData repository, which is included as a Subversion external in the SCIRun repository.")
+ENDIF(EXISTS ${SCIRUN_DATA_DIR})
+
+IF(EXISTS ${SCIRUN_UNIT_TEST_DATA_DIR})
+  MESSAGE(STATUS "Found ${SCIRUN_UNIT_TEST_DATA_DIR} for unit tests.")
+ELSE(EXISTS ${SCIRUN_UNIT_TEST_DATA_DIR})
+  MESSAGE(FATAL_ERROR "SCIRunUnitTestData for unit tests was not found. This directory needs to be a local working copy of the sciruntests repository, which is included as a Subversion external in the SCIRun repository.")
+ENDIF(EXISTS ${SCIRUN_UNIT_TEST_DATA_DIR})
+
+SET(CTEST_CUSTOM_PRE_TEST "${SVNCOMMAND} update ${SCIRUN_DATA_DIR} ${SCIRUN_UNIT_TEST_DATA_DIR}" CACHE STRING "run svn update on unit test data" FORCE)
 
 # ----------------------------------------------------------------------
 # Finding scirun executable
@@ -95,13 +114,13 @@ ENDIF(RUN_MODULE_TESTS OR RUN_SAMPLE_TESTS OR RUN_TOOLKITS)
 
 MARK_AS_ADVANCED(FORCE EXE_LOC)
 
-IF(SCIRUN_DATADIR)
-  SET(DATADIR_LOCATION "${SCIRUN_DATADIR}" CACHE INTERNAL "Find default SCIRunData" FORCE)
+IF(SCIRUN_DATA_DIR)
+  SET(DATADIR_LOCATION "${SCIRUN_DATA_DIR}" CACHE INTERNAL "Find default SCIRunData" FORCE)
   SET(SET_DATADIR "-d" CACHE INTERNAL "" FORCE)
-ELSE(SCIRUN_DATADIR)
+ELSE(SCIRUN_DATA_DIR)
   SET(DATADIR_LOCATION "" CACHE INTERNAL "Find default SCIRunData" FORCE)
   SET(SET_DATADIR "" CACHE INTERNAL "" FORCE)
-ENDIF(SCIRUN_DATADIR)
+ENDIF(SCIRUN_DATA_DIR)
 
 MARK_AS_ADVANCED(FORCE SET_DATADIR)
 

@@ -137,6 +137,9 @@ IOScalarField::IOScalarField( const char *filename, int kernel_type,
 
   // set the domain bounds
   _indicators[_main_indicator]->bounds( _d_start, _d_end );
+  
+  f = new float[_num_indicators-1];
+  fx = new vector_type[_num_indicators-1];
 
 }
 
@@ -145,6 +148,8 @@ IOScalarField::~IOScalarField()
   for ( int i = 0; i < _num_indicators; i++ )
     delete _indicators[i];
   delete [] _indicators;
+  delete [] f;
+  delete [] fx;
 }
 
 //------------------------------------------------------------------------
@@ -194,8 +199,8 @@ bool IOScalarField::computeSurfacePointParams( const vector_type &pos,
   float sf = params._sf;
   vector_type fx_1 = params._Fx;
 
-  float *f = new float[_num_indicators-1];
-  vector_type *fx = new vector_type[_num_indicators-1];
+  //float *f = new float[_num_indicators-1];
+  //vector_type *fx = new vector_type[_num_indicators-1];
   int counter=0;
   for ( int i = 0; i < _num_indicators; i++ )
   {
@@ -221,8 +226,8 @@ bool IOScalarField::computeSurfacePointParams( const vector_type &pos,
 
   params._sf = sf;
 
-  delete [] f;
-  delete [] fx;
+  //delete [] f;
+  //delete [] fx;
 
   return true;
 }

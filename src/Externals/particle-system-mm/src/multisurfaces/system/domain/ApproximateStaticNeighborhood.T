@@ -1,8 +1,13 @@
 #include <cstdlib>
 #include <iostream>
 
+
+
+
 using namespace custom_class;
 using namespace std;
+
+
 
 //------------------------------------------------------------------------
 // Function    : Constructor
@@ -38,6 +43,7 @@ void ApproximateStaticNeighborhood<T>::populateNeighborhood(const svector<T*>
   for ( unsigned int i = 0; i < points.size(); i++ )
     _bins->addElementToBin( _bins->whichBin(points[i]->position()), 
                             points[i] );
+
 }
 
 //------------------------------------------------------------------------
@@ -48,6 +54,7 @@ void ApproximateStaticNeighborhood<T>::populateNeighborhood(const svector<T*>
 template <class T>
 void ApproximateStaticNeighborhood<T>::removeFromNeighborhood( T *point )
 {
+lock_guard<mutex> guardian(lock);
   _bins->removeElementFromBin( _bins->whichBin(point->position()),
                                point );
                                
@@ -75,11 +82,15 @@ template <class T>
 void ApproximateStaticNeighborhood<T>::movingLocation( T* const point,
                                                       const vector_type &new_pos )
 {
+
+  //lock_guard<mutex> guardian(lock);
+
   int old_bin = _bins->whichBin( point->position() );
   int new_bin = _bins->whichBin( new_pos );
 
   if ( new_bin != old_bin )
   {
+	//cout << " BM ";
     _bins->removeElementFromBin( old_bin, point );
     _bins->addElementToBin( new_bin, point );
   }
@@ -114,6 +125,7 @@ void ApproximateStaticNeighborhood<T>::determineNeighborhood( const T *point )
 template <class T>
 void ApproximateStaticNeighborhood<T>::updateNeighborhoodList( const T *point )
 {
+
   // get the location of the neighbor list
   svector<T*> *list = const_cast<T*>(point)->neighbors();
   list->clear();
@@ -227,9 +239,15 @@ T* ApproximateStaticNeighborhood<T>::nextNeighborForList( const T *point )
 template <class T>
 T* ApproximateStaticNeighborhood<T>::nextNeighbor( const T *point )
 {
+
   //cout << _neighbor_index << "  " << _num_neighbors << endl;
   if ( _neighbor_index == _num_neighbors )
     return NULL;
+    
+  _neighbor_index++;
+  
+  if( !  const_cast<T*>(point)->neighbors()->isValid(_neighbor_index) )
+	return NULL;
       
-  return ( const_cast<T*>(point)->neighbors()->at( _neighbor_index++ ) );
+  return ( const_cast<T*>(point)->neighbors()->at( _neighbor_index ) );
 }

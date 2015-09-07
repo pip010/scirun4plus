@@ -46,7 +46,7 @@ void ParticleSystem::init( Domain *d, Optimize *o,
   // initialize the optimizations
   _optimizer->init( _points, 5 );
 
-  cout << "Done intializing" << endl;
+  //cout << "Done intializing" << endl;
 }
 
 void ParticleSystem::init( Domain *d, Optimize *o )

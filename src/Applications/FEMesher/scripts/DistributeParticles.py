@@ -37,6 +37,7 @@ import os
 import time
 import glob
 import shutil
+import pdb
 
 if sys.version_info[0] < 3 :
 	from thread import start_new_thread
@@ -86,7 +87,7 @@ def wait_on_procs(procs) :
 				print("%d processes are complete of %d pid:%d" % (ndone, len(procs), p.pid))
 		count = count + 1
 
-def start_proc(optimize_ps_cmmd,procs,max_procs) :
+def start_proc(optimize_ps_cmmd,procs,max_procs,n_proc) :
 	#print("Start Proc: len(procs:%d Cmmd:%s\n"% (len(procs),optimize_ps_cmmd))
 	if (len(procs) >= max_procs) :
 		done = False
@@ -97,13 +98,18 @@ def start_proc(optimize_ps_cmmd,procs,max_procs) :
 					done = True
 					procs.remove(p)
 					break
+	procstdout = "procs" + str(n_proc) + ".log"
+	optimize_ps_cmmd = optimize_ps_cmmd + " > " + procstdout
+	print("**** parallel process console output: " + optimize_ps_cmmd)
+	#pdb.set_trace()
 	proc = subprocess.Popen(optimize_ps_cmmd,  shell=True, bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=model_output_path)
+
 	Utils.rec_pid(proc.pid)
 	procs.append(proc)
 	# the output from processes need to be dumped or the
 	# buffer fills up and it sleeps.
-	print("starting thread to dump")
-	print(proc)
+	#print("starting thread to dump")
+	#print(proc)
 	start_new_thread(dump_log, (proc, ))
 	
 
@@ -265,7 +271,27 @@ if __name__ == "__main__" :
 
 	if MAX_SIZING_FIELD != "" :
 		max_sizing_field = MAX_SIZING_FIELD
-	  
+	
+	#pip was not passed down to optimize-particles-system
+	if SIZING_SCALE_VAR != "" :
+		sizing_scale_var = SIZING_SCALE_VAR
+	else:
+		sizing_scale_var = 1.0
+
+	if ROI_X != "" :
+		roi_x = ROI_X
+	else:
+		roi_x = 0.5
+	
+	if ROI_Y != "" :
+		roi_y = ROI_Y
+	else:
+		roi_y = 0.5
+		
+	if ROI_Z != "" :
+		roi_z = ROI_Z
+	else:
+		roi_z = 0.5
 
 	psys_txt = [
 			"ENERGY                  radial\n",
@@ -275,7 +301,10 @@ if __name__ == "__main__" :
 			"BASE_FILE_NAME          %s/%s/particle_params.txt\n" % (cwd,dnm),
 			"INIT_NUM_POINTS         5\n", #unused
 			"MAX_SF                  %f\n" % max_sizing_field,
-			"SIZING_SCALE            %f\n" % 0.4
+			"SIZING_SCALE            %f\n" % sizing_scale_var,
+			"ROI_X           		 %f\n" % roi_x,
+			"ROI_Y            		 %f\n" % roi_y,
+			"ROI_Z            		 %f\n" % roi_z,
 			]
 
 	f = open(os.path.join(dnm,'psystem_input.txt'), 'w')
@@ -304,9 +333,11 @@ if __name__ == "__main__" :
 
 		optimize_ps_cmmd = r'"%s" %s %s %s %s ' % (os.path.join(binary_path,"optimize-particle-system"), os.path.join("junctions","psystem_input.txt"), num_particle_iters, i, i)
 		
-		start_proc(optimize_ps_cmmd,procs,max_procs)
-
 		print("**** parallel process %s of %s: %s\n"%(i-g_nquads-g_ntrips+1,g_ndoubs,optimize_ps_cmmd))
+		
+		start_proc(optimize_ps_cmmd,procs,max_procs,i-g_nquads-g_ntrips+1)
+
+		
 
 	wait_on_procs(procs)
 

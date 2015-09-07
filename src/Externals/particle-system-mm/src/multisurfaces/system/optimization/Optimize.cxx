@@ -2,10 +2,23 @@
 #include <iostream>
 #include <system/particles/DynamicSurfacePoint.h>
 #include <system/optimization/Optimize.h>
+#include <ctime>
 
 using namespace particle_sys;
 using namespace std;
 
+void tprint()
+{
+  time_t rawtime;
+  //struct tm * ptm;
+
+  time ( &rawtime );
+
+  //ptm = gmtime ( &rawtime );
+
+cout << "DEBUG TIMESTAMP " << rawtime << endl;
+
+}
 //------------------------------------------------------------------------
 // Function    : Constructor and Destructor
 // Description : 
@@ -34,7 +47,10 @@ void Optimize::init( custom_class::svector<DynamicSurfacePoint*> &points,
                     int num_iterations )
 {
   for ( int i = 0; i < _num_ops; i++ )
+  {
+	  cout << "Optimize::init [" << i+1 << "|" << _num_ops << "]" << endl;
     _optimizations[i]->init( points, num_iterations );
+  }
 }
 
 //------------------------------------------------------------------------
@@ -56,7 +72,16 @@ void Optimize::optimize( svector<DynamicSurfacePoint*> &points )
 
   for ( int i = 0; i < _num_ops; i++ )
   {
+	  //DEBUG pip
+	  //cout << "DEBUG START op " << i << endl;
+	  //tprint();
+	  
     _optimizations[i]->optimize( points );
+    
+	//DEBUG pip
+	  //cout << "DEBUG END op " << i  << endl;
+	  //tprint();
+    
     if ( !_optimizations[i]->optimized()  )
       return;
   }

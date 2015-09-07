@@ -15,7 +15,14 @@
 using namespace particle_sys;
 using namespace std;
 
-
+void SurfaceConstraint::optimize(custom_class::svector<DynamicSurfacePoint*> &points)
+{ 
+	cout << "SurfaceConstraint::optimize [start]" << endl;
+	init(points); 
+	_optimized=true; 
+	cout << "SurfaceConstraint::optimize [end]" << endl;
+};
+    
 void SurfaceConstraint::init( svector<DynamicSurfacePoint*> &points,
                               int num_iterations )
 { 
@@ -59,15 +66,17 @@ SurfaceConstraint::projectOntoSurface(DynamicSurfacePoint *point,
   vector_type feedback;
   for ( int i = 0; i < num_projections; i++ )
   {
-    if ( !point->domain()->surface()->projectOntoSurface(point,
-                                                         feedback) )
-      feedback = (-point->F()/(point->Fx().length() + EPSILON)) * 
-        point->normal();
+	 //P.Petrov 2014
+	 //this function is hardcoded to return false :( WTF
+    //if ( !point->domain()->surface()->projectOntoSurface(point, feedback) )
+      feedback = (-point->F()/(point->Fx().length() + EPSILON)) * point->normal();
 
     // project the Point onto the Surface
     vector_type pos = point->position() + feedback;
    
     // update the Point's position
+    // P.Petrov 2014
+    //maybe we can compute only the energy function and avoid moving the point  ??
     point->move( pos );
     if (fabs(point->F()) < threshold) return;
    }

@@ -126,3 +126,10 @@ CONFIGURE_FILE (
       "${SCIRUN_CORE_SOURCE_DIR}/include/sci_defs/version_testdefs.h.in"
       "${SCIRUN_CORE_BINARY_DIR}/include/sci_defs/version_defs.h"
 )
+
+IF(BUILD_TESTING)
+  CONFIGURE_FILE (
+        "${SCIRUN_CORE_SOURCE_DIR}/include/sci_defs/cmake_test_environment_testdefs.h.in"
+        "${SCIRUN_CORE_BINARY_DIR}/include/sci_defs/cmake_test_environment_testdefs.h"
+  )
+ENDIF(BUILD_TESTING)

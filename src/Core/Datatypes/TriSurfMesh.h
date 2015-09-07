@@ -1,4 +1,4 @@
-/*
+ /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
@@ -1486,9 +1486,9 @@ protected:
     typename ARRAY::value_type edge;
     for (size_t i=0; i<faces.size(); i++)
     {
-      for (index_type j=0; j<4; j++)
+      for (index_type j=0; j<3; j++)
       {
-        edge = halfedge_to_edge_[faces[i]*4+j]; 
+        edge = halfedge_to_edge_[faces[i]*3+j];
         size_t k=0;
         for (; k<array.size(); k++)
           if (array[k] == edge) break;

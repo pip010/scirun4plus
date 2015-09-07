@@ -35,6 +35,7 @@ SET(Core_Algorithms_Fields_SRCS ${Core_Algorithms_Fields_SRCS}
   MeshData/FlipSurfaceNormals.cc
   Cleanup/CleanupTetMesh.cc
   Cleanup/RemoveUnusedNodes.cc
+  Cleanup/TriSurfConsistencyCorrection.cc
   ClipMesh/ClipMeshByIsovalue.cc
   ClipMesh/ClipMeshBySelection.cc
   CollectFields/CollectPointClouds.cc
@@ -141,7 +142,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Fields
   Core_Exceptions 
   Core_Thread 
   Core_Geom 
-  Core_Geometry 
+  Core_Geometry
   Core_Algorithms_Converter
   Core_Algorithms_Math
   Core_Algorithms_Util 
@@ -155,6 +156,10 @@ IF(WITH_TETGEN)
      ${SCI_TETGEN_LIBRARY}
   )
 ENDIF(WITH_TETGEN)
+
+IF(BUILD_TESTING)
+  ADD_SUBDIRECTORY(Tests)
+ENDIF(BUILD_TESTING)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Fields)
