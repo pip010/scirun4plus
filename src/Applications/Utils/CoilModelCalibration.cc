@@ -127,6 +127,7 @@ void PrintAnalyticalBfield(const std::vector<Vector>& data)
 void printUsageInfo(char *progName) 
 {
 	std::cerr << "\n Usage: " << progName << " type lod istep radius\n\n";
+	std::cerr << "\t Reports magnetic field magnitude at axial distance of 1, 2, 3, 5, 8 cm.  \n";
 	std::cerr << "\t where, type: 1 - circular coil  \n";
 	std::cerr << "\t              2 - spiral coil \n";
 	std::cerr << "\t              3 - dipoles model \n";
