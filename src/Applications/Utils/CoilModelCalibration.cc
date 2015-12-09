@@ -72,7 +72,7 @@ void CreateCoil(FieldHandle& fh, int type, int lod, double rad)
 		SCIRunAlgo::ModelTMSCoilSpiralAlgo::Args coilAlgoSpiralArgs;
 		coilAlgoSpiralArgs.type = 1; //single figure-0 shaped coil
 		coilAlgoSpiralArgs.wireCurrent = 55.0d;//55 A
-		coilAlgoSpiralArgs.wireLoops = 9; //????????????????????????????????????????????????????????
+		coilAlgoSpiralArgs.wireLoops = 9; 
 		coilAlgoSpiralArgs.coilRadiusInner = 0.029d;
 		coilAlgoSpiralArgs.coilRadiusOuter = 0.044d;
 		coilAlgoSpiralArgs.coilDistanceOuter = 0.002d;
@@ -153,9 +153,6 @@ int parseArgs(mainargs& margs, int argc, char *argv[])
 		return 0;
 	}
 
-	//margs.type = std::stoi(arg1);
-	//margs.lod = std::stoi(arg2);
-	//margs.istep = std::stod(arg3);
 	margs.type = atoi(arg1.c_str());
 	margs.lod = atoi(arg2.c_str());
 	margs.istep = atof(arg3.c_str());

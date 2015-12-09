@@ -431,7 +431,11 @@ using namespace SCIRun;
 
 					coilLayersStep = args.coilLayersStep;
 
-					current = current / coilLayers;
+					//no auto current adjustment for each layer
+					//hidden functionality (rather be explicit up front)
+					//leave it up to users judgment
+
+					//current = current / coilLayers;
 				}
 				
 				~MultiloopsCoilgen()
@@ -552,6 +556,15 @@ using namespace SCIRun;
 					//TODO refactor to avoid this
 					Vector endp(center.x() + innerR * cos(M_PI), center.y() + innerR * sin(M_PI), center.z());
 					segments.AddPoint(endp, -current);
+				}
+
+				/// this is tricky but doable, the idea is to distribute the current along each coil winding 
+				/// so that the top surface flux is not linear but curved (bell shaped like)
+				/// this is required since in the AC profile there is inter-winding coupling increasing the resistivity of the net
+				/// please see: https://en.wikipedia.org/wiki/Proximity_effect_%28electromagnetism%29
+				void AdjustForProximityEffect()
+				{
+					
 				}
 				
 		};
