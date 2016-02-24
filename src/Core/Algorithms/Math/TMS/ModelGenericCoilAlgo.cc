@@ -603,12 +603,13 @@ using namespace SCIRun;
 				{
 					std::vector<Vector> dipolePoints;
 					std::vector<Vector> dipoleValues;
+					std::vector<size_t> coilIndices;
 					std::vector<double> radiiInner = preRadiiInner();
 					std::vector<double> radiiOuter = preRadiiOuter();
 					std::vector<double> numElements = preNumElem();
 					std::vector<double> numCoupling = preNumAdjElem();
 
-					/*
+					
 					if(coilType == 1)
 					{
 						Vector center(0, 0, 0);
@@ -621,7 +622,7 @@ using namespace SCIRun;
 							
 							/// SINGLE COIL
 							Vector dipoleNormL(0,0,1.0*dipoleMoment);
-							GenPointsCircular(dipolePoints, center, ringRad, numElements[i], 0.0d, 2*M_PI);
+							GenPointsCircular2(dipolePoints, center, ringRad, 0.0d, 2*M_PI, numElements[i]);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 						}
 					}
@@ -639,13 +640,13 @@ using namespace SCIRun;
 							
 							/// LEFT COIL
 							Vector dipoleNormL(0,0,1.0*dipoleMoment);
-							GenPointsCircular(dipolePoints, originL, ringRad, numElements[i], 0.0d, 2*M_PI);
+							GenPointsCircular2(dipolePoints, originL, ringRad, 0.0d, 2*M_PI, numElements[i]);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 
 
 							/// RIGHT COIL
 							Vector dipoleNormR(0,0,-1.0*dipoleMoment);
-							GenPointsCircular(dipolePoints, originR, ringRad, numElements[i], 0.0d, 2*M_PI);
+							GenPointsCircular2(dipolePoints, originR, ringRad, 0.0d, 2*M_PI, numElements[i]);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormR );
 						}
 
@@ -655,7 +656,7 @@ using namespace SCIRun;
 						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
 						return;
 					}
-					*/
+					
 					
 					///basic topoly assumptions needs to be correct
 					assert(dipolePoints.size() > 0);
@@ -681,7 +682,6 @@ using namespace SCIRun;
 				const double current;
 				const double outerD;
 				const size_t segments;
-				//const size_t coilLOD;
 				
 				const std::vector<double> preRadiiInner() const
 				{
@@ -719,6 +719,37 @@ using namespace SCIRun;
 					for(size_t i = values.size(); i < points.size(); i++)
 					{
 						values.push_back(val);
+					}
+				}
+
+				void GenPointsCircular2(
+					std::vector<Vector>& points,
+					Vector origin, 
+					double radius,
+					double fromPI,
+					double toPI, 
+					double extLOD) const
+				{
+
+					double dPI = abs(toPI - fromPI);
+					
+					double minPI = M_PI /  extLOD;
+					
+					size_t nsegments = (size_t)extLOD;
+					double iPI = dPI / nsegments;
+					
+
+					algo->remark("#Segments(LOD):  " +  boost::lexical_cast<std::string>(nsegments) );
+					
+					dPI = toPI - fromPI;
+					
+					iPI = dPI / nsegments;
+
+					for(size_t i = 0; i < nsegments; i++)
+					{
+						Vector point(origin.x() + radius * cos(fromPI + iPI*i), origin.y() + radius * sin(fromPI + iPI*i), origin.z());
+						//segments.AddPoint(point,value);
+						points.push_back(point);
 					}
 				}
 				
