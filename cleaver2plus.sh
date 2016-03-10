@@ -1,8 +1,10 @@
 
 SCIRUN4_PATH=$(pwd -P )
 
-echo "SCIRun4 path:"
-echo '$SCIRUN4_PATH'
+echo "SCIRun4 path : $SCIRUN4_PATH"
+
+
+QT5_PATH="$HOME/Qt/5.4/gcc_64/lib/cmake"
 
 if ! [ -d "cleaver2plus" ]; then
 	mkdir cleaver2plus
@@ -20,7 +22,7 @@ if [ -d "cleaver2plus" ]; then
 
 	cd build
 
-	cmake -DBUILD_CLEAVER_APP=OFF -DSCIRun4_DIR='$SCIRUN4_PATH' ../src
+	cmake -DQt5Widgets_DIR="$QT5_PATH/Qt5Widgets" -DQt5OpenGL_DIR="$QT5_PATH/Qt5OpenGL" -DBUILD_CLEAVER_APP=ON -DSCIRun4_DIR=$SCIRUN4_PATH ../src
 
 	make
 
