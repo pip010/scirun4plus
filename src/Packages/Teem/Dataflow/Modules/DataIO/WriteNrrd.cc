@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,11 +40,11 @@
 
 #include <Core/Persistent/Pstreams.h>
 #include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
-
+#include <Core/Datatypes/String.h>
+#include <Core/Util/FullFileName.h>
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/NrrdPort.h>
-
 #include <Dataflow/GuiInterface/GuiVar.h>
 
 #include <sstream>
@@ -77,7 +77,7 @@ using namespace SCITeem;
 DECLARE_MAKER(WriteNrrd)
 
 WriteNrrd::WriteNrrd(GuiContext *ctx)
-: Module("WriteNrrd", ctx, Filter, "DataIO", "Teem"), 
+: Module("WriteNrrd", ctx, Filter, "DataIO", "Teem"),
   filename_(get_ctx()->subVar("filename"), ""),
   filetype_(get_ctx()->subVar("filetype"), "Binary"),
   exporttype_(get_ctx()->subVar("exporttype"), ""),
@@ -86,7 +86,7 @@ WriteNrrd::WriteNrrd(GuiContext *ctx)
   NrrdIEPluginManager mgr;
   std::vector<std::string> exporters;
   mgr.get_exporter_list(exporters);
-  
+
   std::string exporttypes = "{";
   exporttypes += "{{Nrrd}                {.nrrd} } ";
   exporttypes += "{{Nrrd Header and Raw} {.nhdr .raw} } ";
@@ -103,7 +103,7 @@ WriteNrrd::~WriteNrrd()
 
 Piostream* WriteNrrd::make_stream(const std::string& ft, const std::string& nrrd_data_fn)
 {
-  if (ft == "Binary") 
+  if (ft == "Binary")
     return new BinaryPiostream(nrrd_data_fn, Piostream::Write);
   return new TextPiostream(nrrd_data_fn, Piostream::Write);
 }
@@ -114,6 +114,24 @@ WriteNrrd::execute()
   // Read data from the input port
   NrrdDataHandle handle;
   if (!get_input_handle("Input Data", handle)) return;
+
+  // Read filename from input port
+  StringHandle filename;
+  if (get_input_handle("Filename",filename,false))
+  {
+    // This piece of code makes sure that the path to the output
+    // file exists and that we use an absolute filename
+    FullFileName ffn(filename->get());
+    if (!(ffn.create_file_path()))
+    {
+      error("Could not create path to filename");
+      return;
+    }
+    filename = new String(ffn.get_abs_filename());
+
+    filename_.set(filename->get());
+    get_ctx()->reset();
+  }
 
   // If no name is provided, return
   std::string fn(filename_.get());
@@ -129,7 +147,7 @@ WriteNrrd::execute()
 
 
   // determine which case we are writing out based on the
-  // original filename.  
+  // original filename.
   bool writing_nrrd = false;
   bool writing_nhdr = false;
   bool writing_nd = false;
@@ -151,9 +169,9 @@ WriteNrrd::execute()
   // only write out the .nd extension if that was the filename
   // specified or if there are properties.  In the case that it
   // was an .nd filename specified, write out a .nrrd file also.
-  if (handle->nproperties() > 0) 
+  if (handle->nproperties() > 0)
   {
-    if (!writing_nd) 
+    if (!writing_nd)
     {
       writing_nd = true;
       if (!writing_nhdr) writing_nrrd = true;
@@ -163,39 +181,39 @@ WriteNrrd::execute()
   std::string ft(filetype_.get());
 
   // writing out NrrdData - use Piostream
-  if (writing_nd) 
+  if (writing_nd)
   {
     std::string nrrd_data_fn = root + ".nd";
-    
+
     // set NrrdData's write_nrrd variable to indicate
     // whether NrrdData's io method should write out a .nrrd or .nhdr
     if (writing_nhdr) handle.get_rep()->write_nrrd_ = false;
     else handle.get_rep()->write_nrrd_ = true;
 
     PiostreamPtr stream(make_stream(ft, nrrd_data_fn));
-    
-    if (stream->error()) 
+
+    if (stream->error())
     {
       error("Could not open file for writing" + nrrd_data_fn);
-    } 
-    else 
+    }
+    else
     {
       // Write the file
       Pio(*stream, handle); // will also write out a separate nrrd.
-    } 
-  } 
-  else 
+    }
+  }
+  else
   {
     // writing out ordinary .nrrd .nhdr file
     // Restrict TEEM access: it is not thread safe
     NrrdData::lock_teem();
-      
+
     std::string nrrd_fn = root;
     if (writing_nhdr) nrrd_fn += ".nhdr";
     else nrrd_fn += ".nrrd";
 
     Nrrd *nin = handle->nrrd_;
-    
+
     NrrdIoState *nio = nrrdIoStateNew();
     if (ft == "Binary") {
       // set encoding to be raw
@@ -209,25 +227,25 @@ WriteNrrd::execute()
     nio->format = nrrdFormatArray[1];
     // set endian to be endian of machine
     nio->endian = airMyEndian;
-    
-    if (AIR_ENDIAN != nio->endian) 
+
+    if (AIR_ENDIAN != nio->endian)
     {
       nrrdSwapEndian(nin);
     }
-    
-    if (writing_nhdr) 
+
+    if (writing_nhdr)
     {
-      if (nio->format != nrrdFormatNRRD) 
+      if (nio->format != nrrdFormatNRRD)
       {
         nio->format = nrrdFormatNRRD;
       }
     }
-    
-    if (nrrdSave(nrrd_fn.c_str(), nin, nio)) 
+
+    if (nrrdSave(nrrd_fn.c_str(), nin, nio))
     {
-      char *err = biffGet(NRRD);      
+      char *err = biffGet(NRRD);
       error(std::string("Error writing nrrd ") +nrrd_fn+": "+std::string(err));
-      
+
       free(err);
       biffDone(NRRD);
       NrrdData::unlock_teem();
@@ -236,5 +254,3 @@ WriteNrrd::execute()
     NrrdData::unlock_teem();
   }
 }
-
-
