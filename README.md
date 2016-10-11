@@ -3,6 +3,8 @@ SCIRun4.7+
 
 SCIRun (4.7) plus additional modules
 
+[![DOI](https://zenodo.org/badge/15745408.svg)](https://zenodo.org/badge/latestdoi/15745408)
+
 Modules
 =======
 
