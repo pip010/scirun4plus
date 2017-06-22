@@ -5,28 +5,45 @@
 int main(int argc, char** argv)
 {
 
-  if (argc < 3)
-    {
-      cout << "usage: morphsmooth radius infile outfile" << endl;
-      exit(-1);
-    }
+	switch(argc)
+	{
+		case 3: break;
+		case 4: break;
+		default:
+			cout << "usage: morphsmooth [gradient-radius] radius infile outfile" << endl;
+			exit(-1);
+	}
+
+	int rad_mod = argc == 4 ? 1 : 0; //whether we use a singlke radius or radius reference file
 
   float radius;
-  int morph_size;
-  VolumeScalar vol_in, vol_out;
-  VISImageFile imfile;
-  VISVolumeFile volfile;
+
+  //int morph_size;
+
+  VolumeScalar vol_in, vol_out, vol_ref;
+
+  //VISImageFile imfile;
+  //VISVolumeFile volfile;
   int args = 1;
+
   sscanf(argv[args++], "%f", &radius);
+
   cout << "radius is " << radius << endl;
+
   float vol_min, vol_max;
   //  sscanf(argv[1], "%d", &morph_size);
 
   VolScale scale;
 
+
+  if(rad_mod)
+	{
+		vol_ref = readScalarVolumeFile(argv[args++],scale);
+	}
+
   vol_in = readScalarVolumeFile(argv[args++],scale);
   cout << "min input " << (vol_min = vol_in.min()) << " and max " << (vol_max = vol_in.max()) << endl;
-  
+
   //  vol_in = 2.0*((vol_in - vol_min)/(vol_max - vol_min)) - 1.0;
   cout << "adjust " << (2.0f*(vol_min/(vol_max - vol_min)) + 1.0f) << endl;
   cout << "mult " << (2.0f/(vol_max - vol_min)) << endl;
@@ -41,7 +58,14 @@ int main(int argc, char** argv)
 
   //  vol_in -= 0.5f;
 
-  tighten(vol_in, radius);
+	if(rad_mod)
+	{
+		tighten(vol_in, vol_ref, radius);
+	}
+	else
+	{
+  	tighten(vol_in, radius);
+	}
 
   //  volfile.write_float(vol_in, argv[4]);
   writeScalarVolumeFile(argv[args++], vol_in, scale);

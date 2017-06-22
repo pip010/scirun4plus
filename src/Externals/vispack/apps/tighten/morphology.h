@@ -10,34 +10,38 @@ VolumeScalar dilate(const VolumeScalar& vol);
 VolumeScalar open(const VolumeScalar& vol, int size);
 VolumeScalar close(const VolumeScalar& vol, int size);
 
-void advect(VolumeScalar& vol, float time, int sign, float target_grad);
+
 void erode_grey(VolumeScalar& vol, float t, float target_grad);
 void dilate_grey(VolumeScalar& vol, float t, float target_grad);
 void open_grey(VolumeScalar& vol, float t, float target_grad, bool writeIntermediateFiles);
 void close_grey(VolumeScalar& vol, float t, float target_grad, bool writeIntermediateFiles);
-//VISVolume<float> distance(VolumeScalar& vol, float clamp);
+
+
+/// NEW ////////
+// gradient instead of scalar t (smooth radius)
+void erode_grey(VolumeScalar& vol, VolumeScalar& volt, float t , float target_grad);
+void dilate_grey(VolumeScalar& vol, VolumeScalar& volt, float t , float target_grad);
+void open_grey(VolumeScalar& vol, VolumeScalar& volt, float t , float target_grad, bool writeIntermediateFiles);
+void close_grey(VolumeScalar& vol, VolumeScalar& volt, float t , float target_grad, bool writeIntermediateFiles);
 
 // for images, sets distance transform locally
 float reinitDistance(VISImage<float>& image, float target_grad);
-//float reinitDistance(VISVolume<float>& vol, float target_grad, float minmax = 1.0);
-//float reinitDistance(VISVolume<float>& vol, float target_grad);
-float reinitDistanceOld(VISVolume<float>& vol, float target_grad);
-float reinitDistanceOld(VISVolume<float>& vol, float target_grad, const VISVolume<float> &mask);
 float reinitDistance(VISVolume<float>& vol, float target_grad, float minmax, const VISVolume<boolean> &mask = VISVolume<boolean>());
 float reinitDistance(VISVolume<float>& vol, float target_grad, float minmax, VISVolIndexVISList &mask_list);
+float reinitDistance(VISVolume<float>& vol, VISVolume<float>& vol_t ,float target_grad, float minmax, VISVolIndexVISList &mask_list);//NEW
 float reinitDistance(VISVolume<float>& vol, float target_grad, float minmax, const VISVolume<boolean> &mask, float reinit_tolerance, int max_reinit_iterations);
+float reinitDistance(VISVolume<float>& vol, VISVolume<float>& vol_t, float target_grad, float minmax, float reinit_tolerance, int max_reinit_iterations); //NEW
 float reinitDistance(VISVolume<float>& vol, float target_grad, float minmax, float reinit_tolerance, int max_reinit_iterations);
+
 void createMask(VISVolume<float>& vol, VISVolIndexVISList &list, float gradient);
-//float reinitDistance1(VISVolume<float>& vol, float target_grad);
-void tighten(VISImage<float>& image, float radius);
 
-int initZeroCrossings(const VISVolume<float>& vol_scalar, VISVolume<float>& vol_out, VISVolume<boolean> &mask, float minmax);
+//int initZeroCrossings(const VISVolume<float>& vol_scalar, VISVolume<float>& vol_out, VISVolume<boolean> &mask, float minmax);
 
-void gaussDiffuse(VolumeScalar &vol, double sigma);
+//void gaussDiffuse(VolumeScalar &vol, double sigma);
 
 // for images, sets distance transform locally
-//float reinitDistance(VISVolume<float>& volume, float target_grad);
 void tighten(VISVolume<float>& volume, float radius);
+void tighten(VISVolume<float>& volume, VISVolume<float>& radimg, float radius);// NEW
 
 #define NUM_DERIVS (21)
 #define DX (0)
@@ -63,16 +67,9 @@ void tighten(VISVolume<float>& volume, float radius);
 #define DYMZ (20)
 #define NSIZE (27)
 
-inline VISMatrix calculate_curvature (const float* derivs, 
+inline VISMatrix calculate_curvature (const float* derivs,
 				      float &curve_trace, float &curve_norm);
 void get_neighborhood (int, int, int, float*, const VISVolume<float>&);
 void get_derivs(const float*, float*);
 void clamp_curvature(VolumeScalar& vol, float epsilon);
 void clamp_curvature(VISImage<float>& vol, float epsilon);
-
-
-
-
-
-
-
