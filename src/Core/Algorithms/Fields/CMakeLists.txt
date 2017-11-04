@@ -127,6 +127,7 @@ SET(Core_Algorithms_Fields_SRCS ${Core_Algorithms_Fields_SRCS}
   TransformMesh/PolarProjectionTools.cc
   TransformMesh/GeneratePolarProjectionImage.cc
   TracePoints/TracePoints.cc
+  ROI/MeshROI.cc
 )
 
 IF(WITH_TETGEN)

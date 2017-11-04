@@ -23,8 +23,8 @@ if [ -d "cleaver2plus" ]; then
 		(cd build;
 		
 		if [ "$#" -gt 0 ]; 
-			then cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_CLEAVER_APP=ON  -DQt5Widgets_DIR="$QT5_PATH/Qt5Widgets" -DQt5OpenGL_DIR="$QT5_PATH/Qt5OpenGL" -DSCIRun4_DIR="$SCIRUN4_PATH" ../src && make -j4
-			else cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_CLEAVER_APP=OFF -DSCIRun4_DIR="$SCIRUN4_PATH" ../src && make -j4
+			then cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_CLEAVER_APP=ON -DBUILD_TESTING=ON  -DQt5Widgets_DIR="$QT5_PATH/Qt5Widgets" -DQt5OpenGL_DIR="$QT5_PATH/Qt5OpenGL" -DSCIRun4_DIR="$SCIRUN4_PATH" ../src && make -j4
+			else cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_CLEAVER_APP=OFF -DBUILD_TESTING=ON -DSCIRun4_DIR="$SCIRUN4_PATH" ../src && make -j4
 		fi
 		)
 	)

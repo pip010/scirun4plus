@@ -469,8 +469,10 @@ using namespace SCIRun;
 					}
 					else if(coilType == 2)
 					{
-						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
-						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						//Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						//Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originRight ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originLeft (  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
