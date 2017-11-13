@@ -587,7 +587,8 @@ using namespace SCIRun;
 					  	outerR(args.coilRadiusOuter),
 					  	outerD(args.coilDistanceOuter),
 					  	current(args.totalCurrent),
-					  	segments(args.numberSegments)
+					  	segments(args.numberSegments),
+					  	lod_step_m(3.0d / ( args.coilLevelDetails * 1000.0d ))
 					  	
 				{
 					coilLOD = args.coilLevelDetails;
@@ -595,6 +596,7 @@ using namespace SCIRun;
 					coilLayers = args.coilLayers;
 
 					coilLayers = coilLayers == 0 ? 1 : coilLayers;
+					
 				}
 				
 				~DipolesCoilgen()
@@ -606,21 +608,33 @@ using namespace SCIRun;
 					std::vector<Vector> dipolePoints;
 					std::vector<Vector> dipoleValues;
 					std::vector<size_t> coilIndices;
+					
 					std::vector<double> radiiInner = preRadiiInner();
 					std::vector<double> radiiOuter = preRadiiOuter();
-					std::vector<double> numElements = preNumElem();
-					std::vector<double> numCoupling = preNumAdjElem();
+					std::vector<double> numElements = preNumElem(radiiInner.size());
+					std::vector<double> numCoupling = preNumAdjElem(radiiInner.size());
 
+					
+					print_vector(radiiInner);
+					print_vector(radiiOuter);
+					print_vector(numElements);
+					print_vector(numCoupling);
+					
+					assert(radiiInner.size() == radiiOuter.size());
+					
+					
+					algo->remark("#Rings:  " +  boost::lexical_cast<std::string>(radiiOuter.size()) + " ring-step:" + boost::lexical_cast<std::string>(lod_step_m));
 					
 					if(coilType == 1)
 					{
 						Vector center(0, 0, 0);
 
-						for (size_t i = 0; i < 16; i++)
+						for (size_t i = 0; i < radiiInner.size(); i++)
 						{
 							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;
 							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
 							double dipoleMoment = current * ringArea * numCoupling[i] / numElements[i];
+							
 							
 							/// SINGLE COIL
 							Vector dipoleNormL(0,0,1.0*dipoleMoment);
@@ -630,10 +644,10 @@ using namespace SCIRun;
 					}
 					else if(coilType == 2)
 					{
-						Vector originL(- radiiOuter[15] - outerD / 2.0d, 0, 0);
-						Vector originR( radiiOuter[15] + outerD / 2.0d, 0, 0 );
+						Vector originL( -radiiOuter[radiiOuter.size()-1] - outerD / 2.0d, 0, 0);
+						Vector originR( radiiOuter[radiiOuter.size()-1] + outerD / 2.0d, 0, 0 );
 						
-						for (size_t i = 0; i < 16; i++)
+						for (size_t i = 0; i < radiiInner.size(); i++)
 						{
 							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;
 							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
@@ -684,33 +698,94 @@ using namespace SCIRun;
 				const double current;
 				const double outerD;
 				const size_t segments;
+				//const size_t rings;
+				const double lod_step_m;
+				
+				void print_vector(const std::vector<double>& v) const
+				{
+					std::cout << std::endl;
+					for(int i=0;i<v.size();++i)
+					{
+						std::cout << v[i] << " "; 
+					}
+					std::cout << std::endl;
+				}
 				
 				const std::vector<double> preRadiiInner() const
 				{
-					const double vals[16] = {0.00d, 0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d};
-					std::vector<double> preRadii(vals,vals+16);
+					std::vector<double> preRadii;
+					
+					double d = innerR;
+					
+					//add first element
+					//preRadii.push_back(0.00d);
+					
+					while( d < outerR)
+					{
+						preRadii.push_back(d);
+						d += lod_step_m;
+					}
+					
+										
+					//const double vals[16] = {0.00d, 0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d};
+					//std::vector<double> preRadii(vals,vals+16);
 					return preRadii;
 				}
 				
 				const std::vector<double> preRadiiOuter() const
 				{
-					const double vals[16] = {0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d, 0.044d};
-					std::vector<double> preRadii(vals,vals+16);
+					std::vector<double> preRadii;
+					
+					double d = innerR;
+					
+					//add first element
+					//preRadii.push_back(d);
+					
+					while( d < outerR)
+					{
+						d += lod_step_m;
+						preRadii.push_back(d);
+					}
+					
+					//add last
+					//preRadii.push_back(outerR);
+					
+					//override last to fill to exacct outer radius 
+					preRadii[preRadii.size()-1u] = outerR;
+					
+					
+					//const double vals[16] = {0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d, 0.044d};
+					//std::vector<double> preRadii(vals,vals+16);
 					return preRadii;
 				}
 
-				const std::vector<double> preNumElem() const
+				const std::vector<double> preNumElem(size_t n_rings) const
 				{
-					const double vals[16] = {3.0d, 9.0d, 12.0d, 16.0d, 20.0d, 24.0d, 28.0d, 30.0d, 32.0d, 34.0d, 36.0d, 38.0d, 40.0d, 42.0d, 44.0d, 44.0d};
-					std::vector<double> preNumElem(vals,vals+16);
+					std::vector<double> preNumElem;
+					
+					for(size_t i = 1; i <= n_rings; ++i)
+					{
+						size_t n = 3.0 + pow(i,2.0) / coilLOD;
+						preNumElem.push_back(n);
+					}
+					
+					//const double vals[16] = {3.0d, 9.0d, 12.0d, 16.0d, 20.0d, 24.0d, 28.0d, 30.0d, 32.0d, 34.0d, 36.0d, 38.0d, 40.0d, 42.0d, 44.0d, 44.0d};
+					//std::vector<double> preNumElem(vals,vals+16);
 					return preNumElem;
 
 				}
 
-				const std::vector<double> preNumAdjElem() const
+				const std::vector<double> preNumAdjElem(size_t n_rings) const
 				{
-					const double vals[16] = {9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 8.0d, 7.0d, 6.0d, 5.0d, 4.0d, 3.0d, 2.0d, 1.0d};
-					std::vector<double> preNumAdjElem(vals,vals+16);
+					std::vector<double> preNumAdjElem;
+					
+					for(size_t i = 1; i <= n_rings; ++i)
+					{
+						preNumAdjElem.push_back(1.0);
+					}
+					
+					//const double vals[16] = {9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 8.0d, 7.0d, 6.0d, 5.0d, 4.0d, 3.0d, 2.0d, 1.0d};
+					//std::vector<double> preNumAdjElem(vals,vals+16);
 					return preNumAdjElem;
 				}
 					
@@ -738,10 +813,11 @@ using namespace SCIRun;
 					double minPI = M_PI /  extLOD;
 					
 					size_t nsegments = (size_t)extLOD;
+					
 					double iPI = dPI / nsegments;
 					
 
-					algo->remark("#Segments(LOD):  " +  boost::lexical_cast<std::string>(nsegments) );
+					//algo->remark("#Segments(LOD):  " +  boost::lexical_cast<std::string>(nsegments) + " radius:" + boost::lexical_cast<std::string>(radius));
 					
 					dPI = toPI - fromPI;
 					
