@@ -587,8 +587,7 @@ using namespace SCIRun;
 					  	outerR(args.coilRadiusOuter),
 					  	outerD(args.coilDistanceOuter),
 					  	current(args.totalCurrent),
-					  	segments(args.numberSegments),
-					  	lod_step_m(3.0d / ( args.coilLevelDetails * 1000.0d ))
+					  	segments(args.numberSegments)
 					  	
 				{
 					coilLOD = args.coilLevelDetails;
@@ -611,19 +610,21 @@ using namespace SCIRun;
 					
 					std::vector<double> radiiInner = preRadiiInner();
 					std::vector<double> radiiOuter = preRadiiOuter();
-					std::vector<double> numElements = preNumElem(radiiInner.size());
-					std::vector<double> numCoupling = preNumAdjElem(radiiInner.size());
+					//std::vector<double> numElements = preNumElem(radiiInner);
+					std::vector<double> numCoupling = preNumAdjElem(radiiInner);
 
 					
-					print_vector(radiiInner);
-					print_vector(radiiOuter);
-					print_vector(numElements);
-					print_vector(numCoupling);
+					//print_vector(radiiInner);
+					//print_vector(radiiOuter);
+					
+					//print_vector(numElements);
+					//print_vector(numCoupling);
 					
 					assert(radiiInner.size() == radiiOuter.size());
 					
 					
-					algo->remark("#Rings:  " +  boost::lexical_cast<std::string>(radiiOuter.size()) + " ring-step:" + boost::lexical_cast<std::string>(lod_step_m));
+					//algo->remark("#Rings:  " +  boost::lexical_cast<std::string>(radiiOuter.size()) + " ring-step:" + boost::lexical_cast<std::string>(lod_step_m));
+					
 					
 					if(coilType == 1)
 					{
@@ -631,14 +632,13 @@ using namespace SCIRun;
 
 						for (size_t i = 0; i < radiiInner.size(); i++)
 						{
-							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;
-							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
-							double dipoleMoment = current * ringArea * numCoupling[i] / numElements[i];
+							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;						
 							
-							
-							/// SINGLE COIL
+							/// SINGLE COIL								
+							size_t numElements = GenPointsCircular2(dipolePoints, center, ringRad, 0.0d, 2*M_PI, segments);
+							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );							
+							double dipoleMoment = current * ringArea * numCoupling[i] / numElements;
 							Vector dipoleNormL(0,0,1.0*dipoleMoment);
-							GenPointsCircular2(dipolePoints, center, ringRad, 0.0d, 2*M_PI, numElements[i]);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 						}
 					}
@@ -651,18 +651,19 @@ using namespace SCIRun;
 						{
 							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0d;
 							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
-							double dipoleMoment = current * ringArea * numCoupling[i] / numElements[i];
-							
 							
 							/// LEFT COIL
-							Vector dipoleNormL(0,0,1.0*dipoleMoment);
-							GenPointsCircular2(dipolePoints, originL, ringRad, 0.0d, 2*M_PI, numElements[i]);
+							size_t numElementsL = GenPointsCircular2(dipolePoints, originL, ringRad, 0.0d, 2*M_PI, segments);
+							
+							double dipoleMomentL = current * ringArea * numCoupling[i] / numElementsL;
+							Vector dipoleNormL(0,0,1.0*dipoleMomentL);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 
 
 							/// RIGHT COIL
-							Vector dipoleNormR(0,0,-1.0*dipoleMoment);
-							GenPointsCircular2(dipolePoints, originR, ringRad, 0.0d, 2*M_PI, numElements[i]);
+							size_t numElementsR = GenPointsCircular2(dipolePoints, originR, ringRad, 0.0d, 2*M_PI, segments);
+							double dipoleMomentR = current * ringArea * numCoupling[i] / numElementsR;
+							Vector dipoleNormR(0,0,-1.0*dipoleMomentR);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormR );
 						}
 
@@ -699,7 +700,7 @@ using namespace SCIRun;
 				const double outerD;
 				const size_t segments;
 				//const size_t rings;
-				const double lod_step_m;
+				//const double lod_step_m;
 				
 				void print_vector(const std::vector<double>& v) const
 				{
@@ -715,6 +716,8 @@ using namespace SCIRun;
 				{
 					std::vector<double> preRadii;
 					
+					double step = (outerR - innerR) / segments;
+					
 					double d = innerR;
 					
 					//add first element
@@ -723,7 +726,7 @@ using namespace SCIRun;
 					while( d < outerR)
 					{
 						preRadii.push_back(d);
-						d += lod_step_m;
+						d += step;
 					}
 					
 										
@@ -736,6 +739,8 @@ using namespace SCIRun;
 				{
 					std::vector<double> preRadii;
 					
+					double step = (outerR - innerR) / segments;
+					
 					double d = innerR;
 					
 					//add first element
@@ -743,7 +748,7 @@ using namespace SCIRun;
 					
 					while( d < outerR)
 					{
-						d += lod_step_m;
+						d += step;
 						preRadii.push_back(d);
 					}
 					
@@ -759,13 +764,16 @@ using namespace SCIRun;
 					return preRadii;
 				}
 
-				const std::vector<double> preNumElem(size_t n_rings) const
+				const std::vector<double> preNumElem(std::vector<double>& radii) const
 				{
 					std::vector<double> preNumElem;
 					
-					for(size_t i = 1; i <= n_rings; ++i)
+					for(size_t i = 1; i <= radii.size(); ++i)
 					{
-						size_t n = 3.0 + pow(i,2.0) / coilLOD;
+						
+						size_t n = M_PI_2 / (1.0 / ( radii[i]* coilLOD ) );
+						
+						//size_t n = segments +  ( pow(i,1.5) / coilLOD );
 						preNumElem.push_back(n);
 					}
 					
@@ -775,11 +783,11 @@ using namespace SCIRun;
 
 				}
 
-				const std::vector<double> preNumAdjElem(size_t n_rings) const
+				const std::vector<double> preNumAdjElem(std::vector<double>& radii) const
 				{
 					std::vector<double> preNumAdjElem;
 					
-					for(size_t i = 1; i <= n_rings; ++i)
+					for(size_t i = 1; i <= radii.size(); ++i)
 					{
 						preNumAdjElem.push_back(1.0);
 					}
@@ -799,7 +807,7 @@ using namespace SCIRun;
 					}
 				}
 
-				void GenPointsCircular2(
+				size_t GenPointsCircular2(
 					std::vector<Vector>& points,
 					Vector origin, 
 					double radius,
@@ -810,14 +818,20 @@ using namespace SCIRun;
 
 					double dPI = abs(toPI - fromPI);
 					
-					double minPI = M_PI /  extLOD;
+					double minPI = M_PI /  ( 8.0 * coilLOD + coilLOD * extLOD );
 					
-					size_t nsegments = (size_t)extLOD;
+					assert(dPI > minPI);
 					
+					size_t nsegments = 2;
 					double iPI = dPI / nsegments;
 					
+					while(iPI > minPI)
+					{
+						nsegments++;
+						iPI = dPI / nsegments;
+					}
 
-					//algo->remark("#Segments(LOD):  " +  boost::lexical_cast<std::string>(nsegments) + " radius:" + boost::lexical_cast<std::string>(radius));
+					//algo->remark("#Segments(LOD):  " +  boost::lexical_cast<std::string>(nsegments) );
 					
 					dPI = toPI - fromPI;
 					
@@ -829,6 +843,8 @@ using namespace SCIRun;
 						//segments.AddPoint(point,value);
 						points.push_back(point);
 					}
+					
+					return nsegments;
 				}
 				
 				void BuildScirunMesh(const std::vector<Vector>& points, 
