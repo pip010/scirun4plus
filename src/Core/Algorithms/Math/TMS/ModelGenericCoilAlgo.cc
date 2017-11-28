@@ -38,6 +38,8 @@
 //#include <array>
 #include <cassert>
 
+using namespace std;
+
 #include <boost/lexical_cast.hpp>
 
 namespace SCIRunAlgo {
@@ -72,18 +74,17 @@ using namespace SCIRun;
 				{
 					points.push_back(point);
 
-					size_t psize = points.size();
-
-					//std::cout << "AddPoint-> psize:" << psize << " pc:" << pc << "    " << point << std::endl; 
-
 					if( pc > 0)
 					{
+						size_t psize = points.size();
+						//std::cout << "AddPoint-> psize:" << psize << " pc:" << pc << "    " << point << std::endl; 
+					
 						indices.push_back(psize-2);
 						indices.push_back(psize-1);
 						values.push_back(value);
 					}					
 
-					pc++;
+					++pc;
 				}
 
 				virtual void Terminate()
@@ -160,6 +161,8 @@ using namespace SCIRun;
 				}
 		};
 
+	
+
 
 
 		class BaseCoilgen
@@ -232,26 +235,162 @@ using namespace SCIRun;
 						segments.AddPoint(point,value);
 					}
 				}
+				
+				void GenPointsCircular2(
+					BaseSegments& segments,
+					Vector origin, 
+					double radius,
+					double value,
+					double fromPI,
+					double toPI) const
+				{
+					cout << endl;
 
-				// void GenPointsCircular2(
-				// 	BaseSegments& segments,
-				// 	Vector origin, 
-				// 	double radius,
-				// 	double nsegments,
-				// 	double fromPI, 
-				// 	double toPI) const
-				// {										
-				// 	double dPI = toPI - fromPI;
+					double dPI = abs(toPI - fromPI);
 					
-				// 	double iPI = dPI / nsegments;
 					
+					double max_err = (1.0 / (double)coilLOD )  * 0.2d + 0.05d ;
 
-				// 	for(size_t i = 0; i < nsegments; i++)
-				// 	{
-				// 		Vector p(origin.x() + radius * cos(fromPI + iPI*i), origin.y() + radius * sin(fromPI + iPI*i), origin.z());
-				// 		segments.AddPoint(p);
-				// 	}
-				// }
+					size_t nsegments = GetDiscretizationParams(radius, max_err);
+					
+					
+					double iPI = dPI / nsegments;
+
+					for(size_t i = 0; i < nsegments; ++i)
+					{
+						Vector point(origin.x() + radius * cos(fromPI + iPI*i), origin.y() + radius * sin(fromPI + iPI*i), origin.z());
+						segments.AddPoint(point,value);
+					}
+				}
+				
+				static void CalcAnalyticalBfield(const std::vector<Vector>& points, std::vector<Vector>& data, const double R,const double current)
+				{
+					/// the analytical B-field: B = MU_0*I / 2 * (  R^2 / ( X^2+ R^2 ) ^ 3/2 )
+					/// where R is the radius of the circular coil and X is an offset along its central/middle axis
+					for(size_t i =0; i < points.size(); i++)
+					{
+						Vector v;
+						double Z = points[i].z();
+						v.z( (current * 2.0 * M_PI * 1E-7) * ( R*R / Pow( (Z*Z + R*R), 3.0 / 2.0 ) ) );
+						data.push_back(v);
+					}
+
+				}
+				
+				static double CalcAnalyticalAtZ(const double Z, const double R,const double current = 1.0d)
+				{
+					/// the analytical B-field: B = MU_0*I / 2 * (  R^2 / ( X^2+ R^2 ) ^ 3/2 )
+					/// where R is the radius of the circular coil and X is an offset along its central/middle axis
+					return	current * 2.0 * M_PI * 1E-7 * ( R*R / Pow( (Z*Z + R*R), 3.0 / 2.0 ) );
+				}
+				
+				static double CalcDiscreteAtZ(const double Z, const double R, const unsigned int num_segments, const double current = 1.0d)
+				{
+					Vector F(0.0,0.0,0.0);
+					
+					Vector ref_node(0,0,Z);
+									
+					
+					double seg_pi = 2 * M_PI / num_segments;
+
+					
+					//cout << " Segment : " << seg_begin << " | "  << seg_end << endl;
+				
+					int nips = R > 0.0 ? 1 / R * num_segments : R * num_segments;
+					
+					std::vector<Vector> integrPoints;
+					
+					for (int s = 0; s < num_segments; ++s)
+					{
+					
+						Vector start(cos(seg_pi*s)*R,sin(seg_pi*s)*R,0);
+						Vector end(cos(seg_pi*(s+1))*R,sin(seg_pi*(s+1))*R,0);
+					
+					
+						//! curve segment discretization
+						for(int iip = 0; iip < nips; iip++)
+						{
+							double interpolant = static_cast<double>(iip) / static_cast<double>(nips);
+							Vector v = Interpolate( start, end, interpolant );
+							integrPoints.push_back( v );
+							//std::cout << "\t\t integration point: " << integrPoints[iip] << std::endl;//DEBUG
+						}
+
+
+						//! integration step over line segment				
+						for(int iip = 0; iip < nips -1; iip++)								
+						{
+
+							//! Vector connecting the infinitesimal curve-element			
+							Vector Rxyz = (integrPoints[iip] + integrPoints[iip+1] ) / 2  - ref_node;
+
+							//! Infinitesimal curve-element components
+							Vector dLxyz = integrPoints[iip+1] - integrPoints[iip];
+							
+							double Rn = Rxyz.length();
+
+
+							//! Biot-Savart Magnetic Field
+							F +=  1.0e-7 * Cross( Rxyz, dLxyz ) * ( Abs(current) / (Rn*Rn*Rn) );					
+						}
+						
+						integrPoints.clear();
+					}
+					
+					//cout << " _____ " << F  << " _____ " << endl;
+					
+					return F.z();
+				}
+				
+				// error (0-1) (that is 1-100%)
+				unsigned int GetDiscretizationParams(const double radius, const double error, unsigned int num_segments = 8 ) const
+				{
+
+					if(num_segments > 1024) return 1024;
+					if(num_segments < 8) return 8;
+					
+					// distance at 10% radius
+					//double z_test_distance = 0.1d * radius; 
+					
+					// 2.5cm
+					double z_test_distance = radius > 0.0 ? 25.0 : 0.025; 
+									
+					
+					double B_ana = CalcAnalyticalAtZ( z_test_distance, radius );
+					
+					double B_dis = CalcDiscreteAtZ( z_test_distance, radius, num_segments );
+					
+					double B_err = abs( B_dis - B_ana ) / B_ana;
+					
+					//double T_err = abs( B_err - error) / error;
+					
+					cout << " Calibration step : " << error << " | "  << B_err << " | " << radius << endl;
+					
+					if( abs(error - B_err) < 0.01d )
+					{
+						cout << " Golden step : " << abs(error - B_err) << endl;
+
+					}					
+					else if( B_err > error )
+					{
+						cout << " Improve step : " << num_segments << " to "  <<  2*num_segments << endl;
+						
+						//! double the number of segments and try again till we reach the relative error required
+						return GetDiscretizationParams(radius, error, num_segments * 2 );
+					}
+					else if( B_err < error )
+					{
+						cout << " Disimprove step : " << num_segments << " to "  <<  num_segments /  2  + num_segments / 4 << endl;
+						
+						return GetDiscretizationParams(radius, error,  num_segments /  2  + num_segments / 4 );
+					}
+					
+					return num_segments;
+
+				}
+				
+				
+				
 				
 				void BuildScirunMesh(
 						const std::vector<Vector>& points, 
@@ -292,6 +431,122 @@ using namespace SCIRun;
 					field->resize_values();
 					field->set_values(values);
 				}			
+				
+		};
+		
+			
+		//! piece-wise wire discretization
+		class CircularWireCoilgen : public BaseCoilgen
+		{
+			protected:
+
+				const double innerR;
+				const double outerR;
+				double current;
+				const double outerD;
+				const size_t windings;
+				
+			public:
+			
+				CircularWireCoilgen( 
+					AlgoBase* algo, 
+					ModelTMSCoilSpiralAlgo::Args args )
+					: BaseCoilgen( algo ),
+					  	innerR(args.coilRadiusInner),
+					  	outerR(args.coilRadiusOuter),
+					  	outerD(args.coilDistanceOuter),
+					  	current(args.wireCurrent),
+					  	windings(args.wireLoops)
+				{
+					coilLOD = args.coilLevelDetails;
+					coilType = args.type;
+					coilLayers = args.coilLayers;
+
+					coilLayers = coilLayers == 0 ? 1 : coilLayers;
+
+					coilLayersStep = args.coilLayersStep;
+				}
+				
+				~CircularWireCoilgen()
+				{
+				}
+				
+				
+				virtual void Generate(FieldHandle& meshHandle) const
+				{
+					cout << endl << endl;
+					
+					std::vector<Vector> coilPoints;
+					std::vector<size_t> coilIndices;
+					std::vector<double> coilValues;
+
+					Vector step(0,0,coilLayersStep);
+					
+					double dr = (outerR - innerR) / windings;
+
+					if(coilType == 1)
+					{
+						//Vector origin(0, 0, -0.5*(1.0/coilLayers));
+						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) );
+
+						for(size_t l = 0; l < coilLayers; l++)
+						{
+							ClosedSegments segments(coilPoints,coilIndices,coilValues);
+							GenPointsCircular2(segments, origin, outerR, current, 0.0, 2.0*M_PI);
+							
+							origin += step;
+						}
+
+					}
+					else if(coilType == 2)
+					{
+						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+
+						for(size_t l = 0; l < coilLayers; l++)
+						{
+							
+							for (size_t i = 0; i < windings; i++)
+							{
+								ClosedSegments segments(coilPoints,coilIndices,coilValues);
+								GenPointsCircular2(segments, originLeft, innerR + dr + i*dr, current, 0.0 , 2*M_PI );
+							}
+							
+							originLeft += step;
+						}
+
+						for(size_t l = coilLayers; l < 2*coilLayers; l++)
+						{	
+							ClosedSegments segments(coilPoints,coilIndices,coilValues);
+
+							for (size_t i = 0; i < windings; i++)
+							{
+								ClosedSegments segments(coilPoints,coilIndices,coilValues);
+								GenPointsCircular2(segments, originRight, innerR + dr + i*dr, -current, 0.0 , 2*M_PI);
+							}
+							
+							originRight += step;
+						}
+
+					}
+					else
+					{
+						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
+						return;
+					}
+				
+										
+					//SCIrun API creating a new mesh
+					//0 data on elements; 1 data on nodes
+					FieldInformation fi("CurveMesh",0,"double");
+					fi.make_curvemesh();
+					fi.make_constantdata();
+					fi.make_scalar();
+
+					meshHandle = CreateField(fi);
+					
+					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
+				}		
 				
 		};
 
@@ -469,10 +724,10 @@ using namespace SCIRun;
 					}
 					else if(coilType == 2)
 					{
-						//Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
-						//Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
-						Vector originRight ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
-						Vector originLeft (  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						//Vector originRight ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						//Vector originLeft (  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
@@ -531,6 +786,7 @@ using namespace SCIRun;
 					Vector center_offset (center.x() + dr/2, center.y(), center.z() );
 					
 					for (size_t i = 0; i < windings; i++)
+					//for (size_t i = windings -1; i > 0; --i)
 					{
 						GenPointsCircular(segments, center, innerR + i*dr, current, 0   , M_PI, i );
 
@@ -549,6 +805,7 @@ using namespace SCIRun;
 					Vector center_offset( center.x() + dr/2, center.y(), center.z() );
 
 					for (size_t i = windings; i > 0; i--)
+					//for (size_t i = windings -1; i > 0; --i)
 					{
 						GenPointsCircular(segments, center, innerR + i*dr, -current, M_PI, 2*M_PI, i );
 
@@ -637,7 +894,7 @@ using namespace SCIRun;
 							/// SINGLE COIL								
 							size_t numElements = GenPointsCircular2(dipolePoints, center, ringRad, 0.0d, 2*M_PI, segments);
 							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );							
-							double dipoleMoment = current * ringArea * numCoupling[i] / numElements;
+							double dipoleMoment = (  current * ringArea * numCoupling[i] ) / numElements;
 							Vector dipoleNormL(0,0,1.0*dipoleMoment);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 						}
@@ -655,14 +912,14 @@ using namespace SCIRun;
 							/// LEFT COIL
 							size_t numElementsL = GenPointsCircular2(dipolePoints, originL, ringRad, 0.0d, 2*M_PI, segments);
 							
-							double dipoleMomentL = current * ringArea * numCoupling[i] / numElementsL;
+							double dipoleMomentL = ( current * ringArea * numCoupling[i] ) / numElementsL;
 							Vector dipoleNormL(0,0,1.0*dipoleMomentL);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 
 
 							/// RIGHT COIL
 							size_t numElementsR = GenPointsCircular2(dipolePoints, originR, ringRad, 0.0d, 2*M_PI, segments);
-							double dipoleMomentR = current * ringArea * numCoupling[i] / numElementsR;
+							double dipoleMomentR = ( current * ringArea * numCoupling[i] ) / numElementsR;
 							Vector dipoleNormR(0,0,-1.0*dipoleMomentR);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormR );
 						}
@@ -919,6 +1176,7 @@ using namespace SCIRun;
 			Handle<BaseCoilgen> helper;
 
 			helper = new MultiloopsCoilgen(this,args);
+			//helper = new CircularWireCoilgen(this,args);
 
 			helper->Generate(meshFieldHandle);
 
