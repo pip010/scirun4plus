@@ -44,6 +44,7 @@
 
 //! BOOST classes needed
 #include <boost/lexical_cast.hpp>
+#include <boost/dynamic_bitset.hpp>
 
 
 
@@ -66,19 +67,40 @@ namespace SCIRunAlgo {
 
 			if(traced_elems.insert(elem_idx).second)
 			{
-			  //std::cout << "non-dublicate" << std::endl;
+				std::cout << "non-dublicate" << std::endl;
+			  
+				mesh->get_neighbors(neigb,elem_idx);
+
+				for (size_t p = 0; p < neigb.size(); p++)
+				{
+					trace_neigb(mesh,neigb[p],top-1,traced_elems);
+				}
 			}
 			else
 			{
-			  //std::cout << "dublicate" << std::endl;
-			}
+			  std::cout << "dublicate" << std::endl;
+			}	  
+		}
+	}
+	
+	void trace_neigb(VMesh* mesh, VMesh::Elem::index_type elem_idx, size_t top, boost::dynamic_bitset<>& traced_elems_bitset)
+	{
+		VMesh::Elem::array_type neigb;
+		
+		// bound of our topologival distance range
+		if(top)
+		{
+			traced_elems_bitset[elem_idx] = true;
+
 
 			mesh->get_neighbors(neigb,elem_idx);
 
 
 			for (size_t p = 0; p < neigb.size(); p++)
 			{
-				trace_neigb(mesh,neigb[p],top-1,traced_elems);
+				if(not traced_elems_bitset[neigb[p]])
+					trace_neigb(mesh,neigb[p],top-1,traced_elems_bitset);
+					
 			}
 		  
 		}
@@ -139,6 +161,10 @@ namespace SCIRunAlgo {
 		status( "--DEBUG: elements : " + boost::lexical_cast<std::string>(num_elems) );
 
 		std::set<VMesh::Elem::index_type> traced_elems;
+		
+		//std::vector<bool> traced_elems_vector(1024*1024*64);
+		boost::dynamic_bitset<> traced_elems_bitset(num_elems);
+		
 		std::vector<char> filter_values(num_elems,0);
 
 
@@ -265,20 +291,22 @@ namespace SCIRunAlgo {
 		}
 
 		// find the topolicaly nearest elements
-		trace_neigb(inmesh,elem_rori,topo_dist,traced_elems);
+		//trace_neigb(inmesh,elem_rori,topo_dist,traced_elems);
+		trace_neigb(inmesh,elem_rori,topo_dist,traced_elems_bitset);
 		
 		status( " --DEBUG number of ROI elements :  " + boost::lexical_cast<std::string>(traced_elems.size()) );
 
 		// ctreate filter mesh data
 		inmesh->begin(it);
 		inmesh->end(eit);
+		
 		size_t iii = 0;
 
 		while (it != eit)
 		{
-		  const std::set<VMesh::Elem::index_type>::iterator loc = traced_elems.find(*it);
-		  
-		  filter_values[iii] = loc == traced_elems.end() ? 0 : 1;
+		  //const std::set<VMesh::Elem::index_type>::iterator loc = traced_elems.find(*it);		  
+		  //filter_values[iii] = loc == traced_elems.end() ? 0 : 1;	  
+		  filter_values[iii] = traced_elems_bitset[iii] ? 0 : 1;
 		  
 		  ++iii;
 		  ++it;
