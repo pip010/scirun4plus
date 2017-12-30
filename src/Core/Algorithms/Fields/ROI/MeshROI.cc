@@ -57,54 +57,29 @@ namespace SCIRunAlgo {
 		sqrt( pow(from[0]-to[0],2) + pow(from[1]-to[1],2) + pow(from[2]-to[2],2) );
 	}
 	
-	void trace_neigb(VMesh* mesh, VMesh::Elem::index_type elem_idx, size_t top, std::set<VMesh::Elem::index_type>& traced_elems)
+	void trace_neigb(VMesh* mesh, VMesh::Elem::index_type elem_idx, std::vector<unsigned char>& traced_elems_vector, size_t distance)
 	{
-		VMesh::Elem::array_type neigb;
-		
+		size_t d = distance - 1;
 		// bound of our topologival distance range
-		if(top)
+		if(distance)
 		{
-
-			if(traced_elems.insert(elem_idx).second)
-			{
-				std::cout << "non-dublicate" << std::endl;
-			  
-				mesh->get_neighbors(neigb,elem_idx);
-
-				for (size_t p = 0; p < neigb.size(); p++)
-				{
-					trace_neigb(mesh,neigb[p],top-1,traced_elems);
-				}
-			}
-			else
-			{
-			  std::cout << "dublicate" << std::endl;
-			}	  
-		}
-	}
-	
-	void trace_neigb(VMesh* mesh, VMesh::Elem::index_type elem_idx, size_t top, boost::dynamic_bitset<>& traced_elems_bitset)
-	{
-		VMesh::Elem::array_type neigb;
-		
-		// bound of our topologival distance range
-		if(top)
-		{
-			traced_elems_bitset[elem_idx] = true;
-
-
+			VMesh::Elem::array_type neigb;
 			mesh->get_neighbors(neigb,elem_idx);
+			
+			traced_elems_vector[elem_idx] = distance;
+			
 
-
-			for (size_t p = 0; p < neigb.size(); p++)
+			for (size_t p = 0; p < neigb.size(); ++p)
 			{
-				if(not traced_elems_bitset[neigb[p]])
-					trace_neigb(mesh,neigb[p],top-1,traced_elems_bitset);
+				if(traced_elems_vector[neigb[p]] < d)
+					trace_neigb(mesh,neigb[p],traced_elems_vector,d);
 					
 			}
 		  
 		}
 	}
+	
+	
 
 	// General access function
 	bool RoiMeshAlgo::run(FieldHandle& input, MatrixHandle& ref, FieldHandle& output)
@@ -122,6 +97,12 @@ namespace SCIRunAlgo {
 
 		int topo_dist;
 		get_int("distance",topo_dist);
+		
+		if(topo_dist > 255)
+		{
+			topo_dist = 255;
+			warning("Truncation, max topological distance is 255");
+		}
 
 		if (select == "")
 		{
@@ -159,11 +140,8 @@ namespace SCIRunAlgo {
 		status( "--DEBUG: topodist : " + boost::lexical_cast<std::string>(topo_dist) );
 		status( "--DEBUG: selected ROI : " + select );
 		status( "--DEBUG: elements : " + boost::lexical_cast<std::string>(num_elems) );
-
-		std::set<VMesh::Elem::index_type> traced_elems;
-		
-		//std::vector<bool> traced_elems_vector(1024*1024*64);
-		boost::dynamic_bitset<> traced_elems_bitset(num_elems);
+				
+		std::vector<unsigned char> traced_elems_vector(num_elems);
 		
 		std::vector<char> filter_values(num_elems,0);
 
@@ -173,69 +151,96 @@ namespace SCIRunAlgo {
 		////////////////////////////////////////////////////////////////////
 
 
-		inmesh->begin(it);
-		inmesh->end(eit);
-		inmesh->size(sz);
+		//inmesh->begin(it);
+		//inmesh->end(eit);
+		//inmesh->size(sz);
 		//VMesh::index_type cnt = 0, c = 0;
 
-		double min_l2_dist = std::numeric_limits<double_t>::max();
+		//double min_l2_dist = std::numeric_limits<double_t>::max();
 
-		VMesh::Elem::index_type elem_rori = 0;
-
-		
+		VMesh::Elem::index_type elem_rori = 0;	
 
 		if(select == "point")
 		{
-			Point from(matref->get(0,0),matref->get(0,1),matref->get(0,2));
-
-			while (it != eit)
+			
+			
+			if(matref->ncols() != 3)
 			{
-				inmesh->get_nodes(nodearray, *it);
-
-				size_t nsize = nodearray.size();
-
-				Point to;
-
-				inmesh->get_center(to, *it);
-
-				double d = distance(from,to);
-				//std::cout << from << to << d << std::endl;
-
-				if(d < min_l2_dist)
+				error("ROI point mode requires 3 columns for 3D position vector");
+				return false;
+			}
+			
+			for(size_type i = 0;i < matref->nrows(); ++i)
+			{
+				Point from(matref->get(i,0),matref->get(i,1),matref->get(i,2));
+				
+				inmesh->begin(it);
+				inmesh->end(eit);
+				inmesh->size(sz);
+				
+				double min_l2_dist = std::numeric_limits<double_t>::max();
+		
+				while (it != eit)
 				{
-					min_l2_dist = d;
-					elem_rori = *it;	  
-				}
-			  
+					inmesh->get_nodes(nodearray, *it);
 
-			  ++it;
-			  
-			  
-			  //cnt++; 
-			  //if (cnt==1000) 
-			  //{ 
-			  //  cnt=0; c+=1000; 
-			   // algo->update_progress(c,sz); 
-			   // if (algo->check_abort()) break;
-			  //}
+					size_t nsize = nodearray.size();
+
+					Point to;
+
+					inmesh->get_center(to, *it);
+
+					double d = distance(from,to);
+					//std::cout << from << to << d << std::endl;
+
+					if(d < min_l2_dist)
+					{
+						min_l2_dist = d;
+						elem_rori = *it;	  
+					}			  
+
+					++it;
+				  			  
+				  //cnt++; 
+				  //if (cnt==1000) 
+				  //{ 
+				  //  cnt=0; c+=1000; 
+				   // algo->update_progress(c,sz); 
+				   // if (algo->check_abort()) break;
+				  //}
+				}
+				
+				//! find the topolicaly nearest elements
+				trace_neigb(inmesh,elem_rori,traced_elems_vector,topo_dist);	
+				status( " --DEBUG ROI point :  " + boost::lexical_cast<std::string>(elem_rori) );
 			}
 		}
 		else if(select == "line")
 		{
+			if(matref->ncols() != 3)
+			{
+				error("ROI point mode requires 6 columns for 3D ray vector of two position vectors in a row.");
+				return false;
+			}
+			
+			inmesh->begin(it);
+			inmesh->end(eit);
+			inmesh->size(sz);
+			
+			double min_l2_dist = std::numeric_limits<double_t>::max();
+			
 			while (it != eit)
 			{
 				inmesh->get_nodes(nodearray, *it);
 
 				size_t nsize = nodearray.size();
-
-				
-				
+			
 				Point to;
 
 				inmesh->get_center(to, *it);
 				
 				Point from1(matref->get(0,0),matref->get(0,1),matref->get(0,2));
-				Point from2(matref->get(1,0),matref->get(1,1),matref->get(1,2));				
+				Point from2(matref->get(0,3),matref->get(0,4),matref->get(0,5));				
 
 				double d = distance(from1,to);
 				
@@ -261,7 +266,7 @@ namespace SCIRunAlgo {
 						Dot(Cross(p0 - p2, x - p2), vn) >= 0.0)
 					{
 						elem_rori = *it;
-						std::cout << " --DEBUG inside triangle \n";
+						//std::cout << " --DEBUG inside triangle \n";
 					}
 
 					if(d < min_l2_dist)
@@ -283,6 +288,10 @@ namespace SCIRunAlgo {
 			   // if (algo->check_abort()) break;
 			  //}
 			}
+			
+			//! find the topolicaly nearest elements
+			trace_neigb(inmesh,elem_rori,traced_elems_vector,topo_dist);	
+			status( " --DEBUG number of ROI elements :  " + boost::lexical_cast<std::string>(traced_elems_vector.size()) );
 		}
 		else
 		{
@@ -290,11 +299,7 @@ namespace SCIRunAlgo {
 			return false;
 		}
 
-		// find the topolicaly nearest elements
-		//trace_neigb(inmesh,elem_rori,topo_dist,traced_elems);
-		trace_neigb(inmesh,elem_rori,topo_dist,traced_elems_bitset);
-		
-		status( " --DEBUG number of ROI elements :  " + boost::lexical_cast<std::string>(traced_elems.size()) );
+
 
 		// ctreate filter mesh data
 		inmesh->begin(it);
@@ -306,7 +311,7 @@ namespace SCIRunAlgo {
 		{
 		  //const std::set<VMesh::Elem::index_type>::iterator loc = traced_elems.find(*it);		  
 		  //filter_values[iii] = loc == traced_elems.end() ? 0 : 1;	  
-		  filter_values[iii] = traced_elems_bitset[iii] ? 0 : 1;
+		  filter_values[iii] = traced_elems_vector[iii] ? 1 : 0;
 		  
 		  ++iii;
 		  ++it;
