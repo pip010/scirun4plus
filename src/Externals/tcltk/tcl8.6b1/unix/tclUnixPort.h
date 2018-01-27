@@ -170,17 +170,19 @@ MODULE_SCOPE int TclUnixSetBlockingMode(int fd, int mode);
  * The type of the status returned by wait varies from UNIX system
  * to UNIX system.  The macro below defines it:
  */
-
+/*
 #ifdef _AIX
 #   define WAIT_STATUS_TYPE pid_t
 #else
 #ifndef NO_UNION_WAIT
+#include <sys/wait.h>
 #   define WAIT_STATUS_TYPE union wait
 #else
 #   define WAIT_STATUS_TYPE int
 #endif
 #endif
-
+*/
+#define WAIT_STATUS_TYPE int
 /*
  * Supply definitions for macros to query wait status, if not already
  * defined in header files above.

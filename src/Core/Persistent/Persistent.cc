@@ -753,9 +753,13 @@ Persistent::add_field_class(const std::string& type,
 
 bool Persistent::is_base_of(const std::string& parent, const std::string& type)
 {
-  if (parent == type)
-    return true;
-  return find_derived(type, parent);
+	if (parent == type)
+		return true;
+	else if(Persistent::find_derived(type, parent))
+		return true;
+	else
+		return false;
+    
 }
 
 

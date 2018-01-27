@@ -32,7 +32,7 @@
 
 #include <limits>
 #include <functional>
-
+#include  <type_traits>
 #include <Core/Datatypes/share.h>
 
 #include <Core/Datatypes/MatrixFwd.h>
@@ -54,7 +54,7 @@ class SCISHARE matrix_cast
 {
 public:
   template <class ToType>
-  static ToType* to(const MatrixHandle& matrix, typename boost::enable_if<boost::is_base_of<MatrixBase, ToType> >::type* = 0)
+  static ToType* to(const MatrixHandle& matrix, typename std::enable_if<std::is_base_of<MatrixBase, ToType>::value >::type* = 0)
   {
     return SCI_DATATYPE_CAST<ToType*>(matrix.get_rep());
   }

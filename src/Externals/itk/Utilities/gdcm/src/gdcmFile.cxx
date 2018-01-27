@@ -1714,9 +1714,9 @@ bool File::AnonymizeFile()
  */
 bool File::Write(std::string fileName, FileType writetype)
 {
-   std::ofstream *fp = new std::ofstream(fileName.c_str(), 
+   std::ofstream fp(fileName.c_str(), 
                                          std::ios::out | std::ios::binary);
-   if (*fp == NULL)
+   if (!fp.is_open())
    {
       gdcmWarningMacro("Failed to open (write) File: " << fileName.c_str());
       return false;
@@ -1739,10 +1739,10 @@ bool File::Write(std::string fileName, FileType writetype)
       s_lgPix = Util::DicomString( s_lgPix.c_str() );
       InsertValEntry(s_lgPix,GrPixel, 0x0000);
    }
-   Document::WriteContent(fp, writetype);
+   Document::WriteContent(&fp, writetype);
 
-   fp->close();
-   delete fp;
+   //fp->close();
+   //delete fp;
 
    return true;
 }

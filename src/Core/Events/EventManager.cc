@@ -141,7 +141,7 @@ EventManager::open_trail_file(const std::string &filename, bool record)
     trailfile_stream_->disable_pointer_hashing();
   }
 
-  return trailfile_stream_;
+  return trailfile_stream_ ? true : false;
 }
 
 

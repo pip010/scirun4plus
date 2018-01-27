@@ -264,7 +264,7 @@ Module::Module(const std::string& name, GuiContext* ctx,
       } 
       else 
       {
-        std::cerr << "Cannot create port: " << datatype << '\n';
+        //std::cerr << "Cannot create port: " << datatype << '\n';
         dynamic_port_maker_ = 0;
       }
     }

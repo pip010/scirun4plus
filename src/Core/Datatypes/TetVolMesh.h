@@ -2445,18 +2445,18 @@ protected:
     static const size_t min_buckets = 8;
 
     //! These are for our own use (making the hash function).
-    static const int sz_third_int = (int)(sz_int / 3);
-    static const int up_mask = (~((int)0) << sz_third_int << sz_third_int);
-    static const int mid_mask =  up_mask ^ (~((int)0) << sz_third_int);
+    static const int sz_third_int = (unsigned int)(sz_int / 3);
+    static const int up_mask = (~((unsigned int)0) << sz_third_int << sz_third_int);
+    static const int mid_mask =  up_mask ^ (~((unsigned int)0) << sz_third_int);
     static const int low_mask = ~(up_mask | mid_mask);
 
     //! This is the hash function
     template <class PFACE>
     size_t operator()(const PFACE &f) const 
     {
-      return ((up_mask & (static_cast<int>(f.nodes_[0]) << sz_third_int << sz_third_int)) |
-              (mid_mask & (static_cast<int>(f.nodes_[1]) << sz_third_int)) |
-              (low_mask & static_cast<int>(f.nodes_[2])));
+      return ((up_mask & (static_cast<unsigned int>(f.nodes_[0]) << sz_third_int << sz_third_int)) |
+              (mid_mask & (static_cast<unsigned int>(f.nodes_[1]) << sz_third_int)) |
+              (low_mask & static_cast<unsigned int>(f.nodes_[2])));
     }
     //! This should return less than rather than equal to.
 
@@ -2480,15 +2480,15 @@ protected:
     //! These are for our own use (making the hash function.
     static const int sz_int = sizeof(int) * 8; // in bits
     static const int sz_half_int = sizeof(int) << 2; // in bits
-    static const int up_mask = ((~((int)0)) << sz_half_int);
-    static const int low_mask = (~((int)0) ^ up_mask);
+    static const int up_mask = ((~((unsigned int)0)) << sz_half_int);
+    static const int low_mask = (~((unsigned int)0) ^ up_mask);
 
     //! This is the hash function
     template <class PEDGE>
     size_t operator()(const PEDGE &e) const 
     {
-      return (static_cast<int>(e.nodes_[0]) << sz_half_int) | 
-              (low_mask & static_cast<int>(e.nodes_[1]));
+      return (static_cast<unsigned int>(e.nodes_[0]) << sz_half_int) | 
+              (low_mask & static_cast<unsigned int>(e.nodes_[1]));
     }
 
     //!  This should return less than rather than equal to.
