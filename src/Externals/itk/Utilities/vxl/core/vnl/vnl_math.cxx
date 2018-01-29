@@ -81,28 +81,28 @@ extern "C" int finite(double);
 #if !VCL_STATIC_CONST_INIT_FLOAT_NO_DEFN
 
 // constants
-const double vnl_math::e               VCL_STATIC_CONST_INIT_FLOAT_DEFN( 2.7182818284590452354  );
-const double vnl_math::log2e           VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.4426950408889634074  );
-const double vnl_math::log10e          VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.43429448190325182765 );
-const double vnl_math::ln2             VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.69314718055994530942 );
-const double vnl_math::ln10            VCL_STATIC_CONST_INIT_FLOAT_DEFN( 2.30258509299404568402 );
-const double vnl_math::pi              VCL_STATIC_CONST_INIT_FLOAT_DEFN( 3.14159265358979323846 );
-const double vnl_math::pi_over_2       VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.57079632679489661923 );
-const double vnl_math::pi_over_4       VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.78539816339744830962 );
-const double vnl_math::one_over_pi     VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.31830988618379067154 );
-const double vnl_math::two_over_pi     VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.63661977236758134308 );
-const double vnl_math::two_over_sqrtpi VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.12837916709551257390 );
-const double vnl_math::one_over_sqrt2pi VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.39894228040143267794 );
-const double vnl_math::sqrt2           VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.41421356237309504880 );
-const double vnl_math::sqrt1_2         VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.70710678118654752440 );
+constexpr const double vnl_math::e               VCL_STATIC_CONST_INIT_FLOAT_DEFN( 2.7182818284590452354  );
+constexpr const double vnl_math::log2e           VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.4426950408889634074  );
+constexpr const double vnl_math::log10e          VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.43429448190325182765 );
+constexpr const double vnl_math::ln2             VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.69314718055994530942 );
+constexpr const double vnl_math::ln10            VCL_STATIC_CONST_INIT_FLOAT_DEFN( 2.30258509299404568402 );
+constexpr const double vnl_math::pi              VCL_STATIC_CONST_INIT_FLOAT_DEFN( 3.14159265358979323846 );
+constexpr const double vnl_math::pi_over_2       VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.57079632679489661923 );
+constexpr const double vnl_math::pi_over_4       VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.78539816339744830962 );
+constexpr const double vnl_math::one_over_pi     VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.31830988618379067154 );
+constexpr const double vnl_math::two_over_pi     VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.63661977236758134308 );
+constexpr const double vnl_math::two_over_sqrtpi VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.12837916709551257390 );
+constexpr const double vnl_math::one_over_sqrt2pi VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.39894228040143267794 );
+constexpr const double vnl_math::sqrt2           VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.41421356237309504880 );
+constexpr const double vnl_math::sqrt1_2         VCL_STATIC_CONST_INIT_FLOAT_DEFN( 0.70710678118654752440 );
 
 // IEEE double machine precision
-const double vnl_math::eps             VCL_STATIC_CONST_INIT_FLOAT_DEFN( 2.2204460492503131e-16 );
-const double vnl_math::sqrteps         VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.490116119384766e-08  );
+constexpr const double vnl_math::eps             VCL_STATIC_CONST_INIT_FLOAT_DEFN( 2.2204460492503131e-16 );
+constexpr const double vnl_math::sqrteps         VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.490116119384766e-08  );
 
   //: IEEE single machine precision
-const float vnl_math::float_eps        VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.192092896e-07f );
-const float vnl_math::float_sqrteps    VCL_STATIC_CONST_INIT_FLOAT_DEFN( 3.4526698307e-4f );
+constexpr const float vnl_math::float_eps        VCL_STATIC_CONST_INIT_FLOAT_DEFN( 1.192092896e-07f );
+constexpr const float vnl_math::float_sqrteps    VCL_STATIC_CONST_INIT_FLOAT_DEFN( 3.4526698307e-4f );
 
 #endif
 
@@ -230,11 +230,11 @@ bool vnl_math_isinf(double x) { return !_finite(x) && !_isnan(x); }
 bool vnl_math_isinf(long double x) { return !_finitel(x) && !_isnanl(x); }
 #elif !defined(VNL_HAS_NO_FINITE)
 //: Return true if x is inf
-bool vnl_math_isinf(float x) { return !finitef(x) && !isnan(x); }
+bool vnl_math_isinf(float x) { return !finitef(x) && !std::isnan(x); }
 //: Return true if x is inf
-bool vnl_math_isinf(double x) { return !finite(x) && !isnan(x); }
+bool vnl_math_isinf(double x) { return !finite(x) && !std::isnan(x); }
 //: Return true if x is inf
-bool vnl_math_isinf(long double x) { return !finitel(x) && !isnan(x); }
+bool vnl_math_isinf(long double x) { return !finitel(x) && !std::isnan(x); }
 #else
 // Assume IEEE floating point number representation
 bool vnl_math_isinf(float x) {return(bMe(&x,0x7f800000L,sz_f)&&!bMp(&x,0x007fffffL,sz_f))||bMp(&x,0x7fffffffL,sz_f)==0x7f7fffffL;}

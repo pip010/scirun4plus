@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="2" name="{Main}" bbox="{15 52 720 719}" creationDate="{Wed Dec 20 2017}" creationTime="{22:56:37}" geometry="{953x859+248+77}">
+<network version="v4.7" netversion="1" name="{Main}" bbox="{15 52 720 719}" creationDate="{Mon Jan 08 2018}" creationTime="{16:00:14}" geometry="{953x859+1973+80}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="NewField" name="CreateLatVol" version="1.0">
@@ -18,16 +18,16 @@
       <gui_callback>
         <callback>addViewer</callback>
       </gui_callback>
-      <var name="ViewWindow_0-geometry" val="700x742+1099+285" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{0.9519335300483747}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{-8.108965122374043}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{1.1413645685893834}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-x" val="{-0.04491894109373666}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-y" val="{-0.03011069202460303}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-z" val="{0.2645807514522762}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{-0.11250765159179409}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{0.09347855554791407}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{0.9892440487493341}" substitute="no"/>
+      <var name="ViewWindow_0-geometry" val="896x801+2917+52" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{-7.057752217400062}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{10.825984586583985}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{4.310362291218506}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-x" val="{-0.094601431271137}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-y" val="{-0.06036062726897645}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-z" val="{0.04233815703805516}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{0.0389708289806731}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{-0.34302235456566516}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{0.9385184807753049}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -67,8 +67,8 @@
       <var name="ViewWindow_0-fog-end" val="{0.714265}" substitute="no"/>
       <var name="ViewWindow_0-fog-visibleonly" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-inertia_loop_count" val="{360}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_x" val="{-0.007256539456749229}" substitute="no"/>
-      <var name="ViewWindow_0-inertia_y" val="{-0.9981338752801439}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_x" val="{0.5546391539673193}" substitute="no"/>
+      <var name="ViewWindow_0-inertia_y" val="{0.8191321553656902}" substitute="no"/>
       <var name="ViewWindow_0-currentvisual" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-autoav" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-caxes" val="{0}" substitute="no"/>
@@ -145,7 +145,7 @@
       <var name="ViewWindow_0-global-movieName" val="{./movie.%04d}" substitute="no"/>
       <var name="ViewWindow_0-global-movie" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-global-sync_with_execute" val="{0}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-MESH_ORIGINAL Edges (1)&quot;" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-SEED Nodes (3)&quot;" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-0-useglobal" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-0-type" val="{Gouraud}" substitute="no"/>
       <var name="ViewWindow_0-0-debug" val="{0}" substitute="no"/>
@@ -154,7 +154,7 @@
       <var name="ViewWindow_0-0-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-0-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-0-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-SEED Nodes (3)&quot;" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-MESH_ORIGINAL Edges (1)&quot;" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-1-useglobal" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-1-type" val="{Gouraud}" substitute="no"/>
       <var name="ViewWindow_0-1-debug" val="{0}" substitute="no"/>
@@ -222,20 +222,20 @@
       <var name="use_default_size" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{317x683+1480+-4}" substitute="no"/>
     </module>
-    <module id="m4" package="SCIRun" category="Math" name="CreateMatrix" version="1.0" gui_visible="yes">
+    <module id="m4" package="SCIRun" category="Math" name="CreateMatrix" version="1.0">
       <position x="461" y="81"/>
       <var name="rows" val="{2}" substitute="no"/>
       <var name="cols" val="{3}" substitute="no"/>
-      <var name="data" val="{{0.0 0.0} {0.0 0.0} {1.1 0.0}}" substitute="no"/>
+      <var name="data" val="{{0.0 0.0} {0.0 0.0} {1.1 -1.1}}" substitute="no"/>
       <var name="clabel" val="{0 1 2}" substitute="no"/>
       <var name="rlabel" val="{0 1}" substitute="no"/>
-      <var name="ui_geometry" val="{424x259+1480+52}" substitute="no"/>
+      <var name="ui_geometry" val="{424x259+1480+-4}" substitute="no"/>
     </module>
     <module id="m5" package="SCIRun" category="MiscField" name="SelectMeshROI" version="1.0" gui_visible="yes">
       <position x="386" y="281"/>
       <var name="select" val="{point}" substitute="no"/>
-      <var name="isoval" val="{10.0}" substitute="no"/>
-      <var name="ui_geometry" val="{330x126+1480+192}" substitute="no"/>
+      <var name="isoval" val="{5.0}" substitute="no"/>
+      <var name="ui_geometry" val="{330x126+1480+248}" substitute="no"/>
     </module>
     <module id="m6" package="SCIRun" category="Visualization" name="ShowField" version="1.0">
       <position x="365" y="390"/>

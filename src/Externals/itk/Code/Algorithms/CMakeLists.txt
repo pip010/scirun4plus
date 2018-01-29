@@ -9,6 +9,10 @@ ADD_LIBRARY(ITKAlgorithms STATIC
   itkBioGene.cxx
   itkBioGeneNetwork.cxx
 )
+
+  set_property(TARGET ITKAlgorithms PROPERTY CXX_STANDARD 14)
+  set_property(TARGET ITKAlgorithms PROPERTY CXX_STANDARD_REQUIRED ON)
+  
 TARGET_LINK_LIBRARIES(ITKAlgorithms ITKStatistics ITKNumerics)
 IF(USE_FFTWD)
         #If FFTW is desired, then fftw3 and fftw3f will be required by any

@@ -115,6 +115,10 @@ ENDIF(WITH_TETGEN)
 FOREACH(util ${Utils_SRCS})
   
   ADD_EXECUTABLE(${util} ${SCIRUN_CORE_SOURCE_DIR}/Applications/Utils/${util}.cc)
+  
+  set_property(TARGET ${util} PROPERTY CXX_STANDARD 14)
+  set_property(TARGET ${util} PROPERTY CXX_STANDARD_REQUIRED ON)
+  
   TARGET_LINK_LIBRARIES(${util} ${Utils_LIBS})
   
   #INSTALL(TARGETS ${util}

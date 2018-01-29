@@ -83,27 +83,27 @@ class vnl_math
 {
  public:
   //: pi, e and all that
-  static VNL_DLL_DATA const double e                VCL_STATIC_CONST_INIT_FLOAT_DECL(2.7182818284590452354);
-  static VNL_DLL_DATA const double log2e            VCL_STATIC_CONST_INIT_FLOAT_DECL(1.4426950408889634074);
-  static VNL_DLL_DATA const double log10e           VCL_STATIC_CONST_INIT_FLOAT_DECL(0.43429448190325182765);
-  static VNL_DLL_DATA const double ln2              VCL_STATIC_CONST_INIT_FLOAT_DECL(0.69314718055994530942);
-  static VNL_DLL_DATA const double ln10             VCL_STATIC_CONST_INIT_FLOAT_DECL(2.30258509299404568402);
-  static VNL_DLL_DATA const double pi               VCL_STATIC_CONST_INIT_FLOAT_DECL(3.14159265358979323846);
-  static VNL_DLL_DATA const double pi_over_2        VCL_STATIC_CONST_INIT_FLOAT_DECL(1.57079632679489661923);
-  static VNL_DLL_DATA const double pi_over_4        VCL_STATIC_CONST_INIT_FLOAT_DECL(0.78539816339744830962);
-  static VNL_DLL_DATA const double one_over_pi      VCL_STATIC_CONST_INIT_FLOAT_DECL(0.31830988618379067154);
-  static VNL_DLL_DATA const double two_over_pi      VCL_STATIC_CONST_INIT_FLOAT_DECL(0.63661977236758134308);
-  static VNL_DLL_DATA const double two_over_sqrtpi  VCL_STATIC_CONST_INIT_FLOAT_DECL(1.12837916709551257390);
-  static VNL_DLL_DATA const double one_over_sqrt2pi VCL_STATIC_CONST_INIT_FLOAT_DECL(0.39894228040143267794);
-  static VNL_DLL_DATA const double sqrt2            VCL_STATIC_CONST_INIT_FLOAT_DECL(1.41421356237309504880);
-  static VNL_DLL_DATA const double sqrt1_2          VCL_STATIC_CONST_INIT_FLOAT_DECL(0.70710678118654752440);
+  constexpr static VNL_DLL_DATA const double e                VCL_STATIC_CONST_INIT_FLOAT_DECL(2.7182818284590452354);
+  constexpr static VNL_DLL_DATA const double log2e            VCL_STATIC_CONST_INIT_FLOAT_DECL(1.4426950408889634074);
+  constexpr static VNL_DLL_DATA const double log10e           VCL_STATIC_CONST_INIT_FLOAT_DECL(0.43429448190325182765);
+  constexpr static VNL_DLL_DATA const double ln2              VCL_STATIC_CONST_INIT_FLOAT_DECL(0.69314718055994530942);
+  constexpr static VNL_DLL_DATA const double ln10             VCL_STATIC_CONST_INIT_FLOAT_DECL(2.30258509299404568402);
+  constexpr static VNL_DLL_DATA const double pi               VCL_STATIC_CONST_INIT_FLOAT_DECL(3.14159265358979323846);
+  constexpr static VNL_DLL_DATA const double pi_over_2        VCL_STATIC_CONST_INIT_FLOAT_DECL(1.57079632679489661923);
+  constexpr static VNL_DLL_DATA const double pi_over_4        VCL_STATIC_CONST_INIT_FLOAT_DECL(0.78539816339744830962);
+  constexpr static VNL_DLL_DATA const double one_over_pi      VCL_STATIC_CONST_INIT_FLOAT_DECL(0.31830988618379067154);
+  constexpr static VNL_DLL_DATA const double two_over_pi      VCL_STATIC_CONST_INIT_FLOAT_DECL(0.63661977236758134308);
+  constexpr static VNL_DLL_DATA const double two_over_sqrtpi  VCL_STATIC_CONST_INIT_FLOAT_DECL(1.12837916709551257390);
+  constexpr static VNL_DLL_DATA const double one_over_sqrt2pi VCL_STATIC_CONST_INIT_FLOAT_DECL(0.39894228040143267794);
+  constexpr static VNL_DLL_DATA const double sqrt2            VCL_STATIC_CONST_INIT_FLOAT_DECL(1.41421356237309504880);
+  constexpr static VNL_DLL_DATA const double sqrt1_2          VCL_STATIC_CONST_INIT_FLOAT_DECL(0.70710678118654752440);
 
   //: IEEE double machine precision
-  static VNL_DLL_DATA const double eps             VCL_STATIC_CONST_INIT_FLOAT_DECL(2.2204460492503131e-16);
-  static VNL_DLL_DATA const double sqrteps         VCL_STATIC_CONST_INIT_FLOAT_DECL(1.490116119384766e-08);
+  constexpr static VNL_DLL_DATA const double eps             VCL_STATIC_CONST_INIT_FLOAT_DECL(2.2204460492503131e-16);
+  constexpr static VNL_DLL_DATA const double sqrteps         VCL_STATIC_CONST_INIT_FLOAT_DECL(1.490116119384766e-08);
   //: IEEE single machine precision
-  static VNL_DLL_DATA const float float_eps        VCL_STATIC_CONST_INIT_FLOAT_DECL(1.192092896e-07f);
-  static VNL_DLL_DATA const float float_sqrteps    VCL_STATIC_CONST_INIT_FLOAT_DECL(3.4526698307e-4f);
+  constexpr static VNL_DLL_DATA const float float_eps        VCL_STATIC_CONST_INIT_FLOAT_DECL(1.192092896e-07f);
+  constexpr static VNL_DLL_DATA const float float_sqrteps    VCL_STATIC_CONST_INIT_FLOAT_DECL(3.4526698307e-4f);
 };
 
 // We do not want to make assumptions about unknown types that happen

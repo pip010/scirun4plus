@@ -144,6 +144,7 @@ SET(Dataflow_Modules_Fields_SRCS
   CalculateProfile.cc
   TriSurfConsistencyCorrection.cc
   SelectMeshROI.cc
+  FixSurfaceNormals.cc
 )
 
 IF(WITH_TETGEN)

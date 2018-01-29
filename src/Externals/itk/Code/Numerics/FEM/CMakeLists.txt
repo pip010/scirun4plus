@@ -208,6 +208,11 @@ ENDIF(WIN32)
 TARGET_LINK_LIBRARIES(ITKFEM 
                       ITKBasicFilters
                       ITKIO)
+                      
+set_property(TARGET ITKFEM PROPERTY CXX_STANDARD 14)
+set_property(TARGET ITKFEM PROPERTY CXX_STANDARD_REQUIRED ON)
+
+  
 IF(UNIX)
   TARGET_LINK_LIBRARIES (ITKFEM -lm )
 ENDIF(UNIX)

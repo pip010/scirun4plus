@@ -343,6 +343,8 @@ SET( vcl_sources
 #AUX_SOURCE_DIRECTORY(Templates vcl_sources)
 
 ADD_LIBRARY(itkvcl ${ITK_BUILD_SHARED_LIBS} ${vcl_sources})
+set_property(TARGET itkvcl PROPERTY CXX_STANDARD 14)
+set_property(TARGET itkvcl PROPERTY CXX_STANDARD_REQUIRED ON)
 
 IF(WIN32)
   IF(NOT CYGWIN)

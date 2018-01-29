@@ -42,7 +42,9 @@ ADD_LIBRARY(ITKNumerics STATIC
   itkVersorRigid3DTransformOptimizer.cxx
   itkVersorTransformOptimizer.cxx
 )
-
+  set_property(TARGET ITKNumerics PROPERTY CXX_STANDARD 14)
+  set_property(TARGET ITKNumerics PROPERTY CXX_STANDARD_REQUIRED ON)
+  
 TARGET_LINK_LIBRARIES(ITKNumerics ITKCommon)
 
 IF(ITK_LIBRARY_PROPERTIES)

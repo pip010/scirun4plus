@@ -77,6 +77,7 @@ ENDIF(COMMAND CMAKE_POLICY)
 
 PROJECT(SCIRUN_CORE)
 
+
 # SOME HOW CMAKE DOES NOT GET IT RIGHT
 IF(APPLE)
 IF(CMAKE_OSX_ARCHITECTURES MATCHES .*64)
@@ -516,6 +517,9 @@ IF (NOT DISABLE_OPENGL)
 ENDIF (NOT DISABLE_OPENGL)
 
   SCIRUN_INSTALL_LIBRARY(${library})
+  
+  set_property(TARGET ${library} PROPERTY CXX_STANDARD 14)
+	set_property(TARGET ${library} PROPERTY CXX_STANDARD_REQUIRED ON)
 
   # Set a temporary variable in order to make sure it stays as a list.
   #SET(temp_library_list ${SCIRUN_LIBRARY_LIST_BUILD} ${library})

@@ -10,7 +10,9 @@ ADD_LIBRARY(ITKStatistics
   itkTDistribution.cxx
   itkChiSquareDistribution.cxx
   )
-
+  set_property(TARGET ITKStatistics PROPERTY CXX_STANDARD 14)
+  set_property(TARGET ITKStatistics PROPERTY CXX_STANDARD_REQUIRED ON)
+  
 TARGET_LINK_LIBRARIES(ITKStatistics ITKCommon itkNetlibSlatec)
 
 IF(ITK_LIBRARY_PROPERTIES)

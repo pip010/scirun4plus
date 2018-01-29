@@ -487,12 +487,13 @@ using namespace SCIRun;
 					if(coilType == 1)
 					{
 						//Vector origin(0, 0, -0.5*(1.0/coilLayers));
-						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) );
+						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) +coilLayersStep/2);
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
 							ClosedSegments segments(coilPoints,coilIndices,coilValues);
-							GenPointsCircular2(segments, origin, outerR, current, 0.0, 2.0*M_PI);
+							//GenPointsCircular2(segments, origin, outerR, current, 0.0, 2.0*M_PI);
+							GenPointsCircular(segments, origin, outerR, current, 0.0, 2.0*M_PI);
 							
 							origin += step;
 						}
@@ -500,8 +501,8 @@ using namespace SCIRun;
 					}
 					else if(coilType == 2)
 					{
-						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
-						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2)  +coilLayersStep/2);
+						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2)  +coilLayersStep/2);
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
@@ -509,7 +510,8 @@ using namespace SCIRun;
 							for (size_t i = 0; i < windings; i++)
 							{
 								ClosedSegments segments(coilPoints,coilIndices,coilValues);
-								GenPointsCircular2(segments, originLeft, innerR + dr + i*dr, current, 0.0 , 2*M_PI );
+								//GenPointsCircular2(segments, originLeft, innerR + dr + i*dr, current, 0.0 , 2*M_PI );
+								GenPointsCircular(segments, originLeft, innerR + dr + i*dr, current, 0.0 , 2*M_PI );
 							}
 							
 							originLeft += step;
@@ -522,7 +524,8 @@ using namespace SCIRun;
 							for (size_t i = 0; i < windings; i++)
 							{
 								ClosedSegments segments(coilPoints,coilIndices,coilValues);
-								GenPointsCircular2(segments, originRight, innerR + dr + i*dr, -current, 0.0 , 2*M_PI);
+								//GenPointsCircular2(segments, originRight, innerR + dr + i*dr, -current, 0.0 , 2*M_PI);
+								GenPointsCircular(segments, originRight, innerR + dr + i*dr, -current, 0.0 , 2*M_PI);
 							}
 							
 							originRight += step;
@@ -595,7 +598,7 @@ using namespace SCIRun;
 					{
 						///SINGLE
 						//Vector origin(0, 0, -0.5*(1.0/coilLayers));
-						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) );
+						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) +coilLayersStep/2);
 						
 						for(size_t l = 0; l < coilLayers; l++)
 						{
@@ -610,8 +613,8 @@ using namespace SCIRun;
 					}
 					else if(coilType == 2)
 					{
-						Vector originLeft( -radius - (outerD/2), 0, -coilLayersStep*(coilLayers/2));
-						Vector originRight( radius + (outerD/2), 0, -coilLayersStep*(coilLayers/2));
+						Vector originLeft( -radius - (outerD/2), 0, -coilLayersStep*(coilLayers/2) +coilLayersStep/2);
+						Vector originRight( radius + (outerD/2), 0, -coilLayersStep*(coilLayers/2) +coilLayersStep/2);
 						
 						
 						for(size_t l = 0; l < coilLayers; l++)
@@ -710,7 +713,7 @@ using namespace SCIRun;
 					if(coilType == 1)
 					{
 						//Vector origin(0, 0, -0.5*(1.0/coilLayers));
-						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) );
+						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) +coilLayersStep/2);
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
@@ -724,8 +727,8 @@ using namespace SCIRun;
 					}
 					else if(coilType == 2)
 					{
-						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
-						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) +coilLayersStep/2);
+						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) +coilLayersStep/2);
 						//Vector originRight ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
 						//Vector originLeft (  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
 
@@ -1175,8 +1178,8 @@ using namespace SCIRun;
 
 			Handle<BaseCoilgen> helper;
 
-			helper = new MultiloopsCoilgen(this,args);
-			//helper = new CircularWireCoilgen(this,args);
+			//helper = new MultiloopsCoilgen(this,args);
+			helper = new CircularWireCoilgen(this,args);
 
 			helper->Generate(meshFieldHandle);
 
