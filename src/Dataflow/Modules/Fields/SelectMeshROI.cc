@@ -99,11 +99,12 @@ SelectMeshROI::execute()
   // Get input field.
   FieldHandle input;
   MatrixHandle roimat;
+  MatrixHandle roidist;
 
   get_input_handle("Input Field", input,true);
   get_input_handle("Input Matrix", roimat, false);
+  get_input_handle("Distance Matrix", roidist, false);
   
-
   if (inputs_changed_ || 
 	gui_select_.changed() ||
 	gui_isoval_.changed() ||
@@ -114,19 +115,22 @@ SelectMeshROI::execute()
     FieldHandle output;
     //MatrixHandle mapping;
 
+	int topo_dist = static_cast<int>(gui_isoval_.get());
     //double topo_dist = gui_isoval_.get();
     
-    if (roimat.get_rep())
+
+    
+    if(roidist.get_rep())
     {
-      //top_dist = 0.0;
-      if (roimat->get_data_size() > 0) 
+	  if (roidist->get_data_size() > 0) 
       {
-		  //top_dist = isomat->get(0,0);
+		  topo_dist = roidist->get(0,0);
 	  }
-    }
+	}
+	
 
     algo_.set_option("select",gui_select_.get());
-    algo_.set_int("distance",static_cast<int>(gui_isoval_.get()));
+    algo_.set_int("distance",topo_dist);
     
    
     //if (gui_method_.get() == "convex")
