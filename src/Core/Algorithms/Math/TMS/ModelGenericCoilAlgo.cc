@@ -897,7 +897,7 @@ using namespace SCIRun;
 							/// SINGLE COIL								
 							size_t numElements = GenPointsCircular2(dipolePoints, center, ringRad, 0.0d, 2*M_PI, segments);
 							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );							
-							double dipoleMoment = (  current * ringArea * numCoupling[i] ) / numElements;
+							double dipoleMoment = (  current * ringArea * numCoupling[i] );// / numElements;
 							Vector dipoleNormL(0,0,1.0*dipoleMoment);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 						}
@@ -915,14 +915,14 @@ using namespace SCIRun;
 							/// LEFT COIL
 							size_t numElementsL = GenPointsCircular2(dipolePoints, originL, ringRad, 0.0d, 2*M_PI, segments);
 							
-							double dipoleMomentL = ( current * ringArea * numCoupling[i] ) / numElementsL;
+							double dipoleMomentL = ( current * ringArea * numCoupling[i] );// / numElementsL;
 							Vector dipoleNormL(0,0,1.0*dipoleMomentL);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
 
 
 							/// RIGHT COIL
 							size_t numElementsR = GenPointsCircular2(dipolePoints, originR, ringRad, 0.0d, 2*M_PI, segments);
-							double dipoleMomentR = ( current * ringArea * numCoupling[i] ) / numElementsR;
+							double dipoleMomentR = ( current * ringArea * numCoupling[i] );// / numElementsR;
 							Vector dipoleNormR(0,0,-1.0*dipoleMomentR);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormR );
 						}
@@ -1037,7 +1037,7 @@ using namespace SCIRun;
 						preNumElem.push_back(n);
 					}
 					
-					//const double vals[16] = {3.0d, 9.0d, 12.0d, 16.0d, 20.0d, 24.0d, 28.0d, 30.0d, 32.0d, 34.0d, 36.0d, 38.0d, 40.0d, 42.0d, 44.0d, 44.0d};
+					//const double vals[16] = {3.0d, 9.0d, 12.0d, 16.0d, 20.0d, 24.0d, 28.0d, 30.0d, 32.0d, 34.0d, 36.0d, 38.0d, 40.0d, 42.0d, 44.0d};
 					//std::vector<double> preNumElem(vals,vals+16);
 					return preNumElem;
 

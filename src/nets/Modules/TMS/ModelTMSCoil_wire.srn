@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="10" name="{Main}" bbox="{62 99 1014 1167}" creationDate="{Wed Nov 22 2017}" creationTime="{16:38:15}" geometry="{960x1028+1910+14}">
+<network version="v4.7" netversion="1" name="{Main}" bbox="{62 99 1014 1167}" creationDate="{Fri Jun 22 2018}" creationTime="{19:59:25}" geometry="{960x1028+85+21}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="MiscField" name="ChooseField" version="1.0">
@@ -107,16 +107,16 @@
       <gui_callback>
         <callback>addViewer</callback>
       </gui_callback>
-      <var name="ViewWindow_0-geometry" val="700x742+2503+201" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{-0.05664504656332102}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{-0.17371528983676876}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{-0.6401334324178116}" substitute="no"/>
+      <var name="ViewWindow_0-geometry" val="700x745+583+229" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{-0.08407915727822232}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{-0.589730849670253}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{-0.40309306040939574}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-x" val="{-0.008905230153948639}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-y" val="{-0.08852437550677326}" substitute="no"/>
       <var name="ViewWindow_0-view-lookat-z" val="{7.524279175097348e-5}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{-0.04855784445728866}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{0.9905601281052465}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{-0.1281903598160926}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{0.016889064555146965}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{0.6251526738932276}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{-0.7803197381987723}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -267,8 +267,8 @@
       <position x="403" y="850"/>
       <var name="main_frame" val="{}" substitute="no"/>
       <var name="isFixed" val="{0}" substitute="no"/>
-      <var name="min" val="{9.91274855024818e-7}" substitute="no"/>
-      <var name="max" val="{0.00014473799285177227}" substitute="no"/>
+      <var name="min" val="{5.509834502589884e-8}" substitute="no"/>
+      <var name="max" val="{3.1124947882575632e-6}" substitute="no"/>
       <var name="makeSymmetric" val="{0}" substitute="no"/>
     </module>
     <module id="m11" package="SCIRun" category="NewField" name="GetFieldBoundary" version="1.0">
@@ -301,7 +301,7 @@
       <var name="coilLayersTCL" val="{1}" substitute="no"/>
       <var name="coilLayersStepTCL" val="{0.001}" substitute="no"/>
       <var name="typeTCL" val="{8-shape}" substitute="no"/>
-      <var name="ui_geometry" val="{288x207+1975+255}" substitute="no"/>
+      <var name="ui_geometry" val="{288x207+-353+261}" substitute="no"/>
     </module>
     <module id="m15" package="SCIRun" category="Visualization" name="ShowField" version="1.0">
       <position x="62" y="846"/>
@@ -358,7 +358,7 @@
     </module>
     <module id="m17" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">
       <position x="816" y="730"/>
-      <var name="ui_geometry" val="{1126x282+2714+-4}" substitute="no"/>
+      <var name="ui_geometry" val="{1126x282+794+-4}" substitute="no"/>
     </module>
     <module id="m18" package="SCIRun" category="NewField" name="ClipFieldByFunction" version="2.0">
       <position x="634" y="423"/>
@@ -390,9 +390,7 @@
     <connection id="c14" from="m8" fromport="0" to="m9" toport="0"/>
     <connection id="c15" from="m5" fromport="0" to="m10" toport="1"/>
     <connection id="c16" from="m6" fromport="0" to="m3" toport="1"/>
-    <connection id="c17" from="m4" fromport="0" to="m5" toport="1">
-      <route>{453 590 453 613.0 389 613.0 389 657}</route>
-    </connection>
+    <connection id="c17" from="m4" fromport="1" to="m5" toport="1"/>
     <connection id="c18" from="m1" fromport="0" to="m4" toport="1"/>
     <connection id="c19" from="m14" fromport="0" to="m1" toport="1"/>
     <connection id="c20" from="m10" fromport="0" to="m8" toport="1"/>

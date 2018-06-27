@@ -756,7 +756,7 @@ namespace SCIRunAlgo {
 						if(over) autostep *= 1.5d;
 						
 						//DEBUG
-						//std::cout << "\t integration step : " << step << ",for segment lenght :" << len <<", with number of points per segment :" << NP << std::endl;
+						//std::cout << "\t integration step : " << autostep << ",for segment lenght :" << len <<", with number of points per segment :" << NP << std::endl;
 
 					}while( under || over );
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE network PUBLIC "-//SCIRun/Network DTD" "network.dtd">
-<network version="v4.7" netversion="5" name="{Main}" bbox="{80 82 1097 1064}" creationDate="{Sun Nov 12 2017}" creationTime="{22:55:57}" geometry="{1615x1026+65+24}">
+<network version="v4.7" netversion="4" name="{Main}" bbox="{80 82 1097 1064}" creationDate="{Fri Jun 22 2018}" creationTime="{19:50:18}" geometry="{1615x1026+65+24}">
   <note>{}</note>
   <modules>
     <module id="m1" package="SCIRun" category="Render" name="ViewScene" version="1.0">
@@ -8,16 +8,16 @@
       <gui_callback>
         <callback>addViewer</callback>
       </gui_callback>
-      <var name="ViewWindow_0-geometry" val="1615x739+145+120" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-x" val="{0.10136736286143695}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-y" val="{-0.16264528225241193}" substitute="no"/>
-      <var name="ViewWindow_0-view-eyep-z" val="{0.36189755260684353}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-x" val="{2.2705644369125366e-6}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-y" val="{0.0}" substitute="no"/>
-      <var name="ViewWindow_0-view-lookat-z" val="{0.0}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-x" val="{-0.04505857205153513}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-y" val="{0.9064123965165354}" substitute="no"/>
-      <var name="ViewWindow_0-view-up-z" val="{0.419983681261341}" substitute="no"/>
+      <var name="ViewWindow_0-geometry" val="1615x742+145+148" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-x" val="{0.0366868972023502}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-y" val="{-1.608838170499145}" substitute="no"/>
+      <var name="ViewWindow_0-view-eyep-z" val="{0.6237888989354871}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-x" val="{8.902722470031733e-5}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-y" val="{1.288823622175736e-5}" substitute="no"/>
+      <var name="ViewWindow_0-view-lookat-z" val="{-1.8507685417349133e-5}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-x" val="{0.09250500316927288}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-y" val="{0.36178982834368817}" substitute="no"/>
+      <var name="ViewWindow_0-view-up-z" val="{0.9276588513541482}" substitute="no"/>
       <var name="ViewWindow_0-view-fov" val="{20.0}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-x" val="{2.1}" substitute="no"/>
       <var name="ViewWindow_0-homeview-eyep-y" val="{1.6}" substitute="no"/>
@@ -135,7 +135,7 @@
       <var name="ViewWindow_0-global-movieName" val="{./movie.%04d}" substitute="no"/>
       <var name="ViewWindow_0-global-movie" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-global-sync_with_execute" val="{0}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-ShowColorMap Sticky (4)&quot;" val="{0}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-DIPOLES Vectors (5)&quot;" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-0-useglobal" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-0-type" val="{Gouraud}" substitute="no"/>
       <var name="ViewWindow_0-0-debug" val="{0}" substitute="no"/>
@@ -144,24 +144,9 @@
       <var name="ViewWindow_0-0-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-0-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-0-light" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-ShowColorMap Sticky (4)&quot;" val="{0}" substitute="no"/>
       <var name="&quot;ViewWindow_0-MODEL-AField Vectors (3)&quot;" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-1-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-1-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-1-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-1-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-MODEL-BField Vectors (2)&quot;" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-2-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-2-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-2-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-2-light" val="{1}" substitute="no"/>
+      <var name="&quot;ViewWindow_0-MODEL-BField Vectors (2)&quot;" val="{1}" substitute="no"/>
       <var name="&quot;ViewWindow_0-MODEL Nodes (1)&quot;" val="{0}" substitute="no"/>
       <var name="&quot;ViewWindow_0-MODEL Transparent Faces (1)&quot;" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-3-useglobal" val="{1}" substitute="no"/>
@@ -172,15 +157,6 @@
       <var name="ViewWindow_0-3-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-3-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-3-light" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-4-useglobal" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-4-type" val="{Gouraud}" substitute="no"/>
-      <var name="ViewWindow_0-4-debug" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-4-clip" val="{1}" substitute="no"/>
-      <var name="ViewWindow_0-4-cull" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-4-dl" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-4-fog" val="{0}" substitute="no"/>
-      <var name="ViewWindow_0-4-light" val="{1}" substitute="no"/>
-      <var name="&quot;ViewWindow_0-DIPOLES Vectors (5)&quot;" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-5-useglobal" val="{1}" substitute="no"/>
       <var name="ViewWindow_0-5-type" val="{Gouraud}" substitute="no"/>
       <var name="ViewWindow_0-5-debug" val="{0}" substitute="no"/>
@@ -189,6 +165,14 @@
       <var name="ViewWindow_0-5-dl" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-5-fog" val="{0}" substitute="no"/>
       <var name="ViewWindow_0-5-light" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-useglobal" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-type" val="{Gouraud}" substitute="no"/>
+      <var name="ViewWindow_0-2-debug" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-clip" val="{1}" substitute="no"/>
+      <var name="ViewWindow_0-2-cull" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-dl" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-fog" val="{0}" substitute="no"/>
+      <var name="ViewWindow_0-2-light" val="{1}" substitute="no"/>
     </module>
     <module id="m2" package="SCIRun" category="Math" name="SolveBiotSavartContour" version="1.0">
       <position x="409" y="449"/>
@@ -242,7 +226,7 @@
       <var name="use_default_size" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{317x683+1553+368}" substitute="no"/>
     </module>
-    <module id="m4" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0">
+    <module id="m4" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0" gui_visible="yes">
       <position x="353" y="872"/>
       <var name="scalars_has_data" val="{0}" substitute="no"/>
       <var name="scalars_on" val="{0}" substitute="no"/>
@@ -259,7 +243,7 @@
       <var name="vectors_transparency" val="{0}" substitute="no"/>
       <var name="vectors_normalize" val="{1}" substitute="no"/>
       <var name="vectors_color_type" val="{1}" substitute="no"/>
-      <var name="vectors_scale" val="{0.048}" substitute="no"/>
+      <var name="vectors_scale" val="{0.0148}" substitute="no"/>
       <var name="vectors_threshold" val="{1e-5}" substitute="no"/>
       <var name="vectors_resolution" val="{6}" substitute="no"/>
       <var name="vectors_bidirectional" val="{0}" substitute="no"/>
@@ -307,13 +291,13 @@
       <var name="def_color-b" val="{0.24}" substitute="no"/>
       <var name="def_color-a" val="{0.5}" substitute="no"/>
       <var name="active_tab" val="{Vectors}" substitute="no"/>
-      <var name="interactive_mode" val="{Interactive}" substitute="no"/>
+      <var name="interactive_mode" val="{OnExecute}" substitute="no"/>
       <var name="show_progress" val="{0}" substitute="no"/>
       <var name="field_name" val="{MODEL-BField}" substitute="no"/>
       <var name="field_name_override" val="{1}" substitute="no"/>
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{367x753+1313+220}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1313+248}" substitute="no"/>
     </module>
     <module id="m5" package="SCIRun" category="MiscField" name="ReportFieldInfo" version="1.0">
       <position x="815" y="774"/>
@@ -327,8 +311,8 @@
       <position x="874" y="438"/>
       <var name="main_frame" val="{}" substitute="no"/>
       <var name="isFixed" val="{0}" substitute="no"/>
-      <var name="min" val="{0.0}" substitute="no"/>
-      <var name="max" val="{2.0299521761657124e-5}" substitute="no"/>
+      <var name="min" val="{0.0006288211855425326}" substitute="no"/>
+      <var name="max" val="{0.0009545415118667223}" substitute="no"/>
       <var name="makeSymmetric" val="{0}" substitute="no"/>
     </module>
     <module id="m8" package="SCIRun" category="Visualization" name="CreateStandardColorMaps" version="1.0">
@@ -371,8 +355,8 @@
       <position x="606" y="761"/>
       <var name="main_frame" val="{.uiSCIRun_Visualization_RescaleColorMap_1}" substitute="no"/>
       <var name="isFixed" val="{0}" substitute="no"/>
-      <var name="min" val="{2.3555435351615137e-9}" substitute="no"/>
-      <var name="max" val="{5.1781524071223646e-8}" substitute="no"/>
+      <var name="min" val="{7.347806953375216e-6}" substitute="no"/>
+      <var name="max" val="{0.0013833859601789465}" substitute="no"/>
       <var name="makeSymmetric" val="{0}" substitute="no"/>
       <var name="ui_geometry" val="{288x200+1585+136}" substitute="no"/>
     </module>
@@ -391,7 +375,7 @@
     <module id="m18" package="SCIRun" category="NewField" name="GetFieldBoundary" version="1.0">
       <position x="430" y="748"/>
     </module>
-    <module id="m19" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0">
+    <module id="m19" package="SCIRun" category="Visualization" name="ShowFieldGlyphs" version="1.0" gui_visible="yes">
       <position x="496" y="873"/>
       <var name="scalars_has_data" val="{0}" substitute="no"/>
       <var name="scalars_on" val="{0}" substitute="no"/>
@@ -408,7 +392,7 @@
       <var name="vectors_transparency" val="{0}" substitute="no"/>
       <var name="vectors_normalize" val="{1}" substitute="no"/>
       <var name="vectors_color_type" val="{1}" substitute="no"/>
-      <var name="vectors_scale" val="{0.048}" substitute="no"/>
+      <var name="vectors_scale" val="{0.096}" substitute="no"/>
       <var name="vectors_threshold" val="{1e-5}" substitute="no"/>
       <var name="vectors_resolution" val="{6}" substitute="no"/>
       <var name="vectors_bidirectional" val="{0}" substitute="no"/>
@@ -456,13 +440,13 @@
       <var name="def_color-b" val="{0.24}" substitute="no"/>
       <var name="def_color-a" val="{0.5}" substitute="no"/>
       <var name="active_tab" val="{Vectors}" substitute="no"/>
-      <var name="interactive_mode" val="{Interactive}" substitute="no"/>
+      <var name="interactive_mode" val="{OnExecute}" substitute="no"/>
       <var name="show_progress" val="{0}" substitute="no"/>
       <var name="field_name" val="{MODEL-AField}" substitute="no"/>
       <var name="field_name_override" val="{1}" substitute="no"/>
       <var name="approx_div" val="{1}" substitute="no"/>
       <var name="use_default_size" val="{0}" substitute="no"/>
-      <var name="ui_geometry" val="{367x753+1175+218}" substitute="no"/>
+      <var name="ui_geometry" val="{367x753+1175+246}" substitute="no"/>
     </module>
     <module id="m20" package="SCIRun" category="Visualization" name="ShowColorMap" version="1.0">
       <position x="703" y="911"/>
