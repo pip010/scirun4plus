@@ -197,7 +197,7 @@ execute(GenerateStreamLinesWithPlacementHeuristicData &MESL, ProgressReporter * 
   for(int i=0; i<numsl; i++) 
   {
     mod->remark("streamline: "+to_string(i));
-    rmsmin=HUGE;
+    rmsmin=std::numeric_limits<int>::max();
     bool found=false;
     FieldHandle mslminH;
 
